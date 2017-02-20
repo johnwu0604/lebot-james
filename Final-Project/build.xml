@@ -4,7 +4,7 @@
         <delete dir="build"/>
     </target>
 
-    <target name="compile">
+    <target name="compile" includeantruntime="true">
         <mkdir dir="build/classes"/>
         <javac srcdir="src" destdir="build/classes"/>
     </target>
