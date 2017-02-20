@@ -10,6 +10,5 @@ jdk:
 
 #notifications
 notifications:
-  on_success: never
-  on_failure: never
-  slack: 'dpm-group11:rtTq0hQVEbaZwPRvkMKL4zlD'
+  email: false
+  slack: dpm-group11:rtTq0hQVEbaZwPRvkMKL4zlD
