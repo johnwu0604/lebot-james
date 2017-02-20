@@ -1,5 +1,5 @@
 #before script
-before_script: cd Final-Project
+before_install: cd Final-Project
 
 #language
 language: java
