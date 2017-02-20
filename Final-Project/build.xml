@@ -9,4 +9,8 @@
         <javac srcdir="src" destdir="build/classes"/>
     </target>
 
+    <target name="test" description="Runs the unit tests">
+        
+    </target>
+
 </project>
