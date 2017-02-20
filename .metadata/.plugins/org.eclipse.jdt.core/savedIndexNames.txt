@@ -9,7 +9,6 @@ INDEX VERSION 1.129+/Users/JohnWu/Documents/Projects/dpm-group11/.metadata/.plug
 2058001853.index
 2584745134.index
 3316544250.index
-2065255501.index
 3575267300.index
 2791775041.index
 3957609542.index
