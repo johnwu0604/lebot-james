@@ -9,7 +9,7 @@
         <javac srcdir="src" destdir="build/classes"/>
     </target>
 
-    <target name="test" description="Runs the unit tests">
+    <target name="test" description="Runs the unit tests" depends="compile">
         
     </target>
 
