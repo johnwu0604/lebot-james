@@ -4,9 +4,9 @@
         <delete dir="build"/>
     </target>
 
-    <target name="compile" includeantruntime="true">
+    <target name="compile" depends="clean">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes"/>
+        <javac srcdir="src" destdir="build/classes" includeantruntime="true" />
     </target>
 
     <target name="test" description="Runs the unit tests" depends="compile">
