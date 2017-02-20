@@ -1,3 +1,6 @@
+#before script
+before_script: cd Final-Project
+
 #language
 language: java
 
