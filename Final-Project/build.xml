@@ -6,11 +6,18 @@
 
     <target name="compile" depends="clean">
         <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes" includeantruntime="true" />
+        <javac srcdir="src" destdir="build/classes" includeantruntime="true" classpathref="build-classpath"/>
     </target>
 
     <target name="test" description="Runs the unit tests" depends="compile">
         
     </target>
+
+    <path id="build-classpath">
+        <fileset dir="lib">
+            <include name="*.jar"/>
+        </fileset>
+        <pathelement path= "${build.dir}"/>
+    </path>
 
 </project>

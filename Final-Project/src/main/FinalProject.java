@@ -1,0 +1,26 @@
+package main;
+
+import lejos.hardware.Button;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.TextLCD;
+import lejos.hardware.motor.EV3LargeRegulatedMotor;
+
+/**
+ * Created by JohnWu on 2017-02-25.
+ */
+public class FinalProject {
+
+    private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+    private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
+
+    public static void main(String[] args) {
+
+        @SuppressWarnings("resource")
+
+        final TextLCD t = LocalEV3.get().getTextLCD();
+        t.clear();
+        t.drawString("Hello World", 0, 0);
+        int buttonChoice = Button.waitForAnyPress();
+        System.exit(0);
+    }
+}
