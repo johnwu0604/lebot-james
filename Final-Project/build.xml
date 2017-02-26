@@ -1,12 +1,16 @@
 <project>
 
+    <property name="lib.dir" value="lib"/>
+    <property name="main.build.dir" value="build/classes"/>
+    <property name="main.src.dir" value="src"/>
+
     <target name="clean">
-        <delete dir="build"/>
+        <delete dir="${main.build.dir}"/>
     </target>
 
     <target name="compile" depends="clean">
-        <mkdir dir="build/classes"/>
-        <javac srcdir="src" destdir="build/classes" includeantruntime="true" classpathref="build-classpath"/>
+        <mkdir dir="${main.build.dir}"/>
+        <javac srcdir="${main.src.dir}" destdir="${main.build.dir}" includeantruntime="true" classpathref="build-classpath"/>
     </target>
 
     <target name="test" description="Runs the unit tests" depends="compile">
@@ -14,10 +18,9 @@
     </target>
 
     <path id="build-classpath">
-        <fileset dir="lib">
+        <fileset dir="${lib.dir}">
             <include name="*.jar"/>
         </fileset>
-        <pathelement path= "${build.dir}"/>
     </path>
 
 
