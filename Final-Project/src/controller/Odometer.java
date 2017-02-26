@@ -58,29 +58,23 @@ public class Odometer extends Thread {
             currentLeftMotorTachoCount = leftMotor.getTachoCount();
             currentRightMotorTachoCount = rightMotor.getTachoCount();
 
-            // Compare it with the previous value to get the change
-            int leftDeltaTacho = currentLeftMotorTachoCount - prevLeftMotorTachoCount;
-            int rightDeltaTacho = currentRightMotorTachoCount - prevRightMotorTachoCount;
-
             // Use our change in rotation values to calculate displacement of each wheel
-            double leftMotorDisplacement = WHEEL_CIRCUM*leftDeltaTacho/360;
-            double rightMotorDisplacement = WHEEL_CIRCUM*rightDeltaTacho/360;
+            double leftMotorDisplacement =  calculateMotorDisplacement( currentLeftMotorTachoCount , prevLeftMotorTachoCount );
+            double rightMotorDisplacement = calculateMotorDisplacement( currentRightMotorTachoCount , prevRightMotorTachoCount );
 
             // change in angle of our vehicle
-            double thetaChange = ( leftMotorDisplacement - rightMotorDisplacement ) / TRACK_LENGTH;
+            double thetaChange = calculateThetaChange( leftMotorDisplacement , rightMotorDisplacement );
             // change in distance of our vehicle
-            double displacement = ( leftMotorDisplacement + rightMotorDisplacement ) / 2;
+            double displacement = calculateVehicleDisplacement( leftMotorDisplacement , rightMotorDisplacement );
 
             prevLeftMotorTachoCount = currentLeftMotorTachoCount;
             prevRightMotorTachoCount = currentRightMotorTachoCount;
 
-
             synchronized ( lock ) {
                 // update odometer values
                 theta += thetaChange;
-                x += displacement*Math.sin( theta );
-                y += displacement*Math.cos( theta );
-
+                x +=  calculateXDisplacement(displacement,theta);
+                y += calculateYDisplacement(displacement,theta);
             }
 
             // ensure that the odometer only runs once every period
@@ -95,6 +89,62 @@ public class Odometer extends Thread {
                 }
             }
         }
+    }
+
+    /**
+     * Calculates the motor displacement based on current and previous tacho counts.
+     *
+     * @param currentTachoCount
+     * @param prevTachoCount
+     * @return
+     */
+    public double calculateMotorDisplacement( int currentTachoCount , int prevTachoCount ) {
+        int tachoDelta = currentTachoCount - prevTachoCount;
+        return WHEEL_CIRCUM*tachoDelta/360;
+    }
+
+    /**
+     * Calculates the change in theta based on the displacements of both motors.
+     *
+     * @param leftMotorDisplacement
+     * @param rightMotorDisplacement
+     * @return
+     */
+    public double calculateThetaChange( double leftMotorDisplacement , double rightMotorDisplacement ) {
+        return ( leftMotorDisplacement - rightMotorDisplacement ) / TRACK_LENGTH;
+    }
+
+    /**
+     * Calculates the vehicle displacement based on the displacements of both motors.
+     *
+     * @param leftMotorDisplacement
+     * @param rightMotorDisplacement
+     * @return
+     */
+    public double calculateVehicleDisplacement(double leftMotorDisplacement , double rightMotorDisplacement ) {
+        return ( leftMotorDisplacement + rightMotorDisplacement ) / 2;
+    }
+
+    /**
+     * Calculates the x-displacement of the vehicle.
+     *
+     * @param vehicleDisplacement
+     * @param theta
+     * @return
+     */
+    public double calculateXDisplacement( double vehicleDisplacement , double theta ) {
+        return vehicleDisplacement*Math.sin( theta );
+    }
+
+    /**
+     * Calculates the y-displacement of the vehicle.
+     *
+     * @param vehicleDisplacement
+     * @param theta
+     * @return
+     */
+    public double calculateYDisplacement( double vehicleDisplacement , double theta ) {
+        return vehicleDisplacement*Math.cos( theta );
     }
 
     /**
@@ -134,6 +184,28 @@ public class Odometer extends Thread {
             result = theta;
         }
         return result;
+    }
+
+    /**
+     * A method to get the position vector of our vehicle
+     *
+     * @param position
+     * @param update
+     */
+    public void getPosition(double[] position, boolean[] update) {
+        // ensure that the values don't change while the odometer is running
+        synchronized (lock) {
+            if (update[0])
+                position[0] = x;
+            if (update[1])
+                position[1] = y;
+            if (update[2])
+                if(theta>=0) {
+                    position[2] = ( theta * 360 / ( 2 * Math.PI ) ) % 360;
+                } else {
+                    position[2] = (( theta * 360 / ( 2 * Math.PI ) ) % 360)+360;
+                }
+        }
     }
 
 }
