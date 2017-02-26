@@ -1,4 +1,4 @@
-package controller;
+package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import org.junit.Assert;
@@ -6,7 +6,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import resource.Constants;
+import main.resource.Constants;
 
 import static org.mockito.Mockito.when;
 

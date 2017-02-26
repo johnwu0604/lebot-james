@@ -1,10 +1,7 @@
-package controller;
+package main.controller;
 
-import lejos.hardware.Button;
-import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import resource.Constants;
+import main.resource.Constants;
 
 /**
  * Navigator object used to navigate the vehicle.

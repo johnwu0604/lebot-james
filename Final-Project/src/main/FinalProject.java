@@ -1,8 +1,8 @@
 package main;
 
-import controller.Navigator;
-import controller.Odometer;
-import controller.OdometryDisplay;
+import main.controller.Navigator;
+import main.controller.Odometer;
+import main.controller.OdometryDisplay;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
@@ -19,7 +19,7 @@ public class FinalProject {
     public static void main(String[] args) {
 
 
-        @SuppressWarnings("resource")
+        @SuppressWarnings("main/resource")
         final TextLCD t = LocalEV3.get().getTextLCD();
         t.clear();
         t.drawString("Hello World", 0, 0);
