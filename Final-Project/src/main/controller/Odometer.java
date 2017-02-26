@@ -1,7 +1,7 @@
-package controller;
+package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import resource.Constants;
+import main.resource.Constants;
 
 /**
  * Odometer object used to keep track of vehicle position at all times.

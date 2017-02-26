@@ -1,4 +1,4 @@
-package controller;
+package main.controller;
 
 import lejos.hardware.lcd.TextLCD;
 

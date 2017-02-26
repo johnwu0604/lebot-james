@@ -1,6 +1,4 @@
-package resource;
-
-import lejos.hardware.Battery;
+package main.resource;
 
 /**
  * Created by JohnWu on 2017-02-25.
