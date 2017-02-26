@@ -1,13 +1,12 @@
 package main;
 
-import com.sun.tools.internal.jxc.apt.Const;
 import controller.Navigator;
 import controller.Odometer;
+import controller.OdometryDisplay;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import resource.Constants;
 
 /**
  * Created by JohnWu on 2017-02-25.
@@ -28,8 +27,11 @@ public class FinalProject {
         if ( buttonChoice == Button.ID_UP ) {
             Odometer o = new Odometer(leftMotor,rightMotor);
             Navigator n = new Navigator(leftMotor,rightMotor,o);
-            n.travelTo(0,90);
-            n.travelTo(90,0);
+            OdometryDisplay odometryDisplay = new OdometryDisplay(o,t);
+            o.start();
+            odometryDisplay.start();
+            n.travelTo(0,30);
+            n.travelTo(30,0);
         }
         System.exit(0);
     }

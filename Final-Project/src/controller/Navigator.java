@@ -1,5 +1,8 @@
 package controller;
 
+import lejos.hardware.Button;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import resource.Constants;
 
@@ -35,6 +38,7 @@ public class Navigator {
         ROTATE_SPEED = Constants.VEHICLE_ROTATE_SPEED;
     }
 
+
     /**
      * A method to drive our vehicle to a certain cartesian coordinate.
      *
@@ -49,10 +53,11 @@ public class Navigator {
         turnTo( calculateMinAngle( deltaX , deltaY ) );
 
         // move to the specified point
+        double distanceToPoint =  calculateDistanceToPoint( deltaX , deltaY );
         leftMotor.setSpeed( FORWARD_SPEED );
         rightMotor.setSpeed( FORWARD_SPEED );
-        leftMotor.rotate( convertDistance( WHEEL_RADIUS , calculateDistanceToPoint( deltaX , deltaY ) ), true );
-        rightMotor.rotate( convertDistance( WHEEL_RADIUS , calculateDistanceToPoint( deltaX , deltaY ) ), false );
+        leftMotor.rotate( convertDistance( distanceToPoint ), true );
+        rightMotor.rotate( convertDistance( distanceToPoint ), false );
 
         leftMotor.stop( true );
         rightMotor.stop( true );
@@ -63,29 +68,18 @@ public class Navigator {
      *
      * @param theta
      */
-    private void turnTo( double theta ) {
+    public void turnTo( double theta ) {
         leftMotor.setSpeed( ROTATE_SPEED );
         rightMotor.setSpeed( ROTATE_SPEED );
 
         if( theta < 0 ) { // if angle is negative, turn to the left
-            leftMotor.rotate( -convertAngle( WHEEL_RADIUS , TRACK_LENGTH , -(theta*180)/Math.PI ) , true );
-            rightMotor.rotate( convertAngle( WHEEL_RADIUS , TRACK_LENGTH , -(theta*180)/Math.PI) , false );
+            leftMotor.rotate( -convertAngle( -(theta*180)/Math.PI ) , true );
+            rightMotor.rotate( convertAngle( -(theta*180)/Math.PI ) , false );
         }
         else { // angle is positive, turn to the right
-            leftMotor.rotate( convertAngle( WHEEL_RADIUS , TRACK_LENGTH , (theta*180)/Math.PI) , true);
-            rightMotor.rotate( -convertAngle( WHEEL_RADIUS , TRACK_LENGTH , (theta*180)/Math.PI) , false);
+            leftMotor.rotate( convertAngle( (theta*180)/Math.PI ) , true);
+            rightMotor.rotate( -convertAngle( (theta*180)/Math.PI ) , false);
         }
-    }
-
-    /**
-     * Calculates the distance to a specific point.
-     *
-     * @param deltaX
-     * @param deltaY
-     * @return
-     */
-    private double calculateDistanceToPoint( double deltaX , double deltaY ) {
-        return Math.hypot( deltaX , deltaY );
     }
 
     /**
@@ -96,31 +90,40 @@ public class Navigator {
      *
      * @return double minAngle
      */
-    private double calculateMinAngle( double deltaX , double deltaY ) {
+    public double calculateMinAngle( double deltaX , double deltaY ) {
         // calculate the minimum angle
         return Math.atan2( deltaX , deltaY ) - odometer.getTheta();
     }
 
     /**
+     * Calculates the distance to a specific point.
+     *
+     * @param deltaX
+     * @param deltaY
+     * @return
+     */
+    public double calculateDistanceToPoint( double deltaX , double deltaY ) {
+        return Math.hypot( deltaX , deltaY );
+    }
+
+
+    /**
      * Determine the angle our motors need to rotate in order for vehicle to turn a certain angle.
      *
-     * @param radius
-     * @param TRACK
      * @param angle
      * @return
      */
-    private static int convertAngle( double radius , double TRACK , double angle ) {
-        return convertDistance( radius , Math.PI * TRACK * angle / 360.0 );
+    public int convertAngle( double angle ) {
+        return convertDistance( Math.PI * TRACK_LENGTH * angle / 360.0 );
     }
 
     /**
      * Determine how much the motor must rotate for vehicle to reach a certain distance.
      *
-     * @param radius
      * @param distance
      * @return
      */
-    private static int convertDistance( double radius , double distance ) {
-        return (int) ( (180.0 * distance) / (Math.PI * radius) );
+    public int convertDistance( double distance ) {
+        return (int) ( (180.0 * distance) / (Math.PI * WHEEL_RADIUS) );
     }
 }
