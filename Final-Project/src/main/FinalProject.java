@@ -8,6 +8,7 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.model.Parameters;
+import main.resource.Constants;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
 
@@ -20,8 +21,8 @@ import java.util.Map;
  */
 public class FinalProject {
 
-//    private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
-//    private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
+    private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
+    private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
 
     private static Parameters parameters;
 
@@ -40,39 +41,28 @@ public class FinalProject {
         @SuppressWarnings("main/resource")
         final TextLCD t = LocalEV3.get().getTextLCD();
 
-        /**
-         * Uncomment for wifi code
-         */
         retrieveStartingParameters();
-        t.drawString( Integer.toString( parameters.getForwardTeam() ), 0, 0);
-        t.drawString( Integer.toString( parameters.getDefenseTeam() ), 0, 1);
-        t.drawString( Integer.toString( parameters.getForwardCorner() ), 0, 2);
-        t.drawString( Integer.toString( parameters.getDefenseCorner() ), 0, 3);
-        t.drawString( Integer.toString( parameters.getForwardLine() ), 0, 4);
-        t.drawString( Integer.toString( parameters.getDefenderZone()[0] ), 0, 5);
-        t.drawString( Integer.toString( parameters.getDefenderZone()[1] ), 0, 6);
-        t.drawString( Integer.toString( parameters.getBallDispenserPosition()[0] ) + "  " +Integer.toString( parameters.getBallDispenserPosition()[1] ) +
-                " " + parameters.getBallDispenserOrientation(), 0, 7);
+
+        if ( parameters.getForwardTeam() == 11 ) {
+            Odometer odometer = new Odometer(leftMotor,rightMotor);
+            Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
+            OdometryDisplay odometryDisplay = new OdometryDisplay(odometer,t);
+            odometer.start();
+            odometryDisplay.start();
+            navigator.travelTo(0,1* Constants.SQUARE_LENGTH);
+            navigator.travelTo(0,2* Constants.SQUARE_LENGTH);
+            navigator.travelTo(0,3* Constants.SQUARE_LENGTH);
+            navigator.travelTo(0,4* Constants.SQUARE_LENGTH);
+            navigator.travelTo(0,5* Constants.SQUARE_LENGTH);
+            navigator.travelTo(0,6* Constants.SQUARE_LENGTH);
+//            navigator.travelTo(2* Constants.SQUARE_LENGTH,6* Constants.SQUARE_LENGTH);
+//            navigator.travelTo(2* Constants.SQUARE_LENGTH,0);
+//            navigator.travelTo(0,0);
+        }
+
+
         int buttonChoice = Button.waitForAnyPress();
-
-
-
-        /**
-         * Uncomment for regular code without wifi.
-         */
-//        t.clear();
-//        t.drawString("Hello World", 0, 0);
-//        int buttonChoice = Button.waitForAnyPress();
-//        if ( buttonChoice == Button.ID_UP ) {
-//            Odometer o = new Odometer(leftMotor,rightMotor);
-//            Navigator n = new Navigator(leftMotor,rightMotor,o);
-//            OdometryDisplay odometryDisplay = new OdometryDisplay(o,t);
-//            o.start();
-//            odometryDisplay.start();
-//            n.travelTo(0,30);
-//            n.travelTo(30,0);
-//        }
-//        System.exit(0);
+        System.exit(0);
     }
 
     /**

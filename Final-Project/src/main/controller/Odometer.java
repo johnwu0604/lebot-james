@@ -19,10 +19,6 @@ public class Odometer extends Thread {
     private int currentLeftMotorTachoCount, currentRightMotorTachoCount,
             prevLeftMotorTachoCount, prevRightMotorTachoCount;
 
-    // constants
-    private double TRACK_LENGTH, WHEEL_CIRCUM;
-    private long ODOMETER_PERIOD;
-
     /**
      * Default constructor for an odometer object.
      *
@@ -40,9 +36,6 @@ public class Odometer extends Thread {
         currentRightMotorTachoCount = 0;
         prevLeftMotorTachoCount = 0;
         prevRightMotorTachoCount = 0;
-        TRACK_LENGTH = Constants.TRACK_LENGTH;
-        WHEEL_CIRCUM = Math.PI*2*Constants.WHEEL_RADIUS;
-        ODOMETER_PERIOD = Constants.ODOMETER_PERIOD;
     }
 
     /**
@@ -79,9 +72,9 @@ public class Odometer extends Thread {
 
             // ensure that the odometer only runs once every period
             updateEnd = System.currentTimeMillis();
-            if ( updateEnd - updateStart < ODOMETER_PERIOD ) {
+            if ( updateEnd - updateStart < Constants.ODOMETER_PERIOD ) {
                 try {
-                    Thread.sleep( ODOMETER_PERIOD - ( updateEnd - updateStart ) );
+                    Thread.sleep( Constants.ODOMETER_PERIOD - ( updateEnd - updateStart ) );
                 } catch ( InterruptedException e ) {
                     // there is nothing to be done here because it is not
                     // expected that the odometer will be interrupted by
@@ -100,7 +93,7 @@ public class Odometer extends Thread {
      */
     public double calculateMotorDisplacement( int currentTachoCount , int prevTachoCount ) {
         int tachoDelta = currentTachoCount - prevTachoCount;
-        return WHEEL_CIRCUM*tachoDelta/360;
+        return (2*Math.PI*Constants.WHEEL_RADIUS)*tachoDelta/360;
     }
 
     /**
@@ -111,7 +104,7 @@ public class Odometer extends Thread {
      * @return
      */
     public double calculateThetaChange( double leftMotorDisplacement , double rightMotorDisplacement ) {
-        return ( leftMotorDisplacement - rightMotorDisplacement ) / TRACK_LENGTH;
+        return ( leftMotorDisplacement - rightMotorDisplacement ) / Constants.TRACK_LENGTH;
     }
 
     /**
