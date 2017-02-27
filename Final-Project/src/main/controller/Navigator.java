@@ -1,5 +1,8 @@
 package main.controller;
 
+import lejos.hardware.Button;
+import lejos.hardware.ev3.LocalEV3;
+import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.resource.Constants;
 
@@ -14,10 +17,6 @@ public class Navigator {
     private Odometer odometer;
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
 
-    // constants
-    private double WHEEL_RADIUS, TRACK_LENGTH;
-    private int FORWARD_SPEED, ROTATE_SPEED;
-
     /**
      * Default constructor for Navigator object.
      *
@@ -29,10 +28,6 @@ public class Navigator {
         this.odometer = odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
-        WHEEL_RADIUS = Constants.WHEEL_RADIUS;
-        TRACK_LENGTH = Constants.TRACK_LENGTH;
-        FORWARD_SPEED = Constants.VEHICLE_FORWARD_SPEED_HIGH;
-        ROTATE_SPEED = Constants.VEHICLE_ROTATE_SPEED;
     }
 
 
@@ -51,8 +46,10 @@ public class Navigator {
 
         // move to the specified point
         double distanceToPoint =  calculateDistanceToPoint( deltaX , deltaY );
-        leftMotor.setSpeed( FORWARD_SPEED );
-        rightMotor.setSpeed( FORWARD_SPEED );
+        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
+        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
+        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_HIGH );
+        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_HIGH );
         leftMotor.rotate( convertDistance( distanceToPoint ), true );
         rightMotor.rotate( convertDistance( distanceToPoint ), false );
 
@@ -66,8 +63,8 @@ public class Navigator {
      * @param theta
      */
     public void turnTo( double theta ) {
-        leftMotor.setSpeed( ROTATE_SPEED );
-        rightMotor.setSpeed( ROTATE_SPEED );
+        leftMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
+        rightMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
 
         if( theta < 0 ) { // if angle is negative, turn to the left
             leftMotor.rotate( -convertAngle( -(theta*180)/Math.PI ) , true );
@@ -89,7 +86,13 @@ public class Navigator {
      */
     public double calculateMinAngle( double deltaX , double deltaY ) {
         // calculate the minimum angle
-        return Math.atan2( deltaX , deltaY ) - odometer.getTheta();
+        double theta =  Math.atan2( deltaX , deltaY ) - odometer.getTheta();
+        if ( theta < -Math.PI ) {
+            theta += ( 2*Math.PI );
+        } else if ( theta > Math.PI ) {
+            theta -= ( 2*Math.PI );
+        }
+        return theta;
     }
 
     /**
@@ -111,7 +114,7 @@ public class Navigator {
      * @return
      */
     public int convertAngle( double angle ) {
-        return convertDistance( Math.PI * TRACK_LENGTH * angle / 360.0 );
+        return convertDistance( Math.PI * Constants.TRACK_LENGTH * angle / 360.0 );
     }
 
     /**
@@ -121,6 +124,6 @@ public class Navigator {
      * @return
      */
     public int convertDistance( double distance ) {
-        return (int) ( (180.0 * distance) / (Math.PI * WHEEL_RADIUS) );
+        return (int) ( (180.0 * distance) / (Math.PI * Constants.WHEEL_RADIUS) );
     }
 }

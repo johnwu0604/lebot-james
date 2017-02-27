@@ -8,7 +8,7 @@ public class Constants {
     /**
      * High speed for forward movement
      */
-    public static final int VEHICLE_FORWARD_SPEED_HIGH = 250;
+    public static final int VEHICLE_FORWARD_SPEED_HIGH = 400;
 
     /**
      * Low speed for forward movement
@@ -33,11 +33,16 @@ public class Constants {
     /**
      * Track length of vehicle, in centimetres
      */
-    public static final double TRACK_LENGTH = 15.0;
+    public static final double TRACK_LENGTH = 15.83;
 
     /**
      * Radius of wheel, in centimetres
      */
     public static final double WHEEL_RADIUS = 2.093;
+
+    /**
+     * Length of square
+     */
+    public static final double SQUARE_LENGTH = 30.48;
 
 }
