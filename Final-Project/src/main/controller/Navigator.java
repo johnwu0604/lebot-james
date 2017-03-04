@@ -65,7 +65,6 @@ public class Navigator {
     public void turnTo( double theta ) {
         leftMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
         rightMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
-
         if( theta < 0 ) { // if angle is negative, turn to the left
             leftMotor.rotate( -convertAngle( -(theta*180)/Math.PI ) , true );
             rightMotor.rotate( convertAngle( -(theta*180)/Math.PI ) , false );
@@ -74,6 +73,24 @@ public class Navigator {
             leftMotor.rotate( convertAngle( (theta*180)/Math.PI ) , true);
             rightMotor.rotate( -convertAngle( (theta*180)/Math.PI ) , false);
         }
+    }
+
+    /**
+     * A method to rotate our vehicle counter-clockwise
+     */
+    public void rotateCounterClockwise() {
+        leftMotor.setSpeed( -Constants.VEHICLE_ROTATE_SPEED );
+        rightMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
+        leftMotor.backward();
+        rightMotor.forward();
+    }
+
+    /**
+     * A method to stop our motors
+     */
+    public void stop() {
+        leftMotor.stop(true);
+        rightMotor.stop(false);
     }
 
     /**
@@ -126,4 +143,5 @@ public class Navigator {
     public int convertDistance( double distance ) {
         return (int) ( (180.0 * distance) / (Math.PI * Constants.WHEEL_RADIUS) );
     }
+
 }

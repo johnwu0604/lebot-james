@@ -180,6 +180,39 @@ public class Odometer extends Thread {
     }
 
     /**
+     * A method to set the x-coordinate of our vehicle position.
+     *
+     * @param x
+     */
+    public void setX(double x) {
+        synchronized ( lock ) {
+            this.x = x;
+        }
+    }
+
+    /**
+     * A method to set the y-coordinate of our vehicle position.
+     *
+     * @param y
+     */
+    public void setY(double y) {
+        synchronized ( lock ) {
+            this.y = y;
+        }
+    }
+
+    /**
+     * A method to set the theta of our vehicle position.
+     *
+     * @param theta
+     */
+    public void setTheta(double theta) {
+        synchronized ( lock ) {
+            this.theta = theta;
+        }
+    }
+
+    /**
      * A method to get the position vector of our vehicle
      *
      * @param position
