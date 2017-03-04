@@ -1,5 +1,9 @@
 package main;
 
+import lejos.hardware.port.Port;
+import lejos.hardware.sensor.EV3UltrasonicSensor;
+import lejos.robotics.SampleProvider;
+import main.controller.Localizer;
 import main.controller.Navigator;
 import main.controller.Odometer;
 import main.controller.OdometryDisplay;
@@ -21,20 +25,11 @@ import java.util.Map;
  */
 public class FinalProject {
 
-    private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("A"));
-    private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort("D"));
+    private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "A" ));
+    private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "D" ));
+    private static final SampleProvider forwardSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S1" ) ) ).getMode("Distance");
 
     private static Parameters parameters;
-
-    private static int forwardTeam;
-    private static int defenseTeam;
-    private static int forwardCorner;
-    private static int defenseCorner;
-    private static int forwardLine;
-    private static int[] defenderZone = new int[2];
-    private static int[] ballDispenserPosition = new int[2];
-    private static String ballDispenserOrientation;
-
 
     public static void main(String[] args) {
 
@@ -49,15 +44,8 @@ public class FinalProject {
             OdometryDisplay odometryDisplay = new OdometryDisplay(odometer,t);
             odometer.start();
             odometryDisplay.start();
-            navigator.travelTo(0,1* Constants.SQUARE_LENGTH);
-            navigator.travelTo(0,2* Constants.SQUARE_LENGTH);
-            navigator.travelTo(0,3* Constants.SQUARE_LENGTH);
-            navigator.travelTo(0,4* Constants.SQUARE_LENGTH);
-            navigator.travelTo(0,5* Constants.SQUARE_LENGTH);
-            navigator.travelTo(0,6* Constants.SQUARE_LENGTH);
-//            navigator.travelTo(2* Constants.SQUARE_LENGTH,6* Constants.SQUARE_LENGTH);
-//            navigator.travelTo(2* Constants.SQUARE_LENGTH,0);
-//            navigator.travelTo(0,0);
+
+            Localizer localizer = new Localizer( odometer, forwardSensor, navigator, parameters.getForwardCorner() );
         }
 
 
