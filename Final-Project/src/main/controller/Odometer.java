@@ -66,6 +66,9 @@ public class Odometer extends Thread {
             synchronized ( lock ) {
                 // update odometer values
                 theta += thetaChange;
+                if ( theta < 0 ) {
+                    theta += 2*Math.PI;
+                }
                 x +=  calculateXDisplacement(displacement,theta);
                 y += calculateYDisplacement(displacement,theta);
             }
