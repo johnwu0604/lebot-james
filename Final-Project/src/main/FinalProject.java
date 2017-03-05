@@ -35,19 +35,33 @@ public class FinalProject {
 
         @SuppressWarnings("main/resource")
         final TextLCD t = LocalEV3.get().getTextLCD();
+        /**
+         * Uncomment for wifi code
+         */
+//        retrieveStartingParameters();
+//
+//        if ( parameters.getForwardTeam() == 11 ) {
+//            Odometer odometer = new Odometer(leftMotor,rightMotor);
+//            Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
+//            OdometryDisplay odometryDisplay = new OdometryDisplay(odometer,t);
+//            odometer.start();
+//            odometryDisplay.start();
+//
+//            Localizer localizer = new Localizer( odometer, forwardSensor, navigator, parameters.getForwardCorner() );
+//            localizer.run();
+//        }
 
-        retrieveStartingParameters();
+        /**
+         * Uncomment for non-wifi code
+         */
+        Odometer odometer = new Odometer(leftMotor,rightMotor);
+        Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
+        OdometryDisplay odometryDisplay = new OdometryDisplay(odometer,t);
+        odometer.start();
+        odometryDisplay.start();
 
-        if ( parameters.getForwardTeam() == 11 ) {
-            Odometer odometer = new Odometer(leftMotor,rightMotor);
-            Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
-            OdometryDisplay odometryDisplay = new OdometryDisplay(odometer,t);
-            odometer.start();
-            odometryDisplay.start();
-
-            Localizer localizer = new Localizer( odometer, forwardSensor, navigator, parameters.getForwardCorner() );
-            localizer.run();
-        }
+        Localizer localizer = new Localizer( odometer, forwardSensor, navigator, 2 );
+        localizer.run();
 
 
         int buttonChoice = Button.waitForAnyPress();

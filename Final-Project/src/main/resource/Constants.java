@@ -28,7 +28,7 @@ public class Constants {
     /**
      * Odometer update period, in milliseconds
      */
-    public static final long ODOMETER_PERIOD = 25;
+    public static final long ODOMETER_PERIOD = 10;
 
     /**
      * Track length of vehicle, in centimetres
@@ -48,7 +48,7 @@ public class Constants {
     /**
      * Value in localization that determines a wall has been detected
      */
-    public static final double LOCALIZATION_WALL_DISTANCE = 30;
+    public static final double LOCALIZATION_WALL_DISTANCE = 50;
 
     /**
      * Value in localization for the noise margin
@@ -58,7 +58,12 @@ public class Constants {
     /**
      * Localization sensor reading interval (ms)
      */
-    public static final long LOCALIZATION_SENSOR_READING_PERIOD = 50;
+    public static final long LOCALIZATION_SENSOR_READING_PERIOD = 10;
+
+    /**
+     * Distance from forward sensor to middle of vehicle (cm)
+     */
+    public static final float FORWARD_SENSOR_DISTANCE = 7;
 
     /**
      * Coordinate of each corner on the field

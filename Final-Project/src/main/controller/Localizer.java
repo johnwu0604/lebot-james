@@ -39,26 +39,37 @@ public class Localizer extends Thread {
      * The main method for localizing our robot
      */
     public void run() {
-        // rotate to the left wall where we will start recording our sensor readings
-        rotateToLeftWall();
-        odometer.setTheta( 0 );
 
-        // keep rotating while storing information about each sensor reading
-        ArrayList<SensorReading> sensorReadings = rotateAndRecordSensorReadings();
+        try {
+            // rotate to the left wall where we will start recording our sensor readings
+            rotateToLeftWall();
+            odometer.setTheta(0);
 
-        // find our first minimum index
-        int firstMinIndex = calculateFirstMinimumIndex( sensorReadings );
-        int secondMinIndex = calculateSecondMinimumIndex( sensorReadings, firstMinIndex );
+            // keep rotating while storing information about each sensor reading
+            ArrayList<SensorReading> sensorReadings = rotateAndRecordSensorReadings();
 
-        // turn vehicle to face right
-        navigator.turnTo( sensorReadings.get( secondMinIndex ).getTheta() - Math.PI/2 );
+            // find our first and second minimum index
+            int firstMinIndex = calculateFirstMinimumIndex(sensorReadings);
+            int secondMinIndex = calculateSecondMinimumIndex(sensorReadings, firstMinIndex);
 
-        // set our real odometer position values
-        odometer.setX( calculateStartingX( sensorReadings.get( firstMinIndex ), sensorReadings.get( secondMinIndex ) ) );
-        odometer.setY( calculateStartingY( sensorReadings.get( firstMinIndex ), sensorReadings.get( secondMinIndex ) ) );
+            // turn vehicle to face right
+            navigator.turnTo( calculateRemainingAngleToFaceEast( sensorReadings.get( secondMinIndex ) ) );
 
-        // travel to corner of field
-        travelToStartingCorner();
+            // set our real odometer position values
+            odometer.setX(calculateStartingX(sensorReadings.get(firstMinIndex), sensorReadings.get(secondMinIndex)));
+            odometer.setY(calculateStartingY(sensorReadings.get(firstMinIndex), sensorReadings.get(secondMinIndex)));
+
+            // travel to corner of field
+            travelToStartingCorner();
+
+        } catch ( Exception e ) {
+            try {
+                throw new Exception( "Error: ", e );
+            } catch (Exception e1) {
+                e1.printStackTrace();
+            }
+        }
+
     }
 
     /**
@@ -87,7 +98,7 @@ public class Localizer extends Thread {
      */
     private float getFilteredSensorData() {
         sensor.fetchSample( sensorData, 0 );
-        float distance = sensorData[0]*100;
+        float distance = sensorData[0]*100 + Constants.FORWARD_SENSOR_DISTANCE;
         return distance > 100 ? 100 : distance;
     }
 
@@ -142,8 +153,9 @@ public class Localizer extends Thread {
         for ( int i=20; i<sensorReadings.size()-30; i++ ) {
             float sumLeft = sumDistances( sensorReadings.subList( i-20, i ) );
             float sumRight = sumDistances( sensorReadings.subList( i+1, i+21 ) );
-            if ( Math.abs( sumLeft - sumRight ) < 1 ) {
+            if ( Math.abs( sumLeft - sumRight ) < 2 ) {
                 minimumIndex = i;
+                break;
             }
         }
         return minimumIndex;
@@ -157,11 +169,12 @@ public class Localizer extends Thread {
      * @return
      */
     public int calculateSecondMinimumIndex( ArrayList<SensorReading> sensorReadings, int firstMinimumIndex ) {
-        int secondMinimumIndex = -1;
+        int secondMinimumIndex = -2;
         double secondMinimumIndexAngle = sensorReadings.get( firstMinimumIndex ).getTheta() - Math.PI/2;
         for ( int i=firstMinimumIndex; i<sensorReadings.size(); i++ ) {
-            if ( Math.abs( secondMinimumIndexAngle - sensorReadings.get( i ).getTheta() ) < 0.1 ) {
+            if ( Math.abs( secondMinimumIndexAngle - sensorReadings.get( i ).getTheta() ) < 0.01 ) {
                 secondMinimumIndex = i;
+                break;
             }
         }
         return secondMinimumIndex;
@@ -209,6 +222,16 @@ public class Localizer extends Thread {
             return Constants.CORNER_FOUR_Y + ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() );
         }
         return 0;
+    }
+
+    /**
+     * A method that calculate how much more we need to rotate to orient in eastward direction after retrieving sensor data
+     *
+     * @param secondMinimum
+     * @return
+     */
+    public double calculateRemainingAngleToFaceEast(SensorReading secondMinimum ) {
+        return -(Math.PI / 2 - ( secondMinimum.getTheta() - odometer.getTheta() ) );
     }
 
     /**
