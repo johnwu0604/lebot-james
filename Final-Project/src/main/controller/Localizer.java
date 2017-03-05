@@ -40,22 +40,25 @@ public class Localizer extends Thread {
      */
     public void run() {
         // rotate to the left wall where we will start recording our sensor readings
-        rotateToleftWall();
+        rotateToLeftWall();
         odometer.setTheta( 0 );
+
         // keep rotating while storing information about each sensor reading
         ArrayList<SensorReading> sensorReadings = rotateAndRecordSensorReadings();
+
         // find our first minimum index
         int firstMinIndex = calculateFirstMinimumIndex( sensorReadings );
         int secondMinIndex = calculateSecondMinimumIndex( sensorReadings, firstMinIndex );
 
         // turn vehicle to face right
         navigator.turnTo( sensorReadings.get( secondMinIndex ).getTheta() - Math.PI/2 );
-        // set our new odometer values
-        odometer.setTheta( calculateTheta( corner ) );
-        odometer.setX( calculateStartingX( sensorReadings.get( firstMinIndex ), corner ) );
-        odometer.setY( calculateStartingY( sensorReadings.get( secondMinIndex ), corner ) );
-        // travel to corner of field (hardcoding for corner 0 for now)
-        navigator.travelTo( Constants.CORNER_ONE_X, Constants.CORNER_ONE_Y );
+
+        // set our real odometer position values
+        odometer.setX( calculateStartingX( sensorReadings.get( firstMinIndex ), sensorReadings.get( secondMinIndex ) ) );
+        odometer.setY( calculateStartingY( sensorReadings.get( firstMinIndex ), sensorReadings.get( secondMinIndex ) ) );
+
+        // travel to corner of field
+        travelToStartingCorner();
     }
 
     /**
@@ -88,10 +91,29 @@ public class Localizer extends Thread {
         return distance > 100 ? 100 : distance;
     }
 
+    private void travelToStartingCorner() {
+        if ( corner ==  1 ) {
+            odometer.setTheta( Constants.CORNER_ONE_THETA );
+            navigator.travelTo( Constants.CORNER_ONE_X, Constants.CORNER_ONE_Y );
+        }
+        if ( corner ==  2 ) {
+            odometer.setTheta( Constants.CORNER_TWO_THETA );
+            navigator.travelTo( Constants.CORNER_TWO_X, Constants.CORNER_TWO_Y );
+        }
+        if ( corner ==  3 ) {
+            odometer.setTheta( Constants.CORNER_THREE_THETA );
+            navigator.travelTo( Constants.CORNER_THREE_X, Constants.CORNER_THREE_Y );
+        }
+        if ( corner ==  4 ) {
+            odometer.setTheta( Constants.CORNER_FOUR_THETA );
+            navigator.travelTo( Constants.CORNER_FOUR_X, Constants.CORNER_FOUR_Y );
+        }
+    }
+
     /**
      * A method to rotate robot until first detection of left wall
      */
-    private void rotateToleftWall() {
+    private void rotateToLeftWall() {
         while ( getFilteredSensorData() < Constants.LOCALIZATION_WALL_DISTANCE + Constants.LOCALIZATION_NOISE_MARGIN ) {
             navigator.rotateCounterClockwise();
         }
@@ -146,25 +168,25 @@ public class Localizer extends Thread {
     }
 
     /**
-     * A method that calculates the correct theta at the end of localization.
-     *
-     * @param corner
-     * @return
-     */
-    public double calculateTheta( int corner ) {
-        //hardcoding for corner 1 for now
-        return Math.PI/2;
-    }
-
-    /**
      * A method that calculates the x-coordinate of the vehicle's starting position
      *
      * @param firstMinimum
      * @return
      */
-    public double calculateStartingX( SensorReading firstMinimum, int corner ) {
-        //hardcoding for corner 1 for now
-        return - ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() );
+    public double calculateStartingX( SensorReading firstMinimum, SensorReading secondMinimum ) {
+        if ( corner ==  1 ) {
+            return Constants.CORNER_ONE_X - ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() );
+        }
+        if ( corner ==  2 ) {
+            return Constants.CORNER_TWO_X + ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() );
+        }
+        if ( corner ==  3 ) {
+            return Constants.CORNER_THREE_X + ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() );
+        }
+        if ( corner ==  4 ) {
+            return Constants.CORNER_FOUR_X - ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() );
+        }
+        return 0;
     }
 
     /**
@@ -173,9 +195,20 @@ public class Localizer extends Thread {
      * @param secondMinimum
      * @return
      */
-    public double calculateStartingY( SensorReading secondMinimum, int corner ) {
-        //hardcoding for corner 1 for now
-        return - ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() );
+    public double calculateStartingY( SensorReading firstMinimum, SensorReading secondMinimum ) {
+        if ( corner ==  1 ) {
+            return Constants.CORNER_ONE_Y - ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() );
+        }
+        if ( corner ==  2 ) {
+            return Constants.CORNER_TWO_Y - ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() );
+        }
+        if ( corner ==  3 ) {
+            return Constants.CORNER_THREE_Y + ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() );
+        }
+        if ( corner ==  4 ) {
+            return Constants.CORNER_FOUR_Y + ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() );
+        }
+        return 0;
     }
 
     /**
