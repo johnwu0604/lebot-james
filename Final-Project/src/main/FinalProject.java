@@ -46,6 +46,7 @@ public class FinalProject {
             odometryDisplay.start();
 
             Localizer localizer = new Localizer( odometer, forwardSensor, navigator, parameters.getForwardCorner() );
+            localizer.run();
         }
 
 

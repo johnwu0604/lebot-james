@@ -65,5 +65,15 @@ public class Constants {
      */
     public static final double CORNER_ONE_X = 0.0;
     public static final double CORNER_ONE_Y = 0.0;
+    public static final double CORNER_ONE_THETA = Math.PI/2;
+    public static final double CORNER_TWO_X = 10*SQUARE_LENGTH;
+    public static final double CORNER_TWO_Y = 0.0;
+    public static final double CORNER_TWO_THETA = 0.0;
+    public static final double CORNER_THREE_X = 10*SQUARE_LENGTH;
+    public static final double CORNER_THREE_Y = 10*SQUARE_LENGTH;
+    public static final double CORNER_THREE_THETA = (3*Math.PI)/2;
+    public static final double CORNER_FOUR_X = 0.0;
+    public static final double CORNER_FOUR_Y = 10*SQUARE_LENGTH;
+    public static final double CORNER_FOUR_THETA = Math.PI;
 
 }
