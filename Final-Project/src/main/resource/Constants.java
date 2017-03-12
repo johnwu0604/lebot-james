@@ -56,9 +56,14 @@ public class Constants {
     public static final double LOCALIZATION_NOISE_MARGIN = 3;
 
     /**
+     * Sensor reading distance filter (max distance)
+     */
+    public static final int ULTRASONICSENSOR_MAX_DISTANCE = 100;
+
+    /**
      * Localization sensor reading interval (ms)
      */
-    public static final long LOCALIZATION_SENSOR_READING_PERIOD = 10;
+    public static final long ULTRASONICSENSOR_SENSOR_READING_PERIOD = 10;
 
     /**
      * Distance from forward sensor to middle of vehicle (cm)
