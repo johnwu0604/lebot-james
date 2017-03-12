@@ -40,8 +40,6 @@ public class Localizer extends Thread {
 
         try {
             ultrasonicSensor.start();
-            // rotate to the left wall where we will start recording our sensor readings
-            rotateToLeftWall();
             odometer.setTheta(0);
 
             int firstMinIndex = -1;
@@ -49,7 +47,9 @@ public class Localizer extends Thread {
             ArrayList<SensorReading> sensorReadings = new ArrayList<>();
 
             // repeatedly rotate until we find can precisely localize
-            while ( firstMinIndex != -1 && secondMinIndex != -2 ) {
+            while ( firstMinIndex == -1 && secondMinIndex == -2 ) {
+                // rotate to the left wall where we will start recording our sensor readings
+                rotateToLeftWall();
                 // keep rotating while storing information about each sensor reading
                 sensorReadings = rotateAndRecordSensorReadings();
 
@@ -229,7 +229,7 @@ public class Localizer extends Thread {
             return 0;
         }
         if ( corner ==  2 ) {
-            return 2*Math.PI/3;
+            return 3*Math.PI/2;
         }
         if ( corner ==  3 ) {
             return Math.PI;

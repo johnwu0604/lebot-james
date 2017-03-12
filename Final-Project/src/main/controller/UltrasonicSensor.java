@@ -13,7 +13,7 @@ public class UltrasonicSensor extends Thread {
 
     // variables
     private float[] data;
-    private volatile boolean running = true;
+    private boolean running = true;
 
     /**
      * Our main constructor method
