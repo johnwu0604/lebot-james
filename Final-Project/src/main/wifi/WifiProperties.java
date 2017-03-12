@@ -19,4 +19,15 @@ public class WifiProperties {
      * Enabling/disabling printing of debug info from WiFi class
      */
     public static final boolean ENABLE_DEBUG_WIFI_PRINT = true;
+
+    /**
+     * Port number of server to connect to
+     */
+    public static final int PORT_NUMBER = 49287;
+
+    /**
+     * Timeout parameter
+     */
+    public static final int TIMEOUT = 0;
+
 }

@@ -13,24 +13,22 @@ public class Localizer extends Thread {
 
     // objects
     private Odometer odometer;
-    private SampleProvider sensor;
+    private UltrasonicSensor ultrasonicSensor;
     private Navigator navigator;
 
     // variables
-    private float[] sensorData;
     private int corner;
 
     /**
      * Our default constructor
      *
      * @param odometer
-     * @param sensor
+     * @param ultrasonicSensor
      * @param navigator
      */
-    public Localizer( Odometer odometer, SampleProvider sensor, Navigator navigator, int corner ) {
+    public Localizer( Odometer odometer, SampleProvider ultrasonicSensor, Navigator navigator, int corner ) {
         this.odometer = odometer;
-        this.sensor = sensor;
-        this.sensorData = new float[sensor.sampleSize()];
+        this.ultrasonicSensor = new UltrasonicSensor( ultrasonicSensor );
         this.navigator = navigator;
         this.corner = corner;
     }
@@ -41,26 +39,34 @@ public class Localizer extends Thread {
     public void run() {
 
         try {
-            // rotate to the left wall where we will start recording our sensor readings
-            rotateToLeftWall();
+            ultrasonicSensor.start();
             odometer.setTheta(0);
 
-            // keep rotating while storing information about each sensor reading
-            ArrayList<SensorReading> sensorReadings = rotateAndRecordSensorReadings();
+            int firstMinIndex = -1;
+            int secondMinIndex = -2;
+            ArrayList<SensorReading> sensorReadings = new ArrayList<>();
 
-            // find our first and second minimum index
-            int firstMinIndex = calculateFirstMinimumIndex(sensorReadings);
-            int secondMinIndex = calculateSecondMinimumIndex(sensorReadings, firstMinIndex);
+            // repeatedly rotate until we find can precisely localize
+            while ( firstMinIndex == -1 && secondMinIndex == -2 ) {
+                // rotate to the left wall where we will start recording our sensor readings
+                rotateToLeftWall();
+                // keep rotating while storing information about each sensor reading
+                sensorReadings = rotateAndRecordSensorReadings();
 
-            // turn vehicle to face right
-            navigator.turnTo( calculateRemainingAngleToFaceEast( sensorReadings.get( secondMinIndex ) ) );
+                // find our first and second minimum index
+                firstMinIndex = calculateFirstMinimumIndex(sensorReadings);
+                secondMinIndex = calculateSecondMinimumIndex(sensorReadings, firstMinIndex);
+            }
+
+            ultrasonicSensor.stopRunning();
+
+            // turn vehicle to face north
+            navigator.turnTo( calculateRemainingAngleToFaceNorth( sensorReadings.get( secondMinIndex ) ) );
 
             // set our real odometer position values
             odometer.setX(calculateStartingX(sensorReadings.get(firstMinIndex), sensorReadings.get(secondMinIndex)));
             odometer.setY(calculateStartingY(sensorReadings.get(firstMinIndex), sensorReadings.get(secondMinIndex)));
-
-            // travel to corner of field
-            travelToStartingCorner();
+            odometer.setTheta( calculateStartingTheta() );
 
         } catch ( Exception e ) {
             try {
@@ -80,26 +86,15 @@ public class Localizer extends Thread {
     public ArrayList<SensorReading> rotateAndRecordSensorReadings() {
         ArrayList<SensorReading> sensorReadings = new ArrayList<>();
         navigator.rotateCounterClockwise();
-        while ( getFilteredSensorData() < Constants.LOCALIZATION_WALL_DISTANCE + Constants.LOCALIZATION_NOISE_MARGIN ) {
+        while ( ultrasonicSensor.getFilteredSensorData() < Constants.LOCALIZATION_WALL_DISTANCE + Constants.LOCALIZATION_NOISE_MARGIN ) {
             SensorReading sensorReading = new SensorReading();
-            sensorReading.setDistance( getFilteredSensorData() );
+            sensorReading.setDistance( ultrasonicSensor.getFilteredSensorData() );
             sensorReading.setTheta( odometer.getTheta() );
             sensorReadings.add( sensorReading );
-            try { Thread.sleep( Constants.LOCALIZATION_SENSOR_READING_PERIOD ); } catch( Exception e ){ }
+            try { Thread.sleep( Constants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){ }
         }
         navigator.stop();
         return sensorReadings;
-    }
-
-    /**
-     * A method which filters our data for the distance
-     *
-     * @return
-     */
-    private float getFilteredSensorData() {
-        sensor.fetchSample( sensorData, 0 );
-        float distance = sensorData[0]*100 + Constants.FORWARD_SENSOR_DISTANCE;
-        return distance > 100 ? 100 : distance;
     }
 
     private void travelToStartingCorner() {
@@ -125,10 +120,10 @@ public class Localizer extends Thread {
      * A method to rotate robot until first detection of left wall
      */
     private void rotateToLeftWall() {
-        while ( getFilteredSensorData() < Constants.LOCALIZATION_WALL_DISTANCE + Constants.LOCALIZATION_NOISE_MARGIN ) {
+        while ( ultrasonicSensor.getFilteredSensorData() < Constants.LOCALIZATION_WALL_DISTANCE + Constants.LOCALIZATION_NOISE_MARGIN ) {
             navigator.rotateCounterClockwise();
         }
-        while ( getFilteredSensorData() > Constants.LOCALIZATION_WALL_DISTANCE ) {
+        while ( ultrasonicSensor.getFilteredSensorData() > Constants.LOCALIZATION_WALL_DISTANCE ) {
             navigator.rotateCounterClockwise();
         }
         navigator.stop();
@@ -225,13 +220,34 @@ public class Localizer extends Thread {
     }
 
     /**
-     * A method that calculate how much more we need to rotate to orient in eastward direction after retrieving sensor data
+     * A method that calculates the theta of the vehicle's starting position
+     *
+     * @return
+     */
+    public double calculateStartingTheta() {
+        if ( corner ==  1 ) {
+            return 0;
+        }
+        if ( corner ==  2 ) {
+            return 3*Math.PI/2;
+        }
+        if ( corner ==  3 ) {
+            return Math.PI;
+        }
+        if ( corner ==  4 ) {
+            return Math.PI/2;
+        }
+        return 0;
+    }
+
+    /**
+     * A method that calculate how much more we need to rotate to orient in northward direction after retrieving sensor data
      *
      * @param secondMinimum
      * @return
      */
-    public double calculateRemainingAngleToFaceEast(SensorReading secondMinimum ) {
-        return -(Math.PI / 2 - ( secondMinimum.getTheta() - odometer.getTheta() ) );
+    public double calculateRemainingAngleToFaceNorth(SensorReading secondMinimum ) {
+        return -(Math.PI - ( secondMinimum.getTheta() - odometer.getTheta() ) );
     }
 
     /**

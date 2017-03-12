@@ -1,14 +1,14 @@
 package main.controller;
 
 import lejos.hardware.lcd.TextLCD;
+import main.resource.Constants;
 
-public class OdometryDisplay extends Thread {
-    private static final long DISPLAY_PERIOD = 250;
+public class OdometerDisplay extends Thread {
     private Odometer odometer;
     private TextLCD t;
 
     // constructor
-    public OdometryDisplay(Odometer odometer, TextLCD t) {
+    public OdometerDisplay(Odometer odometer, TextLCD t) {
         this.odometer = odometer;
         this.t = t;
     }
@@ -37,14 +37,14 @@ public class OdometryDisplay extends Thread {
                 t.drawString(formattedDoubleToString(position[i], 2), 3, i);
             }
 
-            // throttle the OdometryDisplay
+            // throttle the OdometerDisplay
             displayEnd = System.currentTimeMillis();
-            if (displayEnd - displayStart < DISPLAY_PERIOD) {
+            if (displayEnd - displayStart < Constants.ODOMETER_PERIOD) {
                 try {
-                    Thread.sleep(DISPLAY_PERIOD - (displayEnd - displayStart));
+                    Thread.sleep(Constants.ODOMETER_PERIOD - (displayEnd - displayStart));
                 } catch (InterruptedException e) {
                     // there is nothing to be done here because it is not
-                    // expected that OdometryDisplay will be interrupted
+                    // expected that OdometerDisplay will be interrupted
                     // by another thread
                 }
             }

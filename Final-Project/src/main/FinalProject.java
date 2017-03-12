@@ -1,18 +1,13 @@
 package main;
 
-import lejos.hardware.port.Port;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
-import main.controller.Localizer;
-import main.controller.Navigator;
-import main.controller.Odometer;
-import main.controller.OdometryDisplay;
+import main.controller.*;
 import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.model.Parameters;
-import main.resource.Constants;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
 
@@ -27,7 +22,7 @@ public class FinalProject {
 
     private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "A" ));
     private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "D" ));
-    private static final SampleProvider forwardSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S1" ) ) ).getMode("Distance");
+    private static final SampleProvider forwardUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S1" ) ) ).getMode("Distance");
 
     private static Parameters parameters;
 
@@ -47,7 +42,7 @@ public class FinalProject {
 //            odometer.start();
 //            odometryDisplay.start();
 //
-//            Localizer localizer = new Localizer( odometer, forwardSensor, navigator, parameters.getForwardCorner() );
+//            Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, parameters.getForwardCorner() );
 //            localizer.run();
 //        }
 
@@ -56,11 +51,11 @@ public class FinalProject {
          */
         Odometer odometer = new Odometer(leftMotor,rightMotor);
         Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
-        OdometryDisplay odometryDisplay = new OdometryDisplay(odometer,t);
+        OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
         odometer.start();
-        odometryDisplay.start();
+        odometerDisplay.start();
 
-        Localizer localizer = new Localizer( odometer, forwardSensor, navigator, 2 );
+        Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, 2 );
         localizer.run();
 
 

@@ -25,13 +25,6 @@ import org.json.simple.parser.ParseException;
  */
 public class WifiConnection {
 
-	// Port number of server to connect to
-	private static final int portNumber = 49287;
-	// Disable timeout on waiting for response from server because a team may
-	// have to wait a few minutes for
-	// another team to get the robot working in the competition
-	private static final int timeout = 0;
-
 	// Whether or not to print debug messages
 	private boolean debugPrint;
 	// Team number to transmit to server
@@ -74,8 +67,8 @@ public class WifiConnection {
 	public Map getData() throws IOException, UnknownHostException, ParseException {
 
 		// Connect to server, set timeout
-		Socket conn = new Socket(serverIP, portNumber);
-		conn.setSoTimeout(timeout);
+		Socket conn = new Socket(serverIP, WifiProperties.PORT_NUMBER);
+		conn.setSoTimeout(WifiProperties.TIMEOUT);
 
 		// Create a thread to monitor the escape (back) button in case user
 		// wants to exit
