@@ -71,6 +71,16 @@ public class Constants {
     public static final float FORWARD_SENSOR_DISTANCE = 7;
 
     /**
+     * Lower threshold for light sensor
+     */
+    public static final double LOWER_LIGHT_THRESHOLD = 0.4;
+
+    /**
+     * Upper threshold for light sensor
+     */
+    public static final double UPPER_LIGHT_THRESHOLD = 0.5;
+
+    /**
      * Coordinate of each corner on the field
      */
     public static final double CORNER_ONE_X = 0.0;

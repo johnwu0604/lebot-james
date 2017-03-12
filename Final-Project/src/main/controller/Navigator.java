@@ -11,11 +11,15 @@ import main.resource.Constants;
  *
  * @author JohnWu
  */
-public class Navigator {
+public class Navigator extends Thread {
 
     // objects
     private Odometer odometer;
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
+
+    // variables
+    private double travellingToX;
+    private double travellingToY;
 
     /**
      * Default constructor for Navigator object.
@@ -30,6 +34,13 @@ public class Navigator {
         this.rightMotor = rightMotor;
     }
 
+    /**
+     * Main run method
+     */
+    public void run() {
+
+    }
+
 
     /**
      * A method to drive our vehicle to a certain cartesian coordinate.
@@ -37,25 +48,44 @@ public class Navigator {
      * @param x X-Coordinate
      * @param y Y-Coordinate
      */
-    public void travelTo( double x , double y ) {
+    public void travelToPerpendicular( double x , double y ) {
+        travellingToX = x;
+        travellingToY = y;
+
+        double deltaX = x - odometer.getX();
+        double deltaY = y - odometer.getY();
+
+        travelToDirect( odometer.getX() + deltaX, odometer.getY() );
+        travelToDirect( odometer.getX(), odometer.getY() + deltaY );
+
+    }
+
+    /**
+     * A method to drive our vehicle directly to a certain cartesian coordinate.
+     *
+     * @param x X-Coordinate
+     * @param y Y-Coordinate
+     */
+    public void travelToDirect( double x , double y ) {
         double deltaX = x - odometer.getX();
         double deltaY = y - odometer.getY();
 
         // turn to the minimum angle
-        turnTo( calculateMinAngle( deltaX , deltaY ) );
+        turnTo(calculateMinAngle(deltaX, deltaY));
 
         // move to the specified point
-        double distanceToPoint =  calculateDistanceToPoint( deltaX , deltaY );
-        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_HIGH );
-        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_HIGH );
-        leftMotor.rotate( convertDistance( distanceToPoint ), true );
-        rightMotor.rotate( convertDistance( distanceToPoint ), false );
+        double distanceToPoint = calculateDistanceToPoint(deltaX, deltaY);
+        leftMotor.setAcceleration(Constants.VEHICLE_ACCELERATION);
+        rightMotor.setAcceleration(Constants.VEHICLE_ACCELERATION);
+        leftMotor.setSpeed(Constants.VEHICLE_FORWARD_SPEED_HIGH);
+        rightMotor.setSpeed(Constants.VEHICLE_FORWARD_SPEED_HIGH);
+        leftMotor.rotate(convertDistance(distanceToPoint), true);
+        rightMotor.rotate(convertDistance(distanceToPoint), false);
 
-        leftMotor.stop( true );
-        rightMotor.stop( true );
+        leftMotor.stop(true);
+        rightMotor.stop(true);
     }
+
 
     /**
      * A method to turn our vehicle to a certain angle.
@@ -76,6 +106,22 @@ public class Navigator {
     }
 
     /**
+     * A method to rotate the left motor forward
+     */
+    public void rotateLeftMotorForward() {
+        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        leftMotor.forward();
+    }
+
+    /**
+     * A method to rotate the right motor forward
+     */
+    public void rotateRightMotorForward() {
+        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        rightMotor.forward();
+    }
+
+    /**
      * A method to rotate our vehicle counter-clockwise
      */
     public void rotateCounterClockwise() {
@@ -86,9 +132,9 @@ public class Navigator {
     }
 
     /**
-     * A method to stop our motors
+     * A method to stopMotors our motors
      */
-    public void stop() {
+    public void stopMotors() {
         leftMotor.stop(true);
         rightMotor.stop(false);
     }
@@ -144,4 +190,38 @@ public class Navigator {
         return (int) ( (180.0 * distance) / (Math.PI * Constants.WHEEL_RADIUS) );
     }
 
+    /**
+     * A method to determine if the vehicle is within the threshold of a certain distance
+     *
+     * @param x
+     * @param y
+     * @return
+     */
+    public boolean isAtPosition( double x, double y ) {
+        if ( Math.abs( odometer.getX() - x ) > 5 ) {
+            return false;
+        }
+        if ( Math.abs( odometer.getY() - y ) > 5 ) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * A method that returns the current x-coordinate at which our vehicle is in the process of travelling to
+     *
+     * @return
+     */
+    public double getTravellingToX() {
+        return travellingToX;
+    }
+
+    /**
+     * A method that returns the current y-coordinate at which our vehicle is in the process of travelling to
+     *
+     * @return
+     */
+    public double getTravellingToY() {
+        return travellingToY;
+    }
 }

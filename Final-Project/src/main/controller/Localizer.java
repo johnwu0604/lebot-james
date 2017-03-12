@@ -19,6 +19,7 @@ public class Localizer extends Thread {
     // variables
     private int corner;
 
+
     /**
      * Our default constructor
      *
@@ -93,27 +94,8 @@ public class Localizer extends Thread {
             sensorReadings.add( sensorReading );
             try { Thread.sleep( Constants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){ }
         }
-        navigator.stop();
+        navigator.stopMotors();
         return sensorReadings;
-    }
-
-    private void travelToStartingCorner() {
-        if ( corner ==  1 ) {
-            odometer.setTheta( Constants.CORNER_ONE_THETA );
-            navigator.travelTo( Constants.CORNER_ONE_X, Constants.CORNER_ONE_Y );
-        }
-        if ( corner ==  2 ) {
-            odometer.setTheta( Constants.CORNER_TWO_THETA );
-            navigator.travelTo( Constants.CORNER_TWO_X, Constants.CORNER_TWO_Y );
-        }
-        if ( corner ==  3 ) {
-            odometer.setTheta( Constants.CORNER_THREE_THETA );
-            navigator.travelTo( Constants.CORNER_THREE_X, Constants.CORNER_THREE_Y );
-        }
-        if ( corner ==  4 ) {
-            odometer.setTheta( Constants.CORNER_FOUR_THETA );
-            navigator.travelTo( Constants.CORNER_FOUR_X, Constants.CORNER_FOUR_Y );
-        }
     }
 
     /**
@@ -126,7 +108,7 @@ public class Localizer extends Thread {
         while ( ultrasonicSensor.getFilteredSensorData() > Constants.LOCALIZATION_WALL_DISTANCE ) {
             navigator.rotateCounterClockwise();
         }
-        navigator.stop();
+        navigator.stopMotors();
     }
 
     public float sumDistances( List<SensorReading> sensorReadings ) {
