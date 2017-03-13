@@ -14,10 +14,8 @@ public class OdometerCorrection extends Thread {
     private Odometer odometer;
     private SampleProvider leftSensor;
     private SampleProvider rightSensor;
-    private Object lock;
 
     // variables
-    private boolean running = true;
     private float[] leftSensorData;
     private  float[] rightSensorData;
 
@@ -41,28 +39,23 @@ public class OdometerCorrection extends Thread {
      */
     public void run() {
         while ( true ) {
-            if ( running ) {
-                if ( isLineDetectedLeft() ) {
-                    navigator.interrupt();
-                    Sound.buzz();
-                    navigator.stopMotors();
+            if (isLineDetectedLeft()) {
+                Sound.buzz();
+                odometer.setCorrecting(true);
 //                    while ( !isLineDetectedRight() ) {
 //                        navigator.rotateRightMotorForward();
 //                    }
 //                    navigator.stopMotors();
 //                    odometer.setTheta( Math.PI/2 );
-                }
-                if ( isLineDetectedRight() ) {
-                    navigator.interrupt();
-                    Sound.buzz();
-                    navigator.stopMotors();
+            }
+            if (isLineDetectedRight()) {
+                Sound.buzz();
+                odometer.setCorrecting(true);
 //                    while ( !isLineDetectedLeft() ) {
 //                        navigator.rotateLeftMotorForward();
 //                    }
 //                    navigator.stopMotors();
 //                    odometer.setTheta( Math.PI/2 );
-                }
-//                navigator.travelToPerpendicular( navigator.getTravellingToX(), navigator.getTravellingToY() );
             }
         }
     }
@@ -91,13 +84,6 @@ public class OdometerCorrection extends Thread {
             return true;
         }
         return false;
-    }
-
-    /**
-     * A method that stops our thread
-     */
-    public void stopRunning() {
-        running = false;
     }
 
 }

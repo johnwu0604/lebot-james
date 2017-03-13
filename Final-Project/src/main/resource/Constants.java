@@ -81,6 +81,11 @@ public class Constants {
     public static final double UPPER_LIGHT_THRESHOLD = 0.5;
 
     /**
+     * Threshold for reaching a point
+     */
+    public static final double POINT_REACHED_THRESHOLD = 0.5;
+
+    /**
      * Coordinate of each corner on the field
      */
     public static final double CORNER_ONE_X = 0.0;

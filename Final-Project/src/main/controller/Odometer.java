@@ -18,6 +18,7 @@ public class Odometer extends Thread {
     private double x, y, theta;
     private int currentLeftMotorTachoCount, currentRightMotorTachoCount,
             prevLeftMotorTachoCount, prevRightMotorTachoCount;
+    private boolean correcting = false;
 
     /**
      * Default constructor for an odometer object.
@@ -237,4 +238,21 @@ public class Odometer extends Thread {
         }
     }
 
+    /**
+     * A method that returns whether our vehicle is correcting its position or not
+     *
+     * @return
+     */
+    public boolean isCorrecting() {
+        return correcting;
+    }
+
+    /**
+     * A method to set correcting to true
+     *
+     * @param correcting
+     */
+    public void setCorrecting(boolean correcting) {
+        this.correcting = correcting;
+    }
 }

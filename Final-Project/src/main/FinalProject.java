@@ -10,6 +10,7 @@ import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.model.Parameters;
 import main.resource.Constants;
+import main.util.EmergencyStopper;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
 
@@ -53,13 +54,15 @@ public class FinalProject {
         /**
          * Uncomment for non-wifi code
          */
+        EmergencyStopper emergencyStopper = new EmergencyStopper();
+        emergencyStopper.start();
+
         Odometer odometer = new Odometer(leftMotor,rightMotor);
         Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
         OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftColorSensor, rightColorSensor );
         odometer.start();
         odometerDisplay.start();
-        navigator.start();
 
         Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, 1 );
         localizer.run();
