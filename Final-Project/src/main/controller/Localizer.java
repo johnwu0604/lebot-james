@@ -73,6 +73,7 @@ public class Localizer extends Thread {
             odometer.setX(calculateStartingX(sensorReadings.get(firstMinIndex), sensorReadings.get(secondMinIndex)));
             odometer.setY(calculateStartingY(sensorReadings.get(firstMinIndex), sensorReadings.get(secondMinIndex)));
             odometer.setTheta( calculateStartingTheta() );
+            setStartingSquare();
 
         } catch ( Exception e ) {
             try {

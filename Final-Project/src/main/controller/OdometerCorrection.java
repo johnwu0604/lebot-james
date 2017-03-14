@@ -111,7 +111,7 @@ public class OdometerCorrection extends Thread {
         if ( odometer.getTheta() >= 7*Math.PI/4 && odometer.getTheta() < 2*Math.PI ) {
             return 0.0;
         }
-        if ( odometer.getTheta() >= 0 && odometer.getTheta() < Math.PI/2 ) {
+        if ( odometer.getTheta() >= 0 && odometer.getTheta() < Math.PI/4 ) {
             return 0.0;
         }
         if ( odometer.getTheta() >= Math.PI/4 && odometer.getTheta() < 3*Math.PI/4 ) {

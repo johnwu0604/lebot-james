@@ -20,6 +20,7 @@ public class FieldMapper {
      */
     public FieldMapper( Parameters parameters ) {
         this.parameters = parameters;
+        this.squares = new Square[12][12];
         if ( parameters.getForwardTeam() == 11 ) {
             mapOffenseBoundaries();
         } else {
