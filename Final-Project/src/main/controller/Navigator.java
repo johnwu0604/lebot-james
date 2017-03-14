@@ -55,7 +55,7 @@ public class Navigator {
         turnTo( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
         // move to the specified point
         driveForward();
-        while ( Math.abs( odometer.getX() - xCoordinate ) < Constants.POINT_REACHED_THRESHOLD ) {
+        while ( Math.abs( odometer.getX() - xCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
             if ( odometer.isCorrecting() ) {
                 waitUntilCorrectionIsFinished();
                 driveForward();
@@ -74,7 +74,7 @@ public class Navigator {
         turnTo( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
         // move to the specified point
         driveForward();
-        while ( Math.abs( odometer.getY() - yCoordinate ) < Constants.POINT_REACHED_THRESHOLD ) {
+        while ( Math.abs( odometer.getY() - yCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
             if ( odometer.isCorrecting() ) {
                 waitUntilCorrectionIsFinished();
                 driveForward();
@@ -122,6 +122,8 @@ public class Navigator {
      * A method to drive the vehicle forward
      */
     public void driveForward() {
+        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
+        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
         leftMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
         rightMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
         leftMotor.forward();

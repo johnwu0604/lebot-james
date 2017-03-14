@@ -40,22 +40,28 @@ public class OdometerCorrection extends Thread {
     public void run() {
         while ( true ) {
             if (isLineDetectedLeft()) {
-                Sound.buzz();
+                navigator.stopMotors();
                 odometer.setCorrecting(true);
-//                    while ( !isLineDetectedRight() ) {
-//                        navigator.rotateRightMotorForward();
-//                    }
-//                    navigator.stopMotors();
-//                    odometer.setTheta( Math.PI/2 );
+                Sound.buzz();
+                while ( !isLineDetectedRight() ) {
+                    navigator.rotateRightMotorForward();
+                }
+                navigator.stopMotors();
+                odometer.setTheta( Math.PI/2 );
+                odometer.setCorrecting( false );
+                try { Thread.sleep( Constants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
             }
             if (isLineDetectedRight()) {
+                navigator.stopMotors();
+                odometer.setCorrecting( true);
                 Sound.buzz();
-                odometer.setCorrecting(true);
-//                    while ( !isLineDetectedLeft() ) {
-//                        navigator.rotateLeftMotorForward();
-//                    }
-//                    navigator.stopMotors();
-//                    odometer.setTheta( Math.PI/2 );
+                while ( !isLineDetectedLeft() ) {
+                    navigator.rotateLeftMotorForward();
+                }
+                navigator.stopMotors();
+                odometer.setTheta( Math.PI/2 );
+                odometer.setCorrecting( false );
+                try { Thread.sleep( Constants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
             }
         }
     }

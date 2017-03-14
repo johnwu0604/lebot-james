@@ -41,22 +41,26 @@ public class Localizer extends Thread {
 
         try {
             ultrasonicSensor.start();
-            odometer.setTheta(0);
 
             int firstMinIndex = -1;
             int secondMinIndex = -2;
             ArrayList<SensorReading> sensorReadings = new ArrayList<>();
 
             // repeatedly rotate until we find can precisely localize
-            while ( firstMinIndex == -1 && secondMinIndex == -2 ) {
-                // rotate to the left wall where we will start recording our sensor readings
-                rotateToLeftWall();
-                // keep rotating while storing information about each sensor reading
-                sensorReadings = rotateAndRecordSensorReadings();
+            while ( firstMinIndex == -1 || secondMinIndex == -2 ) {
+                try {
+                    // rotate to the left wall where we will start recording our sensor readings
+                    rotateToLeftWall();
+                    odometer.setTheta(0);
+                    // keep rotating while storing information about each sensor reading
+                    sensorReadings = rotateAndRecordSensorReadings();
 
-                // find our first and second minimum index
-                firstMinIndex = calculateFirstMinimumIndex(sensorReadings);
-                secondMinIndex = calculateSecondMinimumIndex(sensorReadings, firstMinIndex);
+                    // find our first and second minimum index
+                    firstMinIndex = calculateFirstMinimumIndex(sensorReadings);
+                    secondMinIndex = calculateSecondMinimumIndex(sensorReadings, firstMinIndex);
+                } catch ( Exception e ) {
+                    // should not happen
+                }
             }
 
             ultrasonicSensor.stopRunning();
@@ -130,7 +134,7 @@ public class Localizer extends Thread {
         for ( int i=20; i<sensorReadings.size()-30; i++ ) {
             float sumLeft = sumDistances( sensorReadings.subList( i-20, i ) );
             float sumRight = sumDistances( sensorReadings.subList( i+1, i+21 ) );
-            if ( Math.abs( sumLeft - sumRight ) < 2 ) {
+            if ( Math.abs( sumLeft - sumRight ) < 1.5 ) {
                 minimumIndex = i;
                 break;
             }

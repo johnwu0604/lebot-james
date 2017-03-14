@@ -23,7 +23,7 @@ public class Constants {
     /**
      * Vehicle acceleration
      */
-    public static final int VEHICLE_ACCELERATION = 200;
+    public static final int VEHICLE_ACCELERATION = 500;
 
     /**
      * Odometer update period, in milliseconds
@@ -58,12 +58,17 @@ public class Constants {
     /**
      * Sensor reading distance filter (max distance)
      */
-    public static final int ULTRASONICSENSOR_MAX_DISTANCE = 100;
+    public static final int ULTRASONICSENSOR_MAX_DISTANCE = 200;
 
     /**
      * Localization sensor reading interval (ms)
      */
     public static final long ULTRASONICSENSOR_SENSOR_READING_PERIOD = 10;
+
+    /**
+     * Color sensor reading hold time to allow time for line to pass
+     */
+    public static final long COLOR_SENSOR_HOLD_TIME = 2000;
 
     /**
      * Distance from forward sensor to middle of vehicle (cm)

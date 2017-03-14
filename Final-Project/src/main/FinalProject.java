@@ -69,7 +69,7 @@ public class FinalProject {
 
 //        odometerCorrection.start();
 //
-//        navigator.travelToPerpendicular( 2*Constants.SQUARE_LENGTH, 0 );
+//        navigator.travelTo( 2*Constants.SQUARE_LENGTH, 0 );
 
 
         int buttonChoice = Button.waitForAnyPress();
