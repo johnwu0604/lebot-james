@@ -1,8 +1,5 @@
 package main.controller;
 
-import lejos.hardware.Button;
-import lejos.hardware.ev3.LocalEV3;
-import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.resource.Constants;
 
@@ -17,6 +14,10 @@ public class Navigator {
     private Odometer odometer;
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
 
+    // variables
+    private double travellingToX;
+    private double travellingToY;
+
     /**
      * Default constructor for Navigator object.
      *
@@ -30,7 +31,6 @@ public class Navigator {
         this.rightMotor = rightMotor;
     }
 
-
     /**
      * A method to drive our vehicle to a certain cartesian coordinate.
      *
@@ -41,21 +41,48 @@ public class Navigator {
         double deltaX = x - odometer.getX();
         double deltaY = y - odometer.getY();
 
-        // turn to the minimum angle
-        turnTo( calculateMinAngle( deltaX , deltaY ) );
-
-        // move to the specified point
-        double distanceToPoint =  calculateDistanceToPoint( deltaX , deltaY );
-        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_HIGH );
-        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_HIGH );
-        leftMotor.rotate( convertDistance( distanceToPoint ), true );
-        rightMotor.rotate( convertDistance( distanceToPoint ), false );
-
-        leftMotor.stop( true );
-        rightMotor.stop( true );
+        travelToX( odometer.getX() + deltaX );
+        travelToY( odometer.getY() + deltaY );
     }
+
+    /**
+     * A method to travel to a specific x coordinate
+     *
+     * @param xCoordinate
+     */
+    public void travelToX( double xCoordinate ) {
+        // turn to the minimum angle
+        turnTo( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
+        // move to the specified point
+        driveForward();
+        while ( Math.abs( odometer.getX() - xCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
+            if ( odometer.isCorrecting() ) {
+                waitUntilCorrectionIsFinished();
+                driveForward();
+            }
+        }
+        stopMotors();
+    }
+
+    /**
+     * A method to travel to a specific y coordinate
+     *
+     * @param yCoordinate
+     */
+    public void travelToY( double yCoordinate ) {
+        // turn to the minimum angle
+        turnTo( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
+        // move to the specified point
+        driveForward();
+        while ( Math.abs( odometer.getY() - yCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
+            if ( odometer.isCorrecting() ) {
+                waitUntilCorrectionIsFinished();
+                driveForward();
+            }
+        }
+        stopMotors();
+    }
+
 
     /**
      * A method to turn our vehicle to a certain angle.
@@ -76,6 +103,34 @@ public class Navigator {
     }
 
     /**
+     * A method to rotate the left motor forward
+     */
+    public void rotateLeftMotorForward() {
+        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        leftMotor.forward();
+    }
+
+    /**
+     * A method to rotate the right motor forward
+     */
+    public void rotateRightMotorForward() {
+        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        rightMotor.forward();
+    }
+
+    /**
+     * A method to drive the vehicle forward
+     */
+    public void driveForward() {
+        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
+        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
+        leftMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
+        rightMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
+        leftMotor.forward();
+        rightMotor.forward();
+    }
+
+    /**
      * A method to rotate our vehicle counter-clockwise
      */
     public void rotateCounterClockwise() {
@@ -86,9 +141,9 @@ public class Navigator {
     }
 
     /**
-     * A method to stop our motors
+     * A method to stopMotors our motors
      */
-    public void stop() {
+    public void stopMotors() {
         leftMotor.stop(true);
         rightMotor.stop(false);
     }
@@ -143,5 +198,16 @@ public class Navigator {
     public int convertDistance( double distance ) {
         return (int) ( (180.0 * distance) / (Math.PI * Constants.WHEEL_RADIUS) );
     }
+
+    /**
+     * A method which waits until odometry correction finishes
+     */
+    public void waitUntilCorrectionIsFinished() {
+        stopMotors();
+        while ( odometer.isCorrecting() ) {
+            // do nothing
+        }
+    }
+
 
 }

@@ -1,5 +1,6 @@
 package main;
 
+import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
 import main.controller.*;
@@ -8,6 +9,8 @@ import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.model.Parameters;
+import main.resource.Constants;
+import main.util.EmergencyStopper;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
 
@@ -23,6 +26,8 @@ public class FinalProject {
     private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "A" ));
     private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "D" ));
     private static final SampleProvider forwardUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S1" ) ) ).getMode("Distance");
+    private static final SampleProvider leftColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S2") ) ).getMode("Red");
+    private static final SampleProvider rightColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S3") ) ).getMode("Red");
 
     private static Parameters parameters;
 
@@ -49,14 +54,22 @@ public class FinalProject {
         /**
          * Uncomment for non-wifi code
          */
+        EmergencyStopper emergencyStopper = new EmergencyStopper();
+        emergencyStopper.start();
+
         Odometer odometer = new Odometer(leftMotor,rightMotor);
         Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
         OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
+        OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftColorSensor, rightColorSensor );
         odometer.start();
         odometerDisplay.start();
 
-        Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, 2 );
+        Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, 1 );
         localizer.run();
+
+//        odometerCorrection.start();
+//
+//        navigator.travelTo( 2*Constants.SQUARE_LENGTH, 0 );
 
 
         int buttonChoice = Button.waitForAnyPress();

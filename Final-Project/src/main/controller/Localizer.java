@@ -19,6 +19,7 @@ public class Localizer extends Thread {
     // variables
     private int corner;
 
+
     /**
      * Our default constructor
      *
@@ -40,22 +41,26 @@ public class Localizer extends Thread {
 
         try {
             ultrasonicSensor.start();
-            odometer.setTheta(0);
 
             int firstMinIndex = -1;
             int secondMinIndex = -2;
             ArrayList<SensorReading> sensorReadings = new ArrayList<>();
 
             // repeatedly rotate until we find can precisely localize
-            while ( firstMinIndex == -1 && secondMinIndex == -2 ) {
-                // rotate to the left wall where we will start recording our sensor readings
-                rotateToLeftWall();
-                // keep rotating while storing information about each sensor reading
-                sensorReadings = rotateAndRecordSensorReadings();
+            while ( firstMinIndex == -1 || secondMinIndex == -2 ) {
+                try {
+                    // rotate to the left wall where we will start recording our sensor readings
+                    rotateToLeftWall();
+                    odometer.setTheta(0);
+                    // keep rotating while storing information about each sensor reading
+                    sensorReadings = rotateAndRecordSensorReadings();
 
-                // find our first and second minimum index
-                firstMinIndex = calculateFirstMinimumIndex(sensorReadings);
-                secondMinIndex = calculateSecondMinimumIndex(sensorReadings, firstMinIndex);
+                    // find our first and second minimum index
+                    firstMinIndex = calculateFirstMinimumIndex(sensorReadings);
+                    secondMinIndex = calculateSecondMinimumIndex(sensorReadings, firstMinIndex);
+                } catch ( Exception e ) {
+                    // should not happen
+                }
             }
 
             ultrasonicSensor.stopRunning();
@@ -93,27 +98,8 @@ public class Localizer extends Thread {
             sensorReadings.add( sensorReading );
             try { Thread.sleep( Constants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){ }
         }
-        navigator.stop();
+        navigator.stopMotors();
         return sensorReadings;
-    }
-
-    private void travelToStartingCorner() {
-        if ( corner ==  1 ) {
-            odometer.setTheta( Constants.CORNER_ONE_THETA );
-            navigator.travelTo( Constants.CORNER_ONE_X, Constants.CORNER_ONE_Y );
-        }
-        if ( corner ==  2 ) {
-            odometer.setTheta( Constants.CORNER_TWO_THETA );
-            navigator.travelTo( Constants.CORNER_TWO_X, Constants.CORNER_TWO_Y );
-        }
-        if ( corner ==  3 ) {
-            odometer.setTheta( Constants.CORNER_THREE_THETA );
-            navigator.travelTo( Constants.CORNER_THREE_X, Constants.CORNER_THREE_Y );
-        }
-        if ( corner ==  4 ) {
-            odometer.setTheta( Constants.CORNER_FOUR_THETA );
-            navigator.travelTo( Constants.CORNER_FOUR_X, Constants.CORNER_FOUR_Y );
-        }
     }
 
     /**
@@ -126,7 +112,7 @@ public class Localizer extends Thread {
         while ( ultrasonicSensor.getFilteredSensorData() > Constants.LOCALIZATION_WALL_DISTANCE ) {
             navigator.rotateCounterClockwise();
         }
-        navigator.stop();
+        navigator.stopMotors();
     }
 
     public float sumDistances( List<SensorReading> sensorReadings ) {
@@ -148,7 +134,7 @@ public class Localizer extends Thread {
         for ( int i=20; i<sensorReadings.size()-30; i++ ) {
             float sumLeft = sumDistances( sensorReadings.subList( i-20, i ) );
             float sumRight = sumDistances( sensorReadings.subList( i+1, i+21 ) );
-            if ( Math.abs( sumLeft - sumRight ) < 2 ) {
+            if ( Math.abs( sumLeft - sumRight ) < 1.5 ) {
                 minimumIndex = i;
                 break;
             }
