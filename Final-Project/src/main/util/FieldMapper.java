@@ -40,6 +40,8 @@ public class FieldMapper {
                 } else {
                     square.setAllowed(false);
                 }
+                square.setX(k);
+                square.setY(i);
                 square.setNorthPosition( i * Constants.SQUARE_LENGTH );
                 square.setSouthPosition( ( i - 1 ) * Constants.SQUARE_LENGTH );
                 square.setEastPosition( k * Constants.SQUARE_LENGTH );
@@ -140,5 +142,13 @@ public class FieldMapper {
         return false;
     }
 
+    /**
+     * A method to retrieve the mapping
+     *
+     * @return
+     */
+    public Square[][] getMapping() {
+        return squares;
+    }
 
 }

@@ -1,7 +1,9 @@
 package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import main.model.Square;
 import main.resource.Constants;
+import main.util.FieldMapper;
 
 /**
  * Odometer object used to keep track of vehicle position at all times.
@@ -12,6 +14,7 @@ public class Odometer extends Thread {
 
     // objects
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
+    private FieldMapper fieldMapper;
     private Object lock;
 
     // variables
@@ -19,6 +22,7 @@ public class Odometer extends Thread {
     private int currentLeftMotorTachoCount, currentRightMotorTachoCount,
             prevLeftMotorTachoCount, prevRightMotorTachoCount;
     private boolean correcting = false;
+    private Square currentSquare;
 
     /**
      * Default constructor for an odometer object.
@@ -26,9 +30,10 @@ public class Odometer extends Thread {
      * @param leftMotor
      * @param rightMotor
      */
-    public Odometer( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor ) {
+    public Odometer( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor, FieldMapper fieldMapper ) {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
+        this.fieldMapper = fieldMapper;
         lock = new Object();
         x = 0.0;
         y = 0.0;
@@ -254,5 +259,32 @@ public class Odometer extends Thread {
      */
     public void setCorrecting(boolean correcting) {
         this.correcting = correcting;
+    }
+
+    /**
+     * A method that returns our field mapping
+     *
+     * @return
+     */
+    public FieldMapper getFieldMapper() {
+        return fieldMapper;
+    }
+
+    /**
+     * A method that returns our current square
+     *
+     * @return
+     */
+    public Square getCurrentSquare() {
+        return currentSquare;
+    }
+
+    /**
+     * A method that sets our current square value
+     *
+     * @param currentSquare
+     */
+    public void setCurrentSquare(Square currentSquare) {
+        this.currentSquare = currentSquare;
     }
 }

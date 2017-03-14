@@ -2,6 +2,7 @@ package main.controller;
 
 import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
+import lejos.utility.Matrix;
 import main.resource.Constants;
 
 /**
@@ -47,7 +48,7 @@ public class OdometerCorrection extends Thread {
                     navigator.rotateRightMotorForward();
                 }
                 navigator.stopMotors();
-                odometer.setTheta( Math.PI/2 );
+                odometer.setTheta( calculateCorrectionTheta() );
                 odometer.setCorrecting( false );
                 try { Thread.sleep( Constants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
             }
@@ -59,7 +60,7 @@ public class OdometerCorrection extends Thread {
                     navigator.rotateLeftMotorForward();
                 }
                 navigator.stopMotors();
-                odometer.setTheta( Math.PI/2 );
+                odometer.setTheta( calculateCorrectionTheta() );
                 odometer.setCorrecting( false );
                 try { Thread.sleep( Constants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
             }
@@ -90,6 +91,25 @@ public class OdometerCorrection extends Thread {
             return true;
         }
         return false;
+    }
+
+    public double calculateCorrectionTheta() {
+        if ( odometer.getTheta() >= 7*Math.PI/4 && odometer.getTheta() < 2*Math.PI ) {
+            return 0.0;
+        }
+        if ( odometer.getTheta() >= 0 && odometer.getTheta() < Math.PI/2 ) {
+            return 0.0;
+        }
+        if ( odometer.getTheta() >= Math.PI/4 && odometer.getTheta() < 3*Math.PI/4 ) {
+            return Math.PI/2;
+        }
+        if ( odometer.getTheta() >= 3*Math.PI/4 && odometer.getTheta() < 5*Math.PI/4 ) {
+            return Math.PI;
+        }
+        if ( odometer.getTheta() >= 5*Math.PI/4 && odometer.getTheta() < 7*Math.PI/4 ) {
+            return 3*Math.PI/2;
+        }
+        return 0.0;
     }
 
 }

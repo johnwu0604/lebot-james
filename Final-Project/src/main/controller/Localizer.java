@@ -1,6 +1,7 @@
 package main.controller;
 
 import lejos.robotics.SampleProvider;
+import main.model.Square;
 import main.resource.Constants;
 
 import java.util.ArrayList;
@@ -224,6 +225,26 @@ public class Localizer extends Thread {
             return Math.PI/2;
         }
         return 0;
+    }
+
+    /**
+     * A method which calculates our starting square for field mapping purposes
+     *
+     * @return
+     */
+    public void setStartingSquare() {
+        if ( corner ==  1 ) {
+            odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[0][0] );
+        }
+        if ( corner ==  2 ) {
+            odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[0][11] );
+        }
+        if ( corner ==  3 ) {
+            odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[11][11] );
+        }
+        if ( corner ==  4 ) {
+            odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[11][0] );
+        }
     }
 
     /**
