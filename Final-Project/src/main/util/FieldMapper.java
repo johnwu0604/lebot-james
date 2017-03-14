@@ -1,7 +1,7 @@
 package main.util;
 
-import main.model.Parameters;
-import main.model.Square;
+import main.Parameters;
+import main.object.Square;
 import main.resource.Constants;
 
 /**

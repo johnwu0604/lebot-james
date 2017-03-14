@@ -1,7 +1,7 @@
 package main.controller;
 
 import lejos.robotics.SampleProvider;
-import main.model.Square;
+import main.object.UltrasonicSensor;
 import main.resource.Constants;
 
 import java.util.ArrayList;

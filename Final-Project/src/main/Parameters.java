@@ -1,4 +1,4 @@
-package main.model;
+package main;
 
 /**
  * An object that represents input paramters from the server.

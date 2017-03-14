@@ -1,4 +1,4 @@
-package main.model;
+package main.object;
 
 /**
  * An object which represents the characteristics of each square on our field

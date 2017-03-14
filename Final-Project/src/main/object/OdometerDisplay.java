@@ -1,6 +1,7 @@
-package main.controller;
+package main.object;
 
 import lejos.hardware.lcd.TextLCD;
+import main.controller.Odometer;
 import main.resource.Constants;
 
 public class OdometerDisplay extends Thread {

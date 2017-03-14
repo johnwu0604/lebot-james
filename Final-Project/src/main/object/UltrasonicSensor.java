@@ -1,10 +1,10 @@
-package main.controller;
+package main.object;
 
 import lejos.robotics.SampleProvider;
 import main.resource.Constants;
 
 /**
- * Created by JohnWu on 2017-03-12.
+ * An object class that represents an ultrasonic sensor
  */
 public class UltrasonicSensor extends Thread {
 

@@ -1,7 +1,7 @@
 package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import main.model.Square;
+import main.object.Square;
 import main.resource.Constants;
 import main.util.FieldMapper;
 
