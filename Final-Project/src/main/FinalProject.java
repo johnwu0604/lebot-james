@@ -8,9 +8,10 @@ import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import main.model.Parameters;
+import main.object.OdometerDisplay;
 import main.resource.Constants;
 import main.util.EmergencyStopper;
+import main.util.FieldMapper;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
 
@@ -31,6 +32,11 @@ public class FinalProject {
 
     private static Parameters parameters;
 
+    /**
+     * The main class of the robot
+     *
+     * @param args
+     */
     public static void main(String[] args) {
 
         @SuppressWarnings("main/resource")
@@ -57,7 +63,16 @@ public class FinalProject {
         EmergencyStopper emergencyStopper = new EmergencyStopper();
         emergencyStopper.start();
 
-        Odometer odometer = new Odometer(leftMotor,rightMotor);
+        int[] defenderZone = {4,4};
+        Parameters parameters = new Parameters();
+        parameters.setForwardCorner(1);
+        parameters.setForwardLine(8);
+        parameters.setForwardTeam(11);
+        parameters.setDefenderZone(defenderZone);
+
+        FieldMapper fieldMapper = new FieldMapper(parameters);
+
+        Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
         Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
         OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftColorSensor, rightColorSensor );
@@ -67,9 +82,9 @@ public class FinalProject {
         Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, 1 );
         localizer.run();
 
-//        odometerCorrection.start();
-//
-//        navigator.travelTo( 2*Constants.SQUARE_LENGTH, 0 );
+        odometerCorrection.start();
+
+        navigator.travelTo( 2* Constants.SQUARE_LENGTH, 2* Constants.SQUARE_LENGTH );
 
 
         int buttonChoice = Button.waitForAnyPress();

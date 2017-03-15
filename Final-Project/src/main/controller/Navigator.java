@@ -14,16 +14,12 @@ public class Navigator {
     private Odometer odometer;
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
 
-    // variables
-    private double travellingToX;
-    private double travellingToY;
-
     /**
      * Default constructor for Navigator object.
      *
-     * @param leftMotor
-     * @param rightMotor
-     * @param odometer
+     * @param leftMotor the left motor EV3 object used in the robot
+     * @param rightMotor the right motor EV3 object used in the robot
+     * @param odometer the odometer controller used in the robot
      */
     public Navigator( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor , Odometer odometer ) {
         this.odometer = odometer;
@@ -48,7 +44,7 @@ public class Navigator {
     /**
      * A method to travel to a specific x coordinate
      *
-     * @param xCoordinate
+     * @param xCoordinate the x coordinate we want to travel to
      */
     public void travelToX( double xCoordinate ) {
         // turn to the minimum angle
@@ -67,7 +63,7 @@ public class Navigator {
     /**
      * A method to travel to a specific y coordinate
      *
-     * @param yCoordinate
+     * @param yCoordinate the y coordinate we want to travel to
      */
     public void travelToY( double yCoordinate ) {
         // turn to the minimum angle
@@ -85,9 +81,9 @@ public class Navigator {
 
 
     /**
-     * A method to turn our vehicle to a certain angle.
+     * A method to turn our vehicle to a certain angle in either direction
      *
-     * @param theta
+     * @param theta the theta angle that we want to turn our vehicle
      */
     public void turnTo( double theta ) {
         leftMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
@@ -151,10 +147,10 @@ public class Navigator {
     /**
      * Calculates the minimum angle to turn to.
      *
-     * @param deltaX
-     * @param deltaY
+     * @param deltaX the x coordinate of our destination
+     * @param deltaY the y coordinate of our destination
      *
-     * @return double minAngle
+     * @return the minimum angle we need to turn
      */
     public double calculateMinAngle( double deltaX , double deltaY ) {
         // calculate the minimum angle
@@ -170,9 +166,9 @@ public class Navigator {
     /**
      * Calculates the distance to a specific point.
      *
-     * @param deltaX
-     * @param deltaY
-     * @return
+     * @param deltaX the x coordinate of our destination
+     * @param deltaY the y coordinate of out destination
+     * @return the distance to the point
      */
     public double calculateDistanceToPoint( double deltaX , double deltaY ) {
         return Math.hypot( deltaX , deltaY );
@@ -182,8 +178,8 @@ public class Navigator {
     /**
      * Determine the angle our motors need to rotate in order for vehicle to turn a certain angle.
      *
-     * @param angle
-     * @return
+     * @param angle the angle we want to turn
+     * @return the tacho count that we need to rotate
      */
     public int convertAngle( double angle ) {
         return convertDistance( Math.PI * Constants.TRACK_LENGTH * angle / 360.0 );
@@ -192,8 +188,8 @@ public class Navigator {
     /**
      * Determine how much the motor must rotate for vehicle to reach a certain distance.
      *
-     * @param distance
-     * @return
+     * @param distance the distance we want to travel
+     * @return the tacho count that we need to rotate
      */
     public int convertDistance( double distance ) {
         return (int) ( (180.0 * distance) / (Math.PI * Constants.WHEEL_RADIUS) );

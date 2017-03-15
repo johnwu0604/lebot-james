@@ -1,6 +1,7 @@
 package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import main.util.FieldMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,12 +22,16 @@ public class OdometerTest {
     @Mock
     private EV3LargeRegulatedMotor rightMotor;
 
+    @Mock
+    private FieldMapper fieldMapper;
+
     private Odometer odometer;
+
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        odometer = new Odometer( leftMotor , rightMotor );
+        odometer = new Odometer( leftMotor , rightMotor, fieldMapper );
     }
 
     @Test
