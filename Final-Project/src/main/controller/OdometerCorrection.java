@@ -7,6 +7,8 @@ import main.resource.Constants;
 
 /**
  * A controller class for odometer correction
+ *
+ * @author JohnWu
  */
 public class OdometerCorrection extends Thread {
 
@@ -19,8 +21,8 @@ public class OdometerCorrection extends Thread {
     /**
      * Our main constructor method
      *
-     * @param leftSensor
-     * @param rightSensor
+     * @param leftSensor the left facing sensor EV3 object used in the robot
+     * @param rightSensor the right facing sensor EV3 object used in the robot
      */
     public OdometerCorrection( Navigator navigator, Odometer odometer, SampleProvider leftSensor, SampleProvider rightSensor ) {
         this.navigator = navigator;
@@ -87,7 +89,7 @@ public class OdometerCorrection extends Thread {
     /**
      * A method to determine if a line was recently detected or not for the left sensor
      *
-     * @return
+     * @return whether line has been detected
      */
     public boolean isLineDetectedLeft() {
         return leftSensor.isLineDetected();
@@ -96,7 +98,7 @@ public class OdometerCorrection extends Thread {
     /**
      * A method to determine if a line was recently detected or not for the right sensor
      *
-     * @return
+     * @return whether line has been detected
      */
     public boolean isLineDetectedRight() {
         return rightSensor.isLineDetected();
@@ -105,7 +107,7 @@ public class OdometerCorrection extends Thread {
     /**
      * A method which calculates the proper theta to correct to upon reaching a line
      *
-     * @return
+     * @return the correct theta value
      */
     public double calculateCorrectionTheta() {
         if ( odometer.getTheta() >= 7*Math.PI/4 && odometer.getTheta() < 2*Math.PI ) {

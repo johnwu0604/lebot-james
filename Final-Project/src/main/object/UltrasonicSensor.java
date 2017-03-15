@@ -5,6 +5,8 @@ import main.resource.Constants;
 
 /**
  * An object class that represents an ultrasonic sensor
+ *
+ * @author JohnWu
  */
 public class UltrasonicSensor extends Thread {
 
@@ -18,7 +20,7 @@ public class UltrasonicSensor extends Thread {
     /**
      * Our main constructor method
      *
-     * @param sensor
+     * @param sensor the ultrasonic sensor EV3 object used in the robot
      */
     public UltrasonicSensor( SampleProvider sensor ) {
         this.sensor = sensor;
@@ -47,7 +49,7 @@ public class UltrasonicSensor extends Thread {
     /**
      * A method which filters our data for the distance
      *
-     * @return
+     * @return filtered distance data
      */
     public float getFilteredSensorData() {
         float distance = data[0]*100 + Constants.FORWARD_SENSOR_DISTANCE;

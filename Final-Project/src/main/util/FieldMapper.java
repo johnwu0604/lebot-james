@@ -6,6 +6,8 @@ import main.resource.Constants;
 
 /**
  * A utility class that creates a mapping of our field based on its parameters
+ *
+ * @author JohnWu
  */
 public class FieldMapper {
 
@@ -16,7 +18,7 @@ public class FieldMapper {
     /**
      * Main intialization method
      *
-     * @param parameters
+     * @param parameters the given to the robot
      */
     public FieldMapper( Parameters parameters ) {
         this.parameters = parameters;
@@ -76,9 +78,9 @@ public class FieldMapper {
     /**
      * A method that determines if a square is part of the goal region
      *
-     * @param i
-     * @param k
-     * @return
+     * @param i i coordinate in the double matrix mapping
+     * @param k k coordinate in the double matrix mapping
+     * @return whether square is in goal region
      */
     public boolean isInGoalRegion( int i, int k ) {
         int left = ( 12 - parameters.getDefenderZone()[0] ) / 2 ;
@@ -95,9 +97,9 @@ public class FieldMapper {
     /**
      * A method that determines if a square is part of the offense region
      *
-     * @param i
-     * @param k
-     * @return
+     * @param i i coordinate in the double matrix mapping
+     * @param k k coordinate in the double matrix mapping
+     * @return whether square is in offense
      */
     public boolean isInOffenseRegion( int i, int k ) {
         int left = 2 ;
@@ -113,9 +115,9 @@ public class FieldMapper {
     /**
      * A method that determines if a square is part of the defense region
      *
-     * @param i
-     * @param k
-     * @return
+     * @param i i coordinate in the double matrix mapping
+     * @param k k coordinate in the double matrix mapping
+     * @return whether square is in defense
      */
     public boolean isInDefenseRegion( int i, int k ) {
         int left = 2 ;
@@ -132,9 +134,9 @@ public class FieldMapper {
     /**
      * A method that determines if a square is part of the goal
      *
-     * @param i
-     * @param k
-     * @return
+     * @param i i coordinate in the double matrix mapping
+     * @param k k coordinate in the double matrix mapping
+     * @return whether square is the goal
      */
     public boolean isGoal( int i, int k ) {
         if ( i == 11 && ( k == 5 || k == 6 ) ) {
@@ -146,7 +148,7 @@ public class FieldMapper {
     /**
      * A method to retrieve the mapping
      *
-     * @return
+     * @return double matrix mapping of field
      */
     public Square[][] getMapping() {
         return squares;

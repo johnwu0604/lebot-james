@@ -27,8 +27,8 @@ public class Odometer extends Thread {
     /**
      * Default constructor for an odometer object.
      *
-     * @param leftMotor
-     * @param rightMotor
+     * @param leftMotor the left motor EV3 object used in the robot
+     * @param rightMotor the right motor EV3 object used in the robot
      */
     public Odometer( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor, FieldMapper fieldMapper ) {
         this.leftMotor = leftMotor;
@@ -96,9 +96,9 @@ public class Odometer extends Thread {
     /**
      * Calculates the motor displacement based on current and previous tacho counts.
      *
-     * @param currentTachoCount
-     * @param prevTachoCount
-     * @return
+     * @param currentTachoCount the current tacho count of the motor
+     * @param prevTachoCount the previous tacho count of the motor
+     * @return the displacement of the motor
      */
     public double calculateMotorDisplacement( int currentTachoCount , int prevTachoCount ) {
         int tachoDelta = currentTachoCount - prevTachoCount;
@@ -108,9 +108,9 @@ public class Odometer extends Thread {
     /**
      * Calculates the change in theta based on the displacements of both motors.
      *
-     * @param leftMotorDisplacement
-     * @param rightMotorDisplacement
-     * @return
+     * @param leftMotorDisplacement the displacement of the left motor
+     * @param rightMotorDisplacement the displacement of the right motot
+     * @return the theta change of the robot
      */
     public double calculateThetaChange( double leftMotorDisplacement , double rightMotorDisplacement ) {
         return ( leftMotorDisplacement - rightMotorDisplacement ) / Constants.TRACK_LENGTH;
@@ -119,9 +119,9 @@ public class Odometer extends Thread {
     /**
      * Calculates the vehicle displacement based on the displacements of both motors.
      *
-     * @param leftMotorDisplacement
-     * @param rightMotorDisplacement
-     * @return
+     * @param leftMotorDisplacement the displacement of the left motor
+     * @param rightMotorDisplacement the displacement of the right motor
+     * @return the total displacement of the vehicle
      */
     public double calculateVehicleDisplacement(double leftMotorDisplacement , double rightMotorDisplacement ) {
         return ( leftMotorDisplacement + rightMotorDisplacement ) / 2;
@@ -130,9 +130,9 @@ public class Odometer extends Thread {
     /**
      * Calculates the x-displacement of the vehicle.
      *
-     * @param vehicleDisplacement
-     * @param theta
-     * @return
+     * @param vehicleDisplacement the vehicle displacement
+     * @param theta the theta change
+     * @return the total displacement in the the x direction
      */
     public double calculateXDisplacement( double vehicleDisplacement , double theta ) {
         return vehicleDisplacement*Math.sin( theta );
@@ -141,9 +141,9 @@ public class Odometer extends Thread {
     /**
      * Calculates the y-displacement of the vehicle.
      *
-     * @param vehicleDisplacement
-     * @param theta
-     * @return
+     * @param vehicleDisplacement the vehicle displacement
+     * @param theta the theta change
+     * @return the total displacement in the y direction
      */
     public double calculateYDisplacement( double vehicleDisplacement , double theta ) {
         return vehicleDisplacement*Math.cos( theta );
@@ -152,7 +152,7 @@ public class Odometer extends Thread {
     /**
      * A method to get the x-coordinate of the our vehicle position.
      *
-     * @return
+     * @return the x coordinate
      */
     public double getX() {
         double result;
@@ -165,7 +165,7 @@ public class Odometer extends Thread {
     /**
      * A method to get the y-coordinate of the our vehicle position.
      *
-     * @return
+     * @return the y coordinate
      */
     public double getY() {
         double result;
@@ -178,7 +178,7 @@ public class Odometer extends Thread {
     /**
      * A method to get the theta of the our vehicle position.
      *
-     * @return
+     * @return the theta value
      */
     public double getTheta() {
         double result;
@@ -191,7 +191,7 @@ public class Odometer extends Thread {
     /**
      * A method to set the x-coordinate of our vehicle position.
      *
-     * @param x
+     * @param x the x coordinate to set
      */
     public void setX(double x) {
         synchronized ( lock ) {
@@ -202,7 +202,7 @@ public class Odometer extends Thread {
     /**
      * A method to set the y-coordinate of our vehicle position.
      *
-     * @param y
+     * @param y the y coordinate to set
      */
     public void setY(double y) {
         synchronized ( lock ) {
@@ -213,7 +213,7 @@ public class Odometer extends Thread {
     /**
      * A method to set the theta of our vehicle position.
      *
-     * @param theta
+     * @param theta the theta value to set
      */
     public void setTheta(double theta) {
         synchronized ( lock ) {
@@ -222,12 +222,12 @@ public class Odometer extends Thread {
     }
 
     /**
-     * A method to get the position vector of our vehicle
+     * A method to update the position vector of our vehicle
      *
-     * @param position
-     * @param update
+     * @param position the current position
+     * @param update the update boolean
      */
-    public void getPosition(double[] position, boolean[] update) {
+    public void updatePosition(double[] position, boolean[] update) {
         // ensure that the values don't change while the odometer is running
         synchronized (lock) {
             if (update[0])
@@ -246,7 +246,7 @@ public class Odometer extends Thread {
     /**
      * A method that returns whether our vehicle is correcting its position or not
      *
-     * @return
+     * @return whether vehicle is correcting or not
      */
     public boolean isCorrecting() {
         return correcting;
@@ -255,7 +255,7 @@ public class Odometer extends Thread {
     /**
      * A method to set correcting to true
      *
-     * @param correcting
+     * @param correcting the correcting boolean value
      */
     public void setCorrecting(boolean correcting) {
         this.correcting = correcting;
@@ -264,7 +264,7 @@ public class Odometer extends Thread {
     /**
      * A method that returns our field mapping
      *
-     * @return
+     * @return the field mapping object
      */
     public FieldMapper getFieldMapper() {
         return fieldMapper;
@@ -273,16 +273,16 @@ public class Odometer extends Thread {
     /**
      * A method that returns our current square
      *
-     * @return
+     * @return the current square object
      */
     public Square getCurrentSquare() {
         return currentSquare;
     }
 
     /**
-     * A method that sets our current square value
+     * A method that sets our current square
      *
-     * @param currentSquare
+     * @param currentSquare a square object
      */
     public void setCurrentSquare(Square currentSquare) {
         this.currentSquare = currentSquare;

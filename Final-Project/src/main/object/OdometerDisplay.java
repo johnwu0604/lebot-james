@@ -4,17 +4,29 @@ import lejos.hardware.lcd.TextLCD;
 import main.controller.Odometer;
 import main.resource.Constants;
 
+/**
+ * An object class that outputs values to our odometry display
+ *
+ * @author JohnWu
+ */
 public class OdometerDisplay extends Thread {
     private Odometer odometer;
     private TextLCD t;
 
-    // constructor
-    public OdometerDisplay(Odometer odometer, TextLCD t) {
+    /**
+     * Our main constructor class
+     *
+     * @param odometer the odometer controller used in the robot
+     * @param textLCD the LCD Screen
+     */
+    public OdometerDisplay(Odometer odometer, TextLCD textLCD) {
         this.odometer = odometer;
-        this.t = t;
+        this.t = textLCD;
     }
 
-    // run method (required for Thread)
+    /**
+     * The main thread
+     */
     public void run() {
         long displayStart, displayEnd;
         double[] position = new double[3];
@@ -31,7 +43,7 @@ public class OdometerDisplay extends Thread {
             t.drawString("T:              ", 0, 2);
 
             // get the odometry information
-            odometer.getPosition(position, new boolean[] { true, true, true });
+            odometer.updatePosition(position, new boolean[] { true, true, true });
 
             // display odometry information
             for (int i = 0; i < 3; i++) {
@@ -52,6 +64,13 @@ public class OdometerDisplay extends Thread {
         }
     }
 
+    /**
+     * A method which formats the double value to properly be displayed on the screen
+     *
+     * @param x the double value to be formatted
+     * @param places the amount of decimal places
+     * @return
+     */
     private static String formattedDoubleToString(double x, int places) {
         String result = "";
         String stack = "";

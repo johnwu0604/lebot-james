@@ -2,6 +2,8 @@ package main.wifi;
 
 /**
  * Stores the static properties of our wifi connection.
+ *
+ * @author JohnWu
  */
 public class WifiProperties {
 

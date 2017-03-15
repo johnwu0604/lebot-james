@@ -2,6 +2,8 @@ package main.resource;
 
 /**
  * Stores all the constant variables in our code
+ *
+ * @author JohnWu
  */
 public class Constants {
 
@@ -90,9 +92,6 @@ public class Constants {
      */
     public static final double POINT_REACHED_THRESHOLD = 0.5;
 
-    /**
-     * Coordinate of each corner on the field
-     */
     public static final double CORNER_ONE_X = 0.0;
     public static final double CORNER_ONE_Y = 0.0;
     public static final double CORNER_ONE_THETA = Math.PI/2;

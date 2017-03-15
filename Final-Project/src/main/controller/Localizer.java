@@ -9,6 +9,8 @@ import java.util.List;
 
 /**
  * A controller to localize our robot.
+ *
+ * @author JohnWu
  */
 public class Localizer extends Thread {
 
@@ -24,9 +26,9 @@ public class Localizer extends Thread {
     /**
      * Our default constructor
      *
-     * @param odometer
-     * @param ultrasonicSensor
-     * @param navigator
+     * @param odometer odometer controller used in the robot
+     * @param ultrasonicSensor front facing ultrasonic sensor object used in the robot
+     * @param navigator navigator controller used in the robot
      */
     public Localizer( Odometer odometer, SampleProvider ultrasonicSensor, Navigator navigator, int corner ) {
         this.odometer = odometer;
@@ -88,7 +90,7 @@ public class Localizer extends Thread {
     /**
      * A method to rotate our vehicle and characteristics on each sensor reading
      *
-     * @return
+     * @return an ArrayList of sensor reading objects
      */
     public ArrayList<SensorReading> rotateAndRecordSensorReadings() {
         ArrayList<SensorReading> sensorReadings = new ArrayList<>();
@@ -128,8 +130,8 @@ public class Localizer extends Thread {
     /**
      * A method that returns the index of the reading that corresponds to the first minimum distance
      *
-     * @param sensorReadings
-     * @return
+     * @param sensorReadings the sensor readings recorded from its rotation
+     * @return the index of the sensor reading corresponding to the first minimum
      */
     public int calculateFirstMinimumIndex(ArrayList<SensorReading> sensorReadings ) {
         int minimumIndex = -1;
@@ -147,9 +149,9 @@ public class Localizer extends Thread {
     /**
      * A method that returns the index of the reading that corresponds to the second minimum distance
      *
-     * @param sensorReadings
-     * @param firstMinimumIndex
-     * @return
+     * @param sensorReadings the sensor readings recorded from its rotation
+     * @param firstMinimumIndex the index of the sensor reading corresponding to the first minimum
+     * @return the index of the sensor reading corresponding to the second minimum
      */
     public int calculateSecondMinimumIndex( ArrayList<SensorReading> sensorReadings, int firstMinimumIndex ) {
         int secondMinimumIndex = -2;
@@ -166,8 +168,8 @@ public class Localizer extends Thread {
     /**
      * A method that calculates the x-coordinate of the vehicle's starting position
      *
-     * @param firstMinimum
-     * @return
+     * @param firstMinimum the sensor reading object of the first minimum
+     * @return the robots starting x-coordinate reading
      */
     public double calculateStartingX( SensorReading firstMinimum, SensorReading secondMinimum ) {
         if ( corner ==  1 ) {
@@ -188,8 +190,8 @@ public class Localizer extends Thread {
     /**
      * A method that calculates the y-coordinate of the vehicle's starting position
      *
-     * @param secondMinimum
-     * @return
+     * @param secondMinimum the sensor reading object of the second minimum
+     * @return the robots starting y-coordinate reading
      */
     public double calculateStartingY( SensorReading firstMinimum, SensorReading secondMinimum ) {
         if ( corner ==  1 ) {
@@ -210,7 +212,7 @@ public class Localizer extends Thread {
     /**
      * A method that calculates the theta of the vehicle's starting position
      *
-     * @return
+     * @return the robots starting theta position
      */
     public double calculateStartingTheta() {
         if ( corner ==  1 ) {
@@ -251,8 +253,8 @@ public class Localizer extends Thread {
     /**
      * A method that calculate how much more we need to rotate to orient in northward direction after retrieving sensor data
      *
-     * @param secondMinimum
-     * @return
+     * @param secondMinimum the sensor reading object of our second minimum
+     * @return the theta value we need to rotate
      */
     public double calculateRemainingAngleToFaceNorth(SensorReading secondMinimum ) {
         return -(Math.PI - ( secondMinimum.getTheta() - odometer.getTheta() ) );

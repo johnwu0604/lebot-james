@@ -5,6 +5,8 @@ import main.resource.Constants;
 
 /**
  * An object that represents a Light Sensor
+ *
+ * @author JohnWu
  */
 public class LightSensor extends Thread {
 
@@ -18,7 +20,7 @@ public class LightSensor extends Thread {
     /**
      * Our main constructor method
      *
-     * @param sensor
+     * @param sensor the light sensor EV3 object used in the vehicle
      */
     public LightSensor( SampleProvider sensor ) {
         this.sensor = sensor;
@@ -40,16 +42,16 @@ public class LightSensor extends Thread {
     /**
      * A method which determines if a line was recently detected
      *
-     * @return
+     * @return whether a line was detected
      */
-    public boolean isLineDetected() {
+    public boolean  isLineDetected() {
         return lineDetected;
     }
 
     /**
      * A method to set our lineDetected boolean value
      *
-     * @param lineDetected
+     * @param lineDetected the boolean value for line detection
      */
     public void setLineDetected( boolean lineDetected ) {
         this.lineDetected = lineDetected;

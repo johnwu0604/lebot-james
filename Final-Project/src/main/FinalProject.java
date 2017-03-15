@@ -32,6 +32,11 @@ public class FinalProject {
 
     private static Parameters parameters;
 
+    /**
+     * The main class of the robot
+     *
+     * @param args
+     */
     public static void main(String[] args) {
 
         @SuppressWarnings("main/resource")
