@@ -39,14 +39,13 @@ public class OdometerCorrection extends Thread {
     public void run() {
         while ( true ) {
             if ( isLineDetectedLeft() || isLineDetectedRight() ) {
-                navigator.stopMotors();
                 odometer.setCorrecting( true );
                 Sound.buzz();
-                while ( !isLineDetectedRight() ) {
-                    navigator.rotateRightMotorForward();
+                while ( isLineDetectedRight() && !isLineDetectedLeft() ) {
+                    navigator.stopRightMotor();
                 }
-                while ( !isLineDetectedLeft() ) {
-                    navigator.rotateLeftMotorForward();
+                if ( !isLineDetectedRight() && isLineDetectedLeft() ) {
+                    navigator.stopLeftMotor();
                 }
                 correctOdometerValues();
                 navigator.stopMotors();

@@ -28,11 +28,11 @@ public class Square {
         this.centerCoordinate[0] = (squarePosition[0]-0.5)* Constants.SQUARE_LENGTH;
         this.centerCoordinate[1] = (squarePosition[1]-0.5)* Constants.SQUARE_LENGTH;
 
-        this.northLine = squarePosition[0]* Constants.SQUARE_LENGTH;
-        this.southLine = (squarePosition[0]-1)* Constants.SQUARE_LENGTH;
+        this.northLine = squarePosition[1]* Constants.SQUARE_LENGTH;
+        this.southLine = (squarePosition[1]-1)* Constants.SQUARE_LENGTH;
 
-        this.eastLine = squarePosition[1]* Constants.SQUARE_LENGTH;
-        this.westLine = (squarePosition[1]-1)* Constants.SQUARE_LENGTH;
+        this.eastLine = squarePosition[0]* Constants.SQUARE_LENGTH;
+        this.westLine = (squarePosition[0]-1)* Constants.SQUARE_LENGTH;
     }
 
     public int getX() {

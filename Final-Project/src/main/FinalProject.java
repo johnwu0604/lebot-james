@@ -64,6 +64,7 @@ public class FinalProject {
         emergencyStopper.start();
 
         int[] defenderZone = {4,4};
+        int[] ballDispenserPosition  = {3,9};
         Parameters parameters = new Parameters();
         parameters.setForwardCorner(1);
         parameters.setForwardLine(8);
