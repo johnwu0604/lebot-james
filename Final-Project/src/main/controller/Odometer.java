@@ -5,6 +5,8 @@ import main.object.Square;
 import main.resource.Constants;
 import main.util.FieldMapper;
 
+import java.util.ArrayList;
+
 /**
  * Odometer object used to keep track of vehicle position at all times.
  *
@@ -23,6 +25,7 @@ public class Odometer extends Thread {
             prevLeftMotorTachoCount, prevRightMotorTachoCount;
     private boolean correcting = false;
     private Square currentSquare;
+    private ArrayList<Square> pastSquares;
 
     /**
      * Default constructor for an odometer object.
@@ -160,6 +163,18 @@ public class Odometer extends Thread {
             result = x;
         }
         return result;
+    }
+
+    public ArrayList<Square> getPastSquares(){
+        return this.pastSquares;
+    }
+
+    public Square getLastSquare(){
+        return this.pastSquares.get(this.pastSquares.size());
+    }
+
+    public void addPastSquare(Square lastSquare){
+        this.pastSquares.add(lastSquare);
     }
 
     /**

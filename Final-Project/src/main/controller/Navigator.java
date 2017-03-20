@@ -1,7 +1,10 @@
 package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import main.object.Square;
 import main.resource.Constants;
+import main.object.UltrasonicSensor;
+
 
 /**
  * Navigator object used to navigate the vehicle.
@@ -21,7 +24,7 @@ public class Navigator {
      * @param rightMotor the right motor EV3 object used in the robot
      * @param odometer the odometer controller used in the robot
      */
-    public Navigator( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor , Odometer odometer ) {
+    public Navigator( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor , Odometer odometer) {
         this.odometer = odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
@@ -37,8 +40,8 @@ public class Navigator {
         double deltaX = x - odometer.getX();
         double deltaY = y - odometer.getY();
 
-        travelToX( odometer.getX() + deltaX );
-        travelToY( odometer.getY() + deltaY );
+        travelToX(x);
+        travelToY(y);
     }
 
     /**
@@ -79,6 +82,78 @@ public class Navigator {
         stopMotors();
     }
 
+
+    public void moveSquareX(int dir){
+
+        int currentX = odometer.getCurrentSquare().getX();
+        int currentY = odometer.getCurrentSquare().getY();
+
+
+        int xDest = currentX;
+        if (dir > 0){
+            xDest += 1;
+        } else {
+            xDest -= 1;
+        }
+
+        boolean moveAllowed = odometer.getFieldMapper().getMapping()[xDest][currentY].isAllowed();
+
+        if(moveAllowed){
+            double xCoordinate = odometer.getFieldMapper().getMapping()[xDest][currentY].getXcm();
+            double yCoorindate = odometer.getFieldMapper().getMapping()[xDest][currentY].getYcm();
+
+            travelToY(yCoorindate); //Necessary? (tradeoff Accuracy vs. Speed)
+            travelToX(xCoordinate);
+        }
+
+    }
+
+    public void moveSquareY(int dir){
+
+        int currentX = odometer.getCurrentSquare().getX();
+        int currentY = odometer.getCurrentSquare().getY();
+
+
+        int yDest = currentY;
+        if (dir > 0){
+            yDest += 1;
+        } else {
+            yDest -= 1;
+        }
+
+        boolean moveAllowed = odometer.getFieldMapper().getMapping()[currentX][yDest].isAllowed();
+
+        if(moveAllowed){
+            double xCoordinate = odometer.getFieldMapper().getMapping()[currentX][yDest].getXcm();
+            double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDest].getYcm();
+
+            travelToX(xCoordinate); //Necessary? (tradeoff Accuracy vs. Speed)
+            travelToY(yCoorindate);
+        }
+
+    }
+
+    public void travelToSquare(Square sqr){
+
+        int deltaX = sqr.getX() - odometer.getCurrentSquare().getX();
+        int deltaY = sqr.getY() - odometer.getCurrentSquare().getY();
+
+        while (deltaX != 0 || deltaY != 0){
+
+            if(deltaX >= deltaY){
+                moveSquareX(deltaX);
+                deltaX = sqr.getX() - odometer.getCurrentSquare().getX();
+            }else{
+                moveSquareY(deltaY);
+                deltaY = sqr.getY() - odometer.getCurrentSquare().getY();
+            }
+
+        }
+    }
+
+    public void travelToBallDispenserApproach(){
+        this.travelToSquare(this.odometer.getFieldMapper().getBallDispenserApproach());
+    }
 
     /**
      * A method to turn our vehicle to a certain angle in either direction

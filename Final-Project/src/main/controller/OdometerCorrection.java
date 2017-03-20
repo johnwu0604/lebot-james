@@ -68,19 +68,23 @@ public class OdometerCorrection extends Thread {
 
         odometer.setTheta( correctedTheta );
         if ( correctedTheta == 0.0 ) {
-            odometer.setY( odometer.getCurrentSquare().getNorthPosition() );
+            odometer.setY( odometer.getCurrentSquare().getNorthLine() );
+            odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareY][currentSquareX] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareY+1][currentSquareX] );
         }
         if ( correctedTheta == Math.PI/2 ) {
-            odometer.setX( odometer.getCurrentSquare().getEastPosition() );
+            odometer.setX( odometer.getCurrentSquare().getEastLine() );
+            odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareY][currentSquareX] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareY][currentSquareX+1] );
         }
         if ( correctedTheta == 2*Math.PI ) {
-            odometer.setY( odometer.getCurrentSquare().getSouthPosition() );
+            odometer.setY( odometer.getCurrentSquare().getSouthLine() );
+            odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareY][currentSquareX] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareY-1][currentSquareX] );
         }
         if ( correctedTheta == 3*Math.PI/2 ) {
-            odometer.setX( odometer.getCurrentSquare().getWestPosition() );
+            odometer.setX( odometer.getCurrentSquare().getWestLine() );
+            odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareY][currentSquareX] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareY][currentSquareX-1] );
         }
         odometer.setCorrecting( false );
