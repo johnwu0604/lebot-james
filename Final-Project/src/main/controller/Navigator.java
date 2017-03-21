@@ -37,17 +37,17 @@ public class Navigator {
      */
     public void travelToSquare( Square square ) {
 
-        int deltaX = square.getX() - odometer.getCurrentSquare().getX();
-        int deltaY = square.getY() - odometer.getCurrentSquare().getY();
+        int deltaX = square.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[1];
+        int deltaY = square.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
 
         while (deltaX != 0 || deltaY != 0){
 
             if(deltaX >= deltaY){
                 moveSquareX(deltaX);
-                deltaX = square.getX() - odometer.getCurrentSquare().getX();
+                deltaX = square.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[1];
             }else{
                 moveSquareY(deltaY);
-                deltaY = square.getY() - odometer.getCurrentSquare().getY();
+                deltaY = square.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
             }
 
         }
@@ -109,8 +109,8 @@ public class Navigator {
      */
     public void moveSquareX( int direction ){
 
-        int currentX = odometer.getCurrentSquare().getX();
-        int currentY = odometer.getCurrentSquare().getY();
+        int currentX = odometer.getCurrentSquare().getSquarePosition()[0];
+        int currentY = odometer.getCurrentSquare().getSquarePosition()[1];
 
         int xDest = currentX;
 
@@ -123,7 +123,7 @@ public class Navigator {
         boolean moveAllowed = odometer.getFieldMapper().getMapping()[xDest][currentY].isAllowed();
 
         if(moveAllowed){
-            double xCoordinate = odometer.getFieldMapper().getMapping()[xDest][currentY].getXcm();
+            double xCoordinate = odometer.getFieldMapper().getMapping()[xDest][currentY].getCenterCoordinate()[0];
             travelToX(xCoordinate);
         }
 
@@ -149,18 +149,11 @@ public class Navigator {
         boolean moveAllowed = odometer.getFieldMapper().getMapping()[currentX][yDest].isAllowed();
 
         if(moveAllowed){
-            double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDest].getCenterCoordinate();
+            double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDest].getCenterCoordinate()[1];
 
             travelToY(yCoorindate);
         }
 
-    }
-
-    /**
-     * A method to travel to the ball dispenser retrieval square
-     */
-    public void travelToBallDispenserApproach(){
-        this.travelToSquare( odometer.getFieldMapper().getBallDispenserApproach() );
     }
 
     /**
