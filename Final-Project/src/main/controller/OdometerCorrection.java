@@ -62,8 +62,8 @@ public class OdometerCorrection extends Thread {
      */
     public void correctOdometerValues() {
         double correctedTheta = calculateCorrectionTheta();
-        int currentSquareX = odometer.getCurrentSquare().getX();
-        int currentSquareY = odometer.getCurrentSquare().getY();
+        int currentSquareX = odometer.getCurrentSquare().getSquarePosition()[0];
+        int currentSquareY = odometer.getCurrentSquare().getSquarePosition()[1];
 
         odometer.setTheta( correctedTheta );
         if ( correctedTheta == 0.0 ) {

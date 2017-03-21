@@ -136,8 +136,8 @@ public class Navigator {
      */
     public void moveSquareY(int direction){
 
-        int currentX = odometer.getCurrentSquare().getX();
-        int currentY = odometer.getCurrentSquare().getY();
+        int currentX = odometer.getCurrentSquare().getSquarePosition()[0];
+        int currentY = odometer.getCurrentSquare().getSquarePosition()[1];
 
         int yDest = currentY;
         if (direction > 0){
@@ -149,7 +149,7 @@ public class Navigator {
         boolean moveAllowed = odometer.getFieldMapper().getMapping()[currentX][yDest].isAllowed();
 
         if(moveAllowed){
-            double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDest].getYcm();
+            double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDest].getCenterCoordinate();
 
             travelToY(yCoorindate);
         }

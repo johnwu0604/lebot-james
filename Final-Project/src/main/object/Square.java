@@ -1,111 +1,107 @@
 package main.object;
 
-import main.resource.Constants;
-
 /**
  * An object which represents the characteristics of each square on our field
  */
 public class Square {
 
     private int[] squarePosition;
-    private boolean allowed;
-    private boolean obstacle = false;
-    private boolean ballDisp = false;
-    private boolean ballDispApproach = false;
-    private boolean shootingPosition = false;
     private double[] centerCoordinate;
+    private boolean allowed;
+    private boolean obstacle;
+    private boolean shootingPosition;
     private double northLine;
     private double southLine;
     private double eastLine;
     private double westLine;
 
-    public Square(int xSqr, int ySqr) {
-        this.squarePosition = new int[2];
-        this.squarePosition[0] = xSqr;
-        this.squarePosition[1] = ySqr;
-
-        this.centerCoordinate =  new double[2];
-        this.centerCoordinate[0] = (squarePosition[0]-0.5)* Constants.SQUARE_LENGTH;
-        this.centerCoordinate[1] = (squarePosition[1]-0.5)* Constants.SQUARE_LENGTH;
-
-        this.northLine = squarePosition[1]* Constants.SQUARE_LENGTH;
-        this.southLine = (squarePosition[1]-1)* Constants.SQUARE_LENGTH;
-
-        this.eastLine = squarePosition[0]* Constants.SQUARE_LENGTH;
-        this.westLine = (squarePosition[0]-1)* Constants.SQUARE_LENGTH;
+    public Square( int x, int y) {
+        squarePosition = getSquarePositionArray( x, y );
     }
 
-    public int getX() {
-        return squarePosition[0];
+    /**
+     * A method to get the position array of the square
+     *
+     * @param x
+     * @param y
+     * @return position vector
+     */
+    public static int[] getSquarePositionArray( int x, int y ) {
+        int[] position = new int[2];
+        position[0] = x;
+        position[1] = y;
+        return position;
     }
 
-    public int getY() {
-        return squarePosition[1];
+    public int[] getSquarePosition() {
+        return squarePosition;
     }
 
-    public double getXcm() {
-        return centerCoordinate[0];
+    public void setSquarePosition(int[] squarePosition) {
+        this.squarePosition = squarePosition;
     }
 
-    public double getYcm() {
-        return centerCoordinate[1];
+    public double[] getCenterCoordinate() {
+        return centerCoordinate;
+    }
+
+    public void setCenterCoordinate(double[] centerCoordinate) {
+        this.centerCoordinate = centerCoordinate;
     }
 
     public boolean isAllowed() {
         return allowed;
     }
 
-    public void containsObstacle(){
-        this.obstacle = true;
-        this.allowed = false;
+    public void setAllowed(boolean allowed) {
+        this.allowed = allowed;
     }
 
-    public void setBallDispApproach() {
-        this.ballDispApproach = true;
-    }
-
-    public void constainsBallDispenser(){
-        this.ballDisp = true;
-    }
-    public void setShootingPosition(){
-        this.shootingPosition = true;
-    }
-
-    public boolean isObstacle(){
+    public boolean isObstacle() {
         return obstacle;
     }
 
-    public boolean isBallDisp(){
-        return ballDisp;
+    public void setObstacle(boolean obstacle) {
+        this.obstacle = obstacle;
     }
 
-    public boolean isBallDispApproach() {
-        return ballDispApproach;
-    }
-
-    public boolean isShootingPosition(){
+    public boolean isShootingPosition() {
         return shootingPosition;
     }
 
-    public void setAllowed(boolean allowed) {
-        this.allowed = allowed;
+    public void setShootingPosition(boolean shootingPosition) {
+        this.shootingPosition = shootingPosition;
     }
 
     public double getNorthLine() {
         return northLine;
     }
 
+    public void setNorthLine(double northLine) {
+        this.northLine = northLine;
+    }
+
     public double getSouthLine() {
         return southLine;
+    }
+
+    public void setSouthLine(double southLine) {
+        this.southLine = southLine;
     }
 
     public double getEastLine() {
         return eastLine;
     }
 
+    public void setEastLine(double eastLine) {
+        this.eastLine = eastLine;
+    }
+
     public double getWestLine() {
         return westLine;
     }
 
-
+    public void setWestLine(double westLine) {
+        this.westLine = westLine;
+    }
 }
