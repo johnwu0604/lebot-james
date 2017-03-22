@@ -96,11 +96,13 @@ public class Constants {
     /**
      * Threshold for reaching a point
      */
-    public static final double POINT_REACHED_THRESHOLD = 2.0;
+    public static final double POINT_REACHED_THRESHOLD = 1.0;
 
     public static final double CORRECTION_MAX_TIME = 1000;
 
-    public static final double SENSOR_TO_TRACK_DISTANCE = 6.1;
+    public static final double LIGHT_SENSOR_TO_TRACK_DISTANCE = 3.0;
+
+    public static final double FRONT_US_SENSOR_TO_TRACK_DISTANCE = 11.3;
 
     public static final double CORNER_ONE_X = 0.0;
     public static final double CORNER_ONE_Y = 0.0;
