@@ -92,7 +92,9 @@ public class FinalProject {
         navigator.moveSquareX(1);
         navigator.moveSquareX(1);
         navigator.moveSquareY(1);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][3]);
+        navigator.moveSquareX(1);
+        navigator.moveSquareY(1);
+
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);

@@ -1,6 +1,5 @@
 package main.controller;
 
-import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 import main.object.LightSensor;
 import main.resource.Constants;
@@ -17,6 +16,11 @@ public class OdometerCorrection extends Thread {
     private Odometer odometer;
     private LightSensor leftSensor;
     private LightSensor rightSensor;
+
+    // variables
+    private boolean hasTimedOut = false;
+    private boolean correctingLeft = false;
+    private boolean correctingRight = false;
 
     /**
      * Our main constructor method
@@ -40,19 +44,14 @@ public class OdometerCorrection extends Thread {
         while ( true ) {
             if ( isLineDetectedLeft() || isLineDetectedRight() ) {
                 odometer.setCorrecting( true );
-                while ( !isLineDetectedLeft() ) {
-                    navigator.stopRightMotor();
-                }
-                while ( !isLineDetectedRight() ) {
-                    navigator.stopLeftMotor();
-                }
-                try { Thread.sleep( Constants.LINE_DETECTINO_HOLD_TIME ); } catch( Exception e ){}
-                correctOdometerValues();
-                navigator.driveForward();
+                doCorrection();
                 odometer.setCorrecting( false );
                 try { Thread.sleep( Constants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
+                hasTimedOut = false;
                 leftSensor.setLineDetected( false );
                 rightSensor.setLineDetected( false );
+                correctingLeft = false;
+                correctingRight = false;
             }
         }
     }
@@ -129,6 +128,59 @@ public class OdometerCorrection extends Thread {
             return 3*Math.PI/2;
         }
         return 0.0;
+    }
+
+    /**
+     * A method to determine if our correction has timed out or not
+     *
+     * @param startTime
+     * @return whether the correction has timed out
+     */
+    public boolean hasTimedOut( double startTime ) {
+        double currentTime = System.currentTimeMillis();
+        hasTimedOut = currentTime - startTime < Constants.CORRECTION_MAX_TIME ? false : true;
+        return hasTimedOut;
+    }
+
+    /**
+     * A method to revert our changes from a correction time out
+     */
+    public void revertChangesFromTimeOut() {
+        double startTime = System.currentTimeMillis();
+        if ( correctingLeft ) {
+            while ( !hasTimedOut( startTime ) ) {
+                navigator.rotateLeftMotorBackward();
+                navigator.stopRightMotor();
+            }
+        }
+        if ( correctingRight ) {
+            while ( !hasTimedOut( startTime ) ) {
+                navigator.rotateRightMotorBackward();
+                navigator.stopLeftMotor();
+            }
+        }
+        navigator.driveForward();
+    }
+
+    /**
+     * A method to do our odometry correction
+     */
+    public void doCorrection() {
+        double startTime = System.currentTimeMillis();
+        while ( !isLineDetectedLeft() && !hasTimedOut( startTime ) ) {
+            navigator.stopRightMotor();
+            correctingLeft = true;
+        }
+        while ( !isLineDetectedRight() && !hasTimedOut( startTime ) ) {
+            navigator.stopLeftMotor();
+            correctingRight = true;
+        }
+        if ( hasTimedOut ) {
+            revertChangesFromTimeOut();
+        }
+        try { Thread.sleep( Constants.LINE_DETECTION_HOLD_TIME); } catch( Exception e ){}
+        navigator.driveForward();
+        correctOdometerValues();
     }
 
 }

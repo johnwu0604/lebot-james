@@ -176,6 +176,7 @@ public class Navigator {
      * A method to rotate the left motor forward
      */
     public void rotateLeftMotorForward() {
+        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
         leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
         leftMotor.forward();
     }
@@ -184,8 +185,27 @@ public class Navigator {
      * A method to rotate the right motor forward
      */
     public void rotateRightMotorForward() {
+        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
         rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
         rightMotor.forward();
+    }
+
+    /**
+     * A method to rotate the left motor backward
+     */
+    public void rotateLeftMotorBackward() {
+        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
+        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        leftMotor.backward();
+    }
+
+    /**
+     * A method to rotate the right motor backward
+     */
+    public void rotateRightMotorBackward() {
+        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
+        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        rightMotor.backward();
     }
 
     /**
