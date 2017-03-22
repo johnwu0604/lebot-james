@@ -92,6 +92,45 @@ public class Constants {
      */
     public static final double LINE_DETECTION_LIGHT_THRESHOLD = 0.4;
 
+    /**
+     * acceleration to launch a ball
+     */
+    public static final int LAUNCH_MOTOR_ACCELERATION = 1000000;
+
+    /**
+     * acceleration to move launch arm
+     */
+    public static final int LAUNCH_MOTOR_RETRACTION_ACCELERATION = 500;
+
+    /**
+     * speed to move launch arm
+     */
+    public static final int LAUNCH_MOTOR_RETRACTION_SPEED = 750;
+
+    /**
+     * angle to rotate arm before firing
+     */
+    public static final int LAUNCH_RETRACTION_ROM = -250;
+
+    /**
+     * angle to rotate arm to fire 5 squares
+     */
+    public static final int LAUNCH_ROM_5 = 130;
+
+    /**
+     * angle to rotate arm to fire 6 squares
+     */
+    public static final int LAUNCH_ROM_6 = 135;
+
+    /**
+     * angle to rotate arm to fire 7 squares
+     */
+    public static final int LAUNCH_ROM_7 = 140;
+
+    /**
+     * angle to rotate arm to fire 8 squares
+     */
+    public static final int LAUNCH_ROM_8 = 145;
 
     /**
      * Threshold for reaching a point
@@ -114,5 +153,8 @@ public class Constants {
     public static final double CORNER_FOUR_X = 0.0;
     public static final double CORNER_FOUR_Y = 10*SQUARE_LENGTH;
     public static final double CORNER_FOUR_THETA = Math.PI;
+    public static final double TARGET_CENTER_X_COORDINATE = 5*SQUARE_LENGTH;
+    public static final double TARGET_CENTER_Y_COORDINATE = 10*SQUARE_LENGTH;
+
 
 }
