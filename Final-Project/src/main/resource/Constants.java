@@ -125,12 +125,12 @@ public class Constants {
     /**
      * angle to rotate arm to fire 7 squares
      */
-    public static final int LAUNCH_ROM_7 = 135;
+    public static final int LAUNCH_ROM_7 = 140;
 
     /**
      * angle to rotate arm to fire 8 squares
      */
-    public static final int LAUNCH_ROM_8 = 135;
+    public static final int LAUNCH_ROM_8 = 145;
 
     /**
      * Threshold for reaching a point

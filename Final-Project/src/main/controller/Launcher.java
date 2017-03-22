@@ -111,7 +111,7 @@ public class Launcher {
      */
     private double alignToTarget(){
         double distance =  navigator.calculateDistanceToPoint(Constants.TARGET_CENTER_X_COORDINATE, Constants.TARGET_CENTER_Y_COORDINATE);
-        double targetAngle = navigator.calculateMinAngle((Constants.TARGET_CENTER_X_COORDINATE, Constants.TARGET_CENTER_Y_COORDINATE););
+        double targetAngle = navigator.calculateMinAngle(Constants.TARGET_CENTER_X_COORDINATE, Constants.TARGET_CENTER_Y_COORDINATE);
 
         navigator.turnTo(targetAngle);
 
