@@ -1,5 +1,6 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.Square;
 import main.resource.Constants;
@@ -110,18 +111,11 @@ public class Navigator {
         int currentX = odometer.getCurrentSquare().getSquarePosition()[0];
         int currentY = odometer.getCurrentSquare().getSquarePosition()[1];
 
-        int xDest = currentX;
+        int xDestination = currentX;
+        xDestination += direction > 0 ? 1 : -1;
 
-        if (direction > 0){
-            xDest += 1;
-        } else {
-            xDest -= 1;
-        }
-
-        boolean moveAllowed = odometer.getFieldMapper().getMapping()[xDest][currentY].isAllowed();
-
-        if(moveAllowed){
-            double xCoordinate = odometer.getFieldMapper().getMapping()[xDest][currentY].getCenterCoordinate()[0];
+        if( isSquareAllowed( xDestination, currentY ) ){
+            double xCoordinate = odometer.getFieldMapper().getMapping()[xDestination][currentY].getCenterCoordinate()[0];
             travelToX(xCoordinate);
         }
 
@@ -137,21 +131,25 @@ public class Navigator {
         int currentX = odometer.getCurrentSquare().getSquarePosition()[0];
         int currentY = odometer.getCurrentSquare().getSquarePosition()[1];
 
-        int yDest = currentY;
-        if (direction > 0){
-            yDest += 1;
-        } else {
-            yDest -= 1;
-        }
+        int yDestination = currentY;
+        yDestination += direction > 0 ? 1 : -1;
 
-        boolean moveAllowed = odometer.getFieldMapper().getMapping()[currentX][yDest].isAllowed();
-
-        if(moveAllowed){
-            double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDest].getCenterCoordinate()[1];
-
+        if( isSquareAllowed( currentX, yDestination ) ){
+            double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDestination].getCenterCoordinate()[1];
             travelToY(yCoorindate);
         }
 
+    }
+
+    /**
+     * A method to determine if the square we want to move to is allowed or not
+     *
+     * @param x
+     * @param y
+     * @return is the square allowed
+     */
+    public boolean isSquareAllowed( int x, int y ) {
+        return odometer.getFieldMapper().getMapping()[x][y].isAllowed();
     }
 
     /**
@@ -309,7 +307,7 @@ public class Navigator {
      */
     public void waitUntilCorrectionIsFinished() {
         while ( odometer.isCorrecting() ) {
-            // do nothing
+            try { Thread.sleep( 10 ); } catch( Exception e ){}
         }
     }
 
