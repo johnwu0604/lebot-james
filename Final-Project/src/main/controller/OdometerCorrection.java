@@ -1,6 +1,5 @@
 package main.controller;
 
-import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 import main.object.LightSensor;
 import main.resource.Constants;
@@ -67,22 +66,22 @@ public class OdometerCorrection extends Thread {
 
         odometer.setTheta( correctedTheta );
         if ( correctedTheta == 0.0 ) {
-            odometer.setY( odometer.getCurrentSquare().getNorthLine() - Constants.SENSOR_TO_TRACK_DISTANCE );
+            odometer.setY( odometer.getCurrentSquare().getNorthLine() - Constants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY+1] );
         }
         if ( correctedTheta == Math.PI/2 ) {
-            odometer.setX( odometer.getCurrentSquare().getEastLine() - Constants.SENSOR_TO_TRACK_DISTANCE );
+            odometer.setX( odometer.getCurrentSquare().getEastLine() - Constants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX+1][currentSquareY] );
         }
         if ( correctedTheta == 2*Math.PI ) {
-            odometer.setY( odometer.getCurrentSquare().getSouthLine() - Constants.SENSOR_TO_TRACK_DISTANCE );
+            odometer.setY( odometer.getCurrentSquare().getSouthLine() - Constants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY-1] );
         }
         if ( correctedTheta == 3*Math.PI/2 ) {
-            odometer.setX( odometer.getCurrentSquare().getWestLine() - Constants.SENSOR_TO_TRACK_DISTANCE );
+            odometer.setX( odometer.getCurrentSquare().getWestLine() - Constants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX-1][currentSquareY] );
         }

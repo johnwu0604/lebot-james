@@ -102,6 +102,40 @@ public class Navigator {
     }
 
     /**
+     * A method to travel to a specific x coordinate backwards (doesn't use odometry correction)
+     *
+     * @param xCoordinate the x coordinate we want to travel to
+     */
+    public void travelToXBackward( double xCoordinate ) {
+        double minAngle = calculateMinAngle( xCoordinate - odometer.getX(), 0 );
+        minAngle += minAngle < 0 ? Math.PI : - Math.PI;
+        // turn to the minimum angle
+        turnTo( minAngle );
+        // move to the specified point
+        while ( Math.abs( odometer.getX() - xCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
+            driveBackward();
+        }
+        stopMotors();
+    }
+
+    /**
+     * A method to travel to a specific y coordinate backwards (doesn't use odometry correction)
+     *
+     * @param yCoordinate the y coordinate we want to travel to
+     */
+    public void travelToYBackward( double yCoordinate ) {
+        double minAngle = calculateMinAngle( 0, yCoordinate - odometer.getY() );
+        minAngle += minAngle < 0 ? Math.PI : - Math.PI;
+        // turn to the minimum angle
+        turnTo( minAngle );
+        // move to the specified point
+        while ( Math.abs( odometer.getY() - yCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
+            driveBackward();
+        }
+        stopMotors();
+    }
+
+    /**
      * A method to move the robot 1 square in the x-direction
      *
      * @param direction
@@ -216,6 +250,18 @@ public class Navigator {
         rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
         leftMotor.forward();
         rightMotor.forward();
+    }
+
+    /**
+     * A method to drive the vehicle backward
+     */
+    public void driveBackward() {
+        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
+        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
+        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        leftMotor.backward();
+        rightMotor.backward();
     }
 
     /**

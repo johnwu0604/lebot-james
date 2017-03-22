@@ -90,13 +90,14 @@ public class FinalProject {
         try { Thread.sleep( 2000 ); } catch( Exception e ){}
 
 
-        navigator.moveSquareX(1);
-        navigator.moveSquareY(1);
-        navigator.moveSquareX(1);
-        navigator.moveSquareY(1);
-        navigator.moveSquareX(1);
-        navigator.moveSquareY(1);
-        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[0][0] );
+//        navigator.moveSquareX(1);
+//        navigator.moveSquareY(1);
+//        navigator.moveSquareX(1);
+//        navigator.moveSquareY(1);
+//        navigator.moveSquareX(1);
+//        navigator.moveSquareY(1);
+        navigator.travelTo( 2.5 * Constants.SQUARE_LENGTH, 6.5 * Constants.SQUARE_LENGTH );
+        navigator.travelTo( -0.5 * Constants.SQUARE_LENGTH, -0.5 * Constants.SQUARE_LENGTH );
 
 
 
