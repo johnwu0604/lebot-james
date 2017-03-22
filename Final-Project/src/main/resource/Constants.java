@@ -15,12 +15,12 @@ public class Constants {
     /**
      * Low speed for forward movement
      */
-    public static final int VEHICLE_FORWARD_SPEED_LOW = 150;
+    public static final int VEHICLE_FORWARD_SPEED_LOW = 200;
 
     /**
      * Vehicle rotation speed
      */
-    public static final int VEHICLE_ROTATE_SPEED = 100;
+    public static final int VEHICLE_ROTATE_SPEED = 150;
 
     /**
      * Vehicle acceleration
@@ -73,24 +73,34 @@ public class Constants {
     public static final long COLOR_SENSOR_HOLD_TIME = 2000;
 
     /**
+     * Hold time for correcting sensor to catch up to the spot that other motor decelerated to
+     */
+    public static final long LINE_DETECTION_HOLD_TIME = 50;
+
+    /**
+     * Post correction hold time to account for deceleration go over line
+     */
+    public static final long CORRECTION_HOLD_TIME = 700;
+
+    /**
      * Distance from forward sensor to middle of vehicle (cm)
      */
     public static final float FORWARD_SENSOR_DISTANCE = 7;
 
     /**
-     * Lower threshold for light sensor
+     * Threshold for detecting a line using light sensor
      */
-    public static final double LOWER_LIGHT_THRESHOLD = 0.4;
+    public static final double LINE_DETECTION_LIGHT_THRESHOLD = 0.4;
 
-    /**
-     * Upper threshold for light sensor
-     */
-    public static final double UPPER_LIGHT_THRESHOLD = 0.5;
 
     /**
      * Threshold for reaching a point
      */
-    public static final double POINT_REACHED_THRESHOLD = 0.5;
+    public static final double POINT_REACHED_THRESHOLD = 2.0;
+
+    public static final double CORRECTION_MAX_TIME = 1000;
+
+    public static final double SENSOR_TO_TRACK_DISTANCE = 6.1;
 
     public static final double CORNER_ONE_X = 0.0;
     public static final double CORNER_ONE_Y = 0.0;

@@ -33,7 +33,7 @@ public class LightSensor extends Thread {
     public void run() {
         while ( true ) {
             sensor.fetchSample(data, 0);
-            if( data[0] < Constants.LOWER_LIGHT_THRESHOLD ) {
+            if( data[0] < Constants.LINE_DETECTION_LIGHT_THRESHOLD) {
                 lineDetected = true;
             }
         }
@@ -56,4 +56,6 @@ public class LightSensor extends Thread {
     public void setLineDetected( boolean lineDetected ) {
         this.lineDetected = lineDetected;
     }
+
+
 }

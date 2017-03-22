@@ -64,11 +64,14 @@ public class FinalProject {
         emergencyStopper.start();
 
         int[] defenderZone = {4,4};
+        int[] ballDispenserPosition  = {-1,4};
         Parameters parameters = new Parameters();
         parameters.setForwardCorner(1);
-        parameters.setForwardLine(8);
+        parameters.setForwardLine(7);
         parameters.setForwardTeam(11);
         parameters.setDefenderZone(defenderZone);
+        parameters.setBallDispenserPosition(ballDispenserPosition);
+        parameters.setBallDispenserOrientation("N");
 
         FieldMapper fieldMapper = new FieldMapper(parameters);
 
@@ -84,7 +87,13 @@ public class FinalProject {
 
         odometerCorrection.start();
 
-        navigator.travelTo( 2* Constants.SQUARE_LENGTH, 2* Constants.SQUARE_LENGTH );
+        try { Thread.sleep( 2000 ); } catch( Exception e ){}
+
+        navigator.moveSquareX(1);
+        navigator.moveSquareX(1);
+        navigator.moveSquareY(1);
+        navigator.moveSquareX(1);
+        navigator.moveSquareY(1);
 
 
         int buttonChoice = Button.waitForAnyPress();
