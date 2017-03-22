@@ -16,7 +16,6 @@ public class LightSensor extends Thread {
     // variables
     private float[] data;
     private boolean lineDetected = false;
-    private double timeOfDetection = 0.0;
 
     /**
      * Our main constructor method
@@ -36,7 +35,6 @@ public class LightSensor extends Thread {
             sensor.fetchSample(data, 0);
             if( data[0] < Constants.LINE_DETECTION_LIGHT_THRESHOLD) {
                 lineDetected = true;
-                timeOfDetection = System.currentTimeMillis();
             }
         }
     }
@@ -59,13 +57,5 @@ public class LightSensor extends Thread {
         this.lineDetected = lineDetected;
     }
 
-    /**
-     * A method to get the time of last detection
-     *
-     * @return
-     */
-    public double getTimeOfDetection() {
-        return timeOfDetection;
-    }
 
 }
