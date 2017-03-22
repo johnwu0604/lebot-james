@@ -1,5 +1,6 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 import main.object.LightSensor;
 import main.resource.Constants;
@@ -48,10 +49,10 @@ public class OdometerCorrection extends Thread {
                 odometer.setCorrecting( false );
                 try { Thread.sleep( Constants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
                 hasTimedOut = false;
-                leftSensor.setLineDetected( false );
-                rightSensor.setLineDetected( false );
                 correctingLeft = false;
                 correctingRight = false;
+                leftSensor.setLineDetected( false );
+                rightSensor.setLineDetected( false );
             }
         }
     }

@@ -79,6 +79,9 @@ public class Odometer extends Thread {
                 if ( theta < 0 ) {
                     theta += 2*Math.PI;
                 }
+                if ( theta > 2*Math.PI ) {
+                    theta -= 2*Math.PI;
+                }
                 x +=  calculateXDisplacement(displacement,theta);
                 y += calculateYDisplacement(displacement,theta);
             }
@@ -251,11 +254,7 @@ public class Odometer extends Thread {
             if (update[1])
                 position[1] = y;
             if (update[2])
-                if(theta>=0) {
-                    position[2] = ( theta * 360 / ( 2 * Math.PI ) ) % 360;
-                } else {
-                    position[2] = (( theta * 360 / ( 2 * Math.PI ) ) % 360)+360;
-                }
+                position[2] = ( theta * 360 / ( 2 * Math.PI ) ) % 360;
         }
     }
 
