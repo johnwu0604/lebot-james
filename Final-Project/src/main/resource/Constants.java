@@ -98,6 +98,8 @@ public class Constants {
      */
     public static final double POINT_REACHED_THRESHOLD = 2.0;
 
+    public static final double SENSOR_TO_TRACK_DISTANCE = 6.1;
+
     public static final double CORNER_ONE_X = 0.0;
     public static final double CORNER_ONE_Y = 0.0;
     public static final double CORNER_ONE_THETA = Math.PI/2;

@@ -89,7 +89,10 @@ public class FinalProject {
 
         try { Thread.sleep( 2000 ); } catch( Exception e ){}
 
-        navigator.travelTo( 2.5 * Constants.SQUARE_LENGTH, 2.5 * Constants.SQUARE_LENGTH );
+        navigator.moveSquareX(1);
+        navigator.moveSquareX(1);
+        navigator.moveSquareY(1);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][3]);
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);

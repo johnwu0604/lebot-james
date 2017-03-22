@@ -67,22 +67,22 @@ public class OdometerCorrection extends Thread {
 
         odometer.setTheta( correctedTheta );
         if ( correctedTheta == 0.0 ) {
-            odometer.setY( odometer.getCurrentSquare().getNorthLine() );
+            odometer.setY( odometer.getCurrentSquare().getNorthLine() - Constants.SENSOR_TO_TRACK_DISTANCE );
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY+1] );
         }
         if ( correctedTheta == Math.PI/2 ) {
-            odometer.setX( odometer.getCurrentSquare().getEastLine() );
+            odometer.setX( odometer.getCurrentSquare().getEastLine() - Constants.SENSOR_TO_TRACK_DISTANCE );
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX+1][currentSquareY] );
         }
         if ( correctedTheta == 2*Math.PI ) {
-            odometer.setY( odometer.getCurrentSquare().getSouthLine() );
+            odometer.setY( odometer.getCurrentSquare().getSouthLine() - Constants.SENSOR_TO_TRACK_DISTANCE );
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY-1] );
         }
         if ( correctedTheta == 3*Math.PI/2 ) {
-            odometer.setX( odometer.getCurrentSquare().getWestLine() );
+            odometer.setX( odometer.getCurrentSquare().getWestLine() - Constants.SENSOR_TO_TRACK_DISTANCE );
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX-1][currentSquareY] );
         }
