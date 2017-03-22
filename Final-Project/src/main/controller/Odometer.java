@@ -37,6 +37,7 @@ public class Odometer extends Thread {
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.fieldMapper = fieldMapper;
+        pastSquares = new ArrayList<>();
         lock = new Object();
         x = 0.0;
         y = 0.0;

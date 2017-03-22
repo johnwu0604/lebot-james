@@ -20,7 +20,7 @@ public class Constants {
     /**
      * Vehicle rotation speed
      */
-    public static final int VEHICLE_ROTATE_SPEED = 100;
+    public static final int VEHICLE_ROTATE_SPEED = 150;
 
     /**
      * Vehicle acceleration
@@ -70,7 +70,12 @@ public class Constants {
     /**
      * Color sensor reading hold time to allow time for line to pass
      */
-    public static final long COLOR_SENSOR_HOLD_TIME = 2000;
+    public static final long COLOR_SENSOR_HOLD_TIME = 3000;
+
+    /**
+     * Hold time for correcting sensor to catch up to the spot that other motor decelerated to
+     */
+    public static final long LINE_DETECTINO_HOLD_TIME = 50;
 
     /**
      * Post correction hold time to account for deceleration go over line
@@ -91,7 +96,9 @@ public class Constants {
     /**
      * Threshold for reaching a point
      */
-    public static final double POINT_REACHED_THRESHOLD = 0.5;
+    public static final double POINT_REACHED_THRESHOLD = 2.0;
+
+    public static final double SENSOR_TO_TRACK_DISTANCE = 6.1;
 
     public static final double CORNER_ONE_X = 0.0;
     public static final double CORNER_ONE_Y = 0.0;
