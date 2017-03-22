@@ -31,17 +31,37 @@ public class Navigator {
     }
 
     /**
+     * A method to travel to a certain square.
+     *
+     * @param square
+     */
+    public void travelToSquare( Square square ) {
+
+        int deltaX = square.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[1];
+        int deltaY = square.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
+
+        while (deltaX != 0 || deltaY != 0){
+
+            if(deltaX >= deltaY){
+                moveSquareX(deltaX);
+                deltaX = square.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[1];
+            }else{
+                moveSquareY(deltaY);
+                deltaY = square.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
+            }
+
+        }
+    }
+
+    /**
      * A method to drive our vehicle to a certain cartesian coordinate.
      *
      * @param x X-Coordinate
      * @param y Y-Coordinate
      */
     public void travelTo( double x , double y ) {
-        double deltaX = x - odometer.getX();
-        double deltaY = y - odometer.getY();
-
-        travelToX(x);
         travelToY(y);
+        travelToX(x);
     }
 
     /**
@@ -57,7 +77,6 @@ public class Navigator {
         while ( Math.abs( odometer.getX() - xCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
             if ( odometer.isCorrecting() ) {
                 waitUntilCorrectionIsFinished();
-                driveForward();
             }
         }
         stopMotors();
@@ -76,21 +95,24 @@ public class Navigator {
         while ( Math.abs( odometer.getY() - yCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
             if ( odometer.isCorrecting() ) {
                 waitUntilCorrectionIsFinished();
-                driveForward();
             }
         }
         stopMotors();
     }
 
+    /**
+     * A method to move the robot 1 square in the x-direction
+     *
+     * @param direction
+     */
+    public void moveSquareX( int direction ){
 
-    public void moveSquareX(int dir){
-
-        int currentX = odometer.getCurrentSquare().getX();
-        int currentY = odometer.getCurrentSquare().getY();
-
+        int currentX = odometer.getCurrentSquare().getSquarePosition()[0];
+        int currentY = odometer.getCurrentSquare().getSquarePosition()[1];
 
         int xDest = currentX;
-        if (dir > 0){
+
+        if (direction > 0){
             xDest += 1;
         } else {
             xDest -= 1;
@@ -99,23 +121,24 @@ public class Navigator {
         boolean moveAllowed = odometer.getFieldMapper().getMapping()[xDest][currentY].isAllowed();
 
         if(moveAllowed){
-            double xCoordinate = odometer.getFieldMapper().getMapping()[xDest][currentY].getXcm();
-            double yCoorindate = odometer.getFieldMapper().getMapping()[xDest][currentY].getYcm();
-
-            travelToY(yCoorindate); //Necessary? (tradeoff Accuracy vs. Speed)
+            double xCoordinate = odometer.getFieldMapper().getMapping()[xDest][currentY].getCenterCoordinate()[0];
             travelToX(xCoordinate);
         }
 
     }
 
-    public void moveSquareY(int dir){
+    /**
+     * A method to move the robot one square in the y-direction
+     *
+     * @param direction
+     */
+    public void moveSquareY(int direction){
 
-        int currentX = odometer.getCurrentSquare().getX();
-        int currentY = odometer.getCurrentSquare().getY();
-
+        int currentX = odometer.getCurrentSquare().getSquarePosition()[0];
+        int currentY = odometer.getCurrentSquare().getSquarePosition()[1];
 
         int yDest = currentY;
-        if (dir > 0){
+        if (direction > 0){
             yDest += 1;
         } else {
             yDest -= 1;
@@ -124,35 +147,11 @@ public class Navigator {
         boolean moveAllowed = odometer.getFieldMapper().getMapping()[currentX][yDest].isAllowed();
 
         if(moveAllowed){
-            double xCoordinate = odometer.getFieldMapper().getMapping()[currentX][yDest].getXcm();
-            double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDest].getYcm();
+            double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDest].getCenterCoordinate()[1];
 
-            travelToX(xCoordinate); //Necessary? (tradeoff Accuracy vs. Speed)
             travelToY(yCoorindate);
         }
 
-    }
-
-    public void travelToSquare(Square sqr){
-
-        int deltaX = sqr.getX() - odometer.getCurrentSquare().getX();
-        int deltaY = sqr.getY() - odometer.getCurrentSquare().getY();
-
-        while (deltaX != 0 || deltaY != 0){
-
-            if(deltaX >= deltaY){
-                moveSquareX(deltaX);
-                deltaX = sqr.getX() - odometer.getCurrentSquare().getX();
-            }else{
-                moveSquareY(deltaY);
-                deltaY = sqr.getY() - odometer.getCurrentSquare().getY();
-            }
-
-        }
-    }
-
-    public void travelToBallDispenserApproach(){
-        this.travelToSquare(this.odometer.getFieldMapper().getBallDispenserApproach());
     }
 
     /**
@@ -195,8 +194,8 @@ public class Navigator {
     public void driveForward() {
         leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
         rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        leftMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
-        rightMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
+        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
         leftMotor.forward();
         rightMotor.forward();
     }
@@ -212,12 +211,27 @@ public class Navigator {
     }
 
     /**
-     * A method to stopMotors our motors
+     * A method to our motors
      */
     public void stopMotors() {
         leftMotor.stop(true);
         rightMotor.stop(false);
     }
+
+    /**
+     * A method to stop our left motor
+     */
+    public void stopLeftMotor() {
+        leftMotor.stop(true);
+    }
+
+    /**
+     * A method to stop our right motor
+     */
+    public void stopRightMotor() {
+        rightMotor.stop(true);
+    }
+
 
     /**
      * Calculates the minimum angle to turn to.
@@ -274,7 +288,6 @@ public class Navigator {
      * A method which waits until odometry correction finishes
      */
     public void waitUntilCorrectionIsFinished() {
-        stopMotors();
         while ( odometer.isCorrecting() ) {
             // do nothing
         }

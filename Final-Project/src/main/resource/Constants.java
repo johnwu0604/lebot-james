@@ -15,7 +15,7 @@ public class Constants {
     /**
      * Low speed for forward movement
      */
-    public static final int VEHICLE_FORWARD_SPEED_LOW = 150;
+    public static final int VEHICLE_FORWARD_SPEED_LOW = 200;
 
     /**
      * Vehicle rotation speed
@@ -73,19 +73,20 @@ public class Constants {
     public static final long COLOR_SENSOR_HOLD_TIME = 2000;
 
     /**
+     * Post correction hold time to account for deceleration go over line
+     */
+    public static final long CORRECTION_HOLD_TIME = 700;
+
+    /**
      * Distance from forward sensor to middle of vehicle (cm)
      */
     public static final float FORWARD_SENSOR_DISTANCE = 7;
 
     /**
-     * Lower threshold for light sensor
+     * Threshold for detecting a line using light sensor
      */
-    public static final double LOWER_LIGHT_THRESHOLD = 0.4;
+    public static final double LINE_DETECTION_LIGHT_THRESHOLD = 0.4;
 
-    /**
-     * Upper threshold for light sensor
-     */
-    public static final double UPPER_LIGHT_THRESHOLD = 0.5;
 
     /**
      * Threshold for reaching a point
