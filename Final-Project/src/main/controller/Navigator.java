@@ -60,8 +60,8 @@ public class Navigator {
      * @param y Y-Coordinate
      */
     public void travelTo( double x , double y ) {
-        travelToX(x);
         travelToY(y);
+        travelToX(x);
     }
 
     /**
@@ -77,7 +77,6 @@ public class Navigator {
         while ( Math.abs( odometer.getX() - xCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
             if ( odometer.isCorrecting() ) {
                 waitUntilCorrectionIsFinished();
-                driveForward();
             }
         }
         stopMotors();
@@ -96,7 +95,6 @@ public class Navigator {
         while ( Math.abs( odometer.getY() - yCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
             if ( odometer.isCorrecting() ) {
                 waitUntilCorrectionIsFinished();
-                driveForward();
             }
         }
         stopMotors();
@@ -196,8 +194,8 @@ public class Navigator {
     public void driveForward() {
         leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
         rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        leftMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
-        rightMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
+        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
         leftMotor.forward();
         rightMotor.forward();
     }
@@ -225,15 +223,13 @@ public class Navigator {
      */
     public void stopLeftMotor() {
         leftMotor.stop(true);
-        rightMotor.stop(false);
     }
 
     /**
      * A method to stop our right motor
      */
     public void stopRightMotor() {
-        leftMotor.stop(true);
-        rightMotor.stop(false);
+        rightMotor.stop(true);
     }
 
 
@@ -292,7 +288,6 @@ public class Navigator {
      * A method which waits until odometry correction finishes
      */
     public void waitUntilCorrectionIsFinished() {
-        stopMotors();
         while ( odometer.isCorrecting() ) {
             // do nothing
         }

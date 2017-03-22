@@ -1,5 +1,7 @@
 package main.object;
 
+import java.util.Arrays;
+
 /**
  * An object which represents the characteristics of each square on our field
  */
@@ -17,6 +19,48 @@ public class Square {
 
     public Square( int x, int y) {
         squarePosition = getSquarePositionArray( x, y );
+    }
+
+    /**
+     * A method to determine if two squares are equal
+     *
+     * @param o
+     * @return
+     */
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Square square = (Square) o;
+        if (allowed != square.allowed) return false;
+        if (obstacle != square.obstacle) return false;
+        if (shootingPosition != square.shootingPosition) return false;
+        if (Double.compare(square.northLine, northLine) != 0) return false;
+        if (Double.compare(square.southLine, southLine) != 0) return false;
+        if (Double.compare(square.eastLine, eastLine) != 0) return false;
+        if (Double.compare(square.westLine, westLine) != 0) return false;
+        if (!Arrays.equals(squarePosition, square.squarePosition)) return false;
+        return Arrays.equals(centerCoordinate, square.centerCoordinate);
+    }
+
+    @Override
+    public int hashCode() {
+        int result;
+        long temp;
+        result = Arrays.hashCode(squarePosition);
+        result = 31 * result + Arrays.hashCode(centerCoordinate);
+        result = 31 * result + (allowed ? 1 : 0);
+        result = 31 * result + (obstacle ? 1 : 0);
+        result = 31 * result + (shootingPosition ? 1 : 0);
+        temp = Double.doubleToLongBits(northLine);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(southLine);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(eastLine);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(westLine);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
 
     /**

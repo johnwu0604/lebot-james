@@ -87,8 +87,7 @@ public class FinalProject {
 
         odometerCorrection.start();
 
-        navigator.travelTo( 2.5* Constants.SQUARE_LENGTH, 2.5* Constants.SQUARE_LENGTH );
-
+        navigator.travelTo( 2.5 * Constants.SQUARE_LENGTH, 2.5 * Constants.SQUARE_LENGTH );
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);

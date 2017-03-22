@@ -1,7 +1,8 @@
-package main.controller;
+package main.util;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.Parameters;
+import main.object.Square;
 import main.util.FieldMapper;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,64 +20,176 @@ import static org.mockito.Mockito.when;
  */
 public class FieldMapperTest {
 
-    @Mock
-    private EV3LargeRegulatedMotor leftMotor;
-
-    @Mock
-    private EV3LargeRegulatedMotor rightMotor;
-
-    @Mock
-    private Odometer odometer;
-
-    Parameters parameters;
-
-
-
     FieldMapper fieldMapper;
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
-        navigator = new Navigator( leftMotor, rightMotor, odometer );
+
+        int[] defenderZone = {4,4};
+        int[] ballDispenserPosition  = {-1,4};
+        // define parameters
+        Parameters parameters = new Parameters();
+        parameters.setForwardCorner(1);
+        parameters.setForwardLine(7);
+        parameters.setForwardTeam(11);
+        parameters.setDefenderZone(defenderZone);
+        parameters.setBallDispenserPosition(ballDispenserPosition);
+        parameters.setBallDispenserOrientation("N");
+        // create field mapping
+        fieldMapper = new FieldMapper(parameters);
     }
 
     @Test
-    public void testCalculateMinAngle() {
-        // given
-        double deltaX = 90;
-        double deltaY = 90;
-        when( odometer.getTheta() ).thenReturn( 0.0 );
-
+    public void testIsOffense() {
         // when
-        double minAngle = navigator.calculateMinAngle( deltaX, deltaY );
-
+        boolean isOffense = fieldMapper.isOffense();
         // then
-        Assert.assertEquals( Math.PI/4, minAngle, 0 );
+        Assert.assertTrue( isOffense );
     }
 
     @Test
-    public void testCalculateDistanceToPoint() {
+    public void testCalculateCenterCoordinate() {
+        double[] expectedCenterCoordinate = { -0.5 * Constants.SQUARE_LENGTH, 3.5 * Constants.SQUARE_LENGTH };
         // given
-        double deltaX = 90;
-        double deltaY = 90;
-
+        Square square = new Square( 0, 4 );
         // when
-        double distance = navigator.calculateDistanceToPoint( deltaX, deltaY );
-
+        double[] actualCenterCoordinate = fieldMapper.calculateCenterCoordinate( square );
         // then
-        Assert.assertEquals( 127.0, distance, 1.0 );
+        Assert.assertEquals( expectedCenterCoordinate.length, actualCenterCoordinate.length );
+        for ( int i = 0; i < actualCenterCoordinate.length; i++ ) {
+            Assert.assertEquals( expectedCenterCoordinate[i], actualCenterCoordinate[i], 0 );
+        }
     }
 
     @Test
-    public void testConvertAngle() {
+    public void testIsInGoalRegion() {
         // given
-        double angleToRotateTo = (720*Constants.WHEEL_RADIUS)/Constants.TRACK_LENGTH;
-
+        Square square = new Square( 0, 4 );
         // when
-        int tachoCount = navigator.convertAngle( angleToRotateTo );
-
+        boolean isInGoalRegion = fieldMapper.isInGoalRegion( square );
         // then
-        Assert.assertEquals( 360, tachoCount, 0 );
+        Assert.assertEquals( false, isInGoalRegion );
     }
+
+    @Test
+    public void testIsInOffensRegion() {
+        // given
+        Square square = new Square( 0, 4 );
+        // when
+        boolean isInOffenseRegion = fieldMapper.isInOffenseRegion( square );
+        // then
+        Assert.assertEquals( true, isInOffenseRegion );
+    }
+
+    @Test
+    public void testIsInDefenseRegion() {
+        // given
+        Square square = new Square( 0, 4 );
+        // when
+        boolean isInDefenseRegion = fieldMapper.isInDefenseRegion( square );
+        // then
+        Assert.assertEquals( false, isInDefenseRegion );
+    }
+
+    @Test
+    public void testIsSquareAllowed() {
+        // given
+        Square square = new Square( 0, 4 );
+        // when
+        boolean isSquareAllowed = fieldMapper.isSquareAllowed( square );
+        // then
+        Assert.assertEquals( true, isSquareAllowed );
+    }
+
+    @Test
+    public void testIsIntialObstacle() {
+        // given
+        Square square = new Square( 0, 4 );
+        // when
+        boolean isInitialObject = fieldMapper.isSquareAllowed( square );
+        // then
+        Assert.assertEquals( true, isInitialObject );
+    }
+
+    @Test
+    public void testIsBallDispenser() {
+        // given
+        Square square = new Square( 0, 4 );
+        // when
+        boolean isBallDispenser = fieldMapper.isBallDispenser( square );
+        // then
+        Assert.assertEquals( true, isBallDispenser );
+    }
+
+    @Test
+    public void testIsShootingPosition() {
+        // given
+        Square square = new Square( 0, 4 );
+        // when
+        boolean isShootingPosition = fieldMapper.isShootingPosition( square );
+        // then
+        Assert.assertEquals( false, isShootingPosition );
+    }
+
+    @Test
+    public void testGetNorthLine() {
+        // given
+        Square square = new Square( 0, 4 );
+        // when
+        double northLine = fieldMapper.getNorthLine( square );
+        // then
+        Assert.assertEquals( 4 * Constants.SQUARE_LENGTH, northLine, 0 );
+    }
+
+    @Test
+    public void testGetSouthLine() {
+        // given
+        Square square = new Square( 0, 4 );
+        // when
+        double southLine = fieldMapper.getSouthLine( square );
+        // then
+        Assert.assertEquals( 3 * Constants.SQUARE_LENGTH, southLine, 0 );
+    }
+
+    @Test
+    public void testGetEastLine() {
+        // given
+        Square square = new Square( 0, 4 );
+        // when
+        double eastLine = fieldMapper.getEastLine( square );
+        // then
+        Assert.assertEquals( 0, eastLine, 0 );
+    }
+
+    @Test
+    public void testGetWestLine() {
+        // given
+        Square square = new Square( 0, 4 );
+        // when
+        double westLine = fieldMapper.getWestLine( square );
+        // then
+        Assert.assertEquals( -1 * Constants.SQUARE_LENGTH, westLine, 0 );
+    }
+
+    @Test
+    public void calculateBallDispenserApproach() {
+        Square[] expectedBallDispenserApproach = new Square[4];
+        expectedBallDispenserApproach[0] = fieldMapper.getMapping()[1][4];
+        expectedBallDispenserApproach[1] = fieldMapper.getMapping()[1][5];
+        expectedBallDispenserApproach[2] = fieldMapper.getMapping()[2][4];
+        expectedBallDispenserApproach[3] = fieldMapper.getMapping()[2][5];
+        // when
+        Square[] actualBallDispenserApproach = fieldMapper.getBallDispenserApproach();
+        // then
+        Assert.assertEquals( expectedBallDispenserApproach.length, actualBallDispenserApproach.length );
+        for ( int i = 0; i < expectedBallDispenserApproach.length; i++ ) {
+            Assert.assertTrue( expectedBallDispenserApproach[i].equals( actualBallDispenserApproach[i] ) );
+        }
+
+    }
+
+
+
+
 
 }
