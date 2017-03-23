@@ -117,7 +117,7 @@ public class Localizer extends Thread {
         while ( ultrasonicSensor.getFilteredSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
             navigator.rotateCounterClockwiseLocalizationFast();
         }
-        while ( ultrasonicSensor.getFilteredSensorData() > ThresholdConstants.LOCALIZATION_WALL_DISTANCE ) {
+        while ( ultrasonicSensor.getFilteredSensorData() > ThresholdConstants.LOCALIZATION_WALL_DISTANCE + 5*ThresholdConstants.LOCALIZATION_NOISE_MARGIN) {
             navigator.rotateCounterClockwiseLocalizationFast();
         }
         navigator.stopMotors();
@@ -280,10 +280,10 @@ public class Localizer extends Thread {
      * @param deviationX
      */
     public void moveToCenterOfSquareX( double[] centerCoordinate, double deviationX ) {
-        if ( deviationX < 3 ) {
+        if ( deviationX < 0 ) {
             navigator.travelToXBackward( centerCoordinate[0] );
         }
-        if ( deviationX > 3 ) {
+        if ( deviationX > 0 ) {
             navigator.travelToX( centerCoordinate[0] );
         }
     }
@@ -295,10 +295,10 @@ public class Localizer extends Thread {
      * @param deviationY
      */
     public void moveToCenterOfSquareY( double[] centerCoordinate, double deviationY ) {
-        if ( deviationY < 3 ) {
+        if ( deviationY < 0 ) {
             navigator.travelToYBackward( centerCoordinate[1] );
         }
-        if ( deviationY > 3 ) {
+        if ( deviationY > 0 ) {
             navigator.travelToY( centerCoordinate[1] );
         }
     }

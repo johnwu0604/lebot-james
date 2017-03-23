@@ -51,7 +51,6 @@ public class OdometerCorrection extends Thread {
                     odometer.setCorrecting( true );
                     doCorrection();
                     odometer.setCorrecting( false );
-                    Sound.buzz();
                     try { Thread.sleep( TimeConstants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
                     hasTimedOut = false;
                     correctingLeft = false;
