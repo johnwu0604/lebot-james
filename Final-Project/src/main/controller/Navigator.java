@@ -1,10 +1,8 @@
 package main.controller;
 
-import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.Square;
 import main.resource.Constants;
-import main.object.UltrasonicSensor;
 
 
 /**

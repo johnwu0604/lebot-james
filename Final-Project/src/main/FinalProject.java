@@ -98,11 +98,29 @@ public class FinalProject {
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        launcher.doBetaDemo(); //code to travel to shooting position and fire ball
+        doBetaDemo( navigator, launcher ); //code to travel to shooting position and fire ball
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
 
         //int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
+    }
+
+    /**
+     * A method to pass the beta demo
+     *
+     * @param navigator
+     * @param launcher
+     */
+    public static void doBetaDemo( Navigator navigator, Launcher launcher ){
+        navigator.travelToSquare(navigator.getOdometer().getFieldMapper().getMapping()[1][1]);
+
+        launcher.retractArm();
+        Sound.beep(); //Notify ball is ready to be placed
+        try { Thread.sleep( 5000 ); } catch( Exception e ){}
+
+        navigator.travelToSquare(navigator.getOdometer().getFieldMapper().getMapping()[1][5]);
+
+        launcher.launchBall();
     }
 
     /**
