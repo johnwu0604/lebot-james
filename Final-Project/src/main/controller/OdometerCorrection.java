@@ -173,6 +173,7 @@ public class OdometerCorrection extends Thread {
      * A method to do our odometry correction
      */
     public void doCorrection() {
+        boolean wentIntoTimedOutMethod = false;
         double startTime = System.currentTimeMillis();
         while ( !isLineDetectedLeft() && !hasTimedOut( startTime ) ) {
             navigator.stopRightMotor();
@@ -183,11 +184,17 @@ public class OdometerCorrection extends Thread {
             correctingRight = true;
         }
         if ( hasTimedOut ) {
+            wentIntoTimedOutMethod = true;
             revertChangesFromTimeOut();
+        } else {
+            try { Thread.sleep( TimeConstants.LINE_DETECTION_HOLD_TIME); } catch( Exception e ){}
         }
-        try { Thread.sleep( TimeConstants.LINE_DETECTION_HOLD_TIME); } catch( Exception e ){}
+        double thetaAfterTimeOut = odometer.getTheta();
         navigator.driveForward();
         correctOdometerValues();
+        if ( wentIntoTimedOutMethod ) {
+            odometer.setTheta( thetaAfterTimeOut );
+        }
     }
 
     /**
