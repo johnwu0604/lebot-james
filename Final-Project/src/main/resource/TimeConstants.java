@@ -32,4 +32,9 @@ public class TimeConstants {
      */
     public static final double CORRECTION_MAX_TIME = 1000;
 
+    /**
+     * The time to wait after shooting before resuming navigation
+     */
+    public static final long POST_SHOOTING_WAIT_TIME = 4000;
+
 }

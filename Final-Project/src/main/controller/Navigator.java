@@ -268,11 +268,11 @@ public class Navigator {
     }
 
     /**
-     * A method to rotate our vehicle counter-clockwise
+     * A method to rotate our vehicle counter-clockwise for localization
      */
-    public void rotateCounterClockwise() {
-        leftMotor.setSpeed( -NavigationConstants.VEHICLE_ROTATE_SPEED );
-        rightMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
+    public void rotateCounterClockwiseLocalization() {
+        leftMotor.setSpeed( -NavigationConstants.LOCALIZATION_ROTATE_SPEED );
+        rightMotor.setSpeed( NavigationConstants.LOCALIZATION_ROTATE_SPEED );
         leftMotor.backward();
         rightMotor.forward();
     }

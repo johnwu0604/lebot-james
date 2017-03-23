@@ -4,6 +4,10 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.LightSensor;
 import main.resource.FieldConstants;
 import main.resource.ShootingConstants;
+import main.resource.TimeConstants;
+
+import java.sql.Time;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A controller object to the ball
@@ -30,7 +34,6 @@ public class Launcher {
      * A method to aim at target and launch ball
      */
     public void launchBall(){
-        odometerCorrection.stopRunning();
 
         setLaunchMotorAcceleration(ShootingConstants.LAUNCH_MOTOR_ACCELERATION);
 
@@ -64,7 +67,6 @@ public class Launcher {
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_MAX);
             restArm(ShootingConstants.LAUNCH_ROM_MAX);
         }
-
         odometerCorrection.startRunning();
     }
 
@@ -137,6 +139,7 @@ public class Launcher {
         double targetAngle = navigator.calculateMinAngle(deltaX, deltaY);
 
         navigator.turnTo(targetAngle);
+        odometerCorrection.stopRunning();
 
         return distance;
     }

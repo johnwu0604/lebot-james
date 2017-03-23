@@ -98,7 +98,7 @@ public class Localizer extends Thread {
      */
     public ArrayList<SensorReading> rotateAndRecordSensorReadings() {
         ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
-        navigator.rotateCounterClockwise();
+        navigator.rotateCounterClockwiseLocalization();
         while ( ultrasonicSensor.getFilteredSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
             SensorReading sensorReading = new SensorReading();
             sensorReading.setDistance( ultrasonicSensor.getFilteredSensorData() );
@@ -115,10 +115,10 @@ public class Localizer extends Thread {
      */
     private void rotateToLeftWall() {
         while ( ultrasonicSensor.getFilteredSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
-            navigator.rotateCounterClockwise();
+            navigator.rotateCounterClockwiseLocalization();
         }
         while ( ultrasonicSensor.getFilteredSensorData() > ThresholdConstants.LOCALIZATION_WALL_DISTANCE ) {
-            navigator.rotateCounterClockwise();
+            navigator.rotateCounterClockwiseLocalization();
         }
         navigator.stopMotors();
     }
@@ -263,10 +263,12 @@ public class Localizer extends Thread {
         double deviationY = centerCoordinate[1] - odometer.getY();
         if ( corner == 1 || corner == 3 ) {
             moveToCenterOfSquareX( centerCoordinate, deviationX );
+            navigator.turnTo( -Math.PI/2 );
             moveToCenterOfSquareY( centerCoordinate, deviationY );
         }
         if ( corner == 2 || corner == 4 ) {
             moveToCenterOfSquareY( centerCoordinate, deviationY );
+            navigator.turnTo( -Math.PI/2 );
             moveToCenterOfSquareX( centerCoordinate, deviationX );
         }
     }

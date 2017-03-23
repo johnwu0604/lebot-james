@@ -22,4 +22,9 @@ public class NavigationConstants {
      */
     public static final int VEHICLE_ACCELERATION = 500;
 
+    /**
+     * Localization rotate speed
+     */
+    public static final int LOCALIZATION_ROTATE_SPEED = 150;
+
 }

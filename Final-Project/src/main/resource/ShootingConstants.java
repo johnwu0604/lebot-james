@@ -15,12 +15,12 @@ public class ShootingConstants {
     /**
      * acceleration to move launch arm
      */
-    public static final int LAUNCH_MOTOR_RETRACTION_ACCELERATION = 500;
+    public static final int LAUNCH_MOTOR_RETRACTION_ACCELERATION = 400;
 
     /**
      * speed to move launch arm
      */
-    public static final int LAUNCH_MOTOR_RETRACTION_SPEED = 750;
+    public static final int LAUNCH_MOTOR_RETRACTION_SPEED = 700;
 
     /**
      * angle to rotate arm before firing
