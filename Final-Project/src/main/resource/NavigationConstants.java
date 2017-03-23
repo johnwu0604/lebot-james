@@ -27,4 +27,9 @@ public class NavigationConstants {
      */
     public static final int LOCALIZATION_ROTATE_SPEED = 150;
 
+    /**
+     * Localization rotate speed fast
+     */
+    public static final int LOCALIZATION_ROTATE_SPEED_FAST = 300;
+
 }

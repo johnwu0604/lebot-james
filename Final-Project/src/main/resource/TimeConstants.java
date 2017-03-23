@@ -25,16 +25,12 @@ public class TimeConstants {
     /**
      * Hold time for correcting sensor to catch up to the spot that other motor decelerated to
      */
-    public static final long LINE_DETECTION_HOLD_TIME = 50;
+    public static final long LINE_DETECTION_HOLD_TIME = 100;
 
     /**
      * The max time odometry correction can happen for
      */
     public static final double CORRECTION_MAX_TIME = 1000;
 
-    /**
-     * The time to wait after shooting before resuming navigation
-     */
-    public static final long POST_SHOOTING_WAIT_TIME = 4000;
 
 }
