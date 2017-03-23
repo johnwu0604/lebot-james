@@ -2,7 +2,9 @@ package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.Square;
-import main.resource.Constants;
+import main.resource.ThresholdConstants;
+import main.resource.NavigationConstants;
+import main.resource.RobotConstants;
 
 
 /**
@@ -15,6 +17,7 @@ public class Navigator {
     // objects
     private Odometer odometer;
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
+    private OdometerCorrection odometerCorrection;
 
     /**
      * Default constructor for Navigator object.
@@ -23,7 +26,7 @@ public class Navigator {
      * @param rightMotor the right motor EV3 object used in the robot
      * @param odometer the odometer controller used in the robot
      */
-    public Navigator( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor , Odometer odometer) {
+    public Navigator( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor , Odometer odometer ) {
         this.odometer = odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
@@ -73,7 +76,7 @@ public class Navigator {
         turnTo( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
         // move to the specified point
         driveForward();
-        while ( Math.abs( odometer.getX() - xCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
+        while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
                 waitUntilCorrectionIsFinished();
             }
@@ -91,7 +94,7 @@ public class Navigator {
         turnTo( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
         // move to the specified point
         driveForward();
-        while ( Math.abs( odometer.getY() - yCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
+        while ( Math.abs( odometer.getY() - yCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
                 waitUntilCorrectionIsFinished();
             }
@@ -110,7 +113,7 @@ public class Navigator {
         // turn to the minimum angle
         turnTo( minAngle );
         // move to the specified point
-        while ( Math.abs( odometer.getX() - xCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
+        while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             driveBackward();
         }
         stopMotors();
@@ -127,7 +130,7 @@ public class Navigator {
         // turn to the minimum angle
         turnTo( minAngle );
         // move to the specified point
-        while ( Math.abs( odometer.getY() - yCoordinate ) > Constants.POINT_REACHED_THRESHOLD ) {
+        while ( Math.abs( odometer.getY() - yCoordinate ) > ThresholdConstants.POINT_REACHED) {
             driveBackward();
         }
         stopMotors();
@@ -190,8 +193,9 @@ public class Navigator {
      * @param theta the theta angle that we want to turn our vehicle
      */
     public void turnTo( double theta ) {
-        leftMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
-        rightMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
+        odometerCorrection.stopRunning();
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         if( theta < 0 ) { // if angle is negative, turn to the left
             leftMotor.rotate( -convertAngle( -(theta*180)/Math.PI ) , true );
             rightMotor.rotate( convertAngle( -(theta*180)/Math.PI ) , false );
@@ -200,14 +204,15 @@ public class Navigator {
             leftMotor.rotate( convertAngle( (theta*180)/Math.PI ) , true);
             rightMotor.rotate( -convertAngle( (theta*180)/Math.PI ) , false);
         }
+        odometerCorrection.startRunning();
     }
 
     /**
      * A method to rotate the left motor forward
      */
     public void rotateLeftMotorForward() {
-        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
         leftMotor.forward();
     }
 
@@ -215,8 +220,8 @@ public class Navigator {
      * A method to rotate the right motor forward
      */
     public void rotateRightMotorForward() {
-        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
         rightMotor.forward();
     }
 
@@ -224,8 +229,8 @@ public class Navigator {
      * A method to rotate the left motor backward
      */
     public void rotateLeftMotorBackward() {
-        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
         leftMotor.backward();
     }
 
@@ -233,8 +238,8 @@ public class Navigator {
      * A method to rotate the right motor backward
      */
     public void rotateRightMotorBackward() {
-        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
         rightMotor.backward();
     }
 
@@ -242,10 +247,10 @@ public class Navigator {
      * A method to drive the vehicle forward
      */
     public void driveForward() {
-        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
-        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
         leftMotor.forward();
         rightMotor.forward();
     }
@@ -254,10 +259,10 @@ public class Navigator {
      * A method to drive the vehicle backward
      */
     public void driveBackward() {
-        leftMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        rightMotor.setAcceleration( Constants.VEHICLE_ACCELERATION );
-        leftMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
-        rightMotor.setSpeed( Constants.VEHICLE_FORWARD_SPEED_LOW );
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
         leftMotor.backward();
         rightMotor.backward();
     }
@@ -266,8 +271,8 @@ public class Navigator {
      * A method to rotate our vehicle counter-clockwise
      */
     public void rotateCounterClockwise() {
-        leftMotor.setSpeed( -Constants.VEHICLE_ROTATE_SPEED );
-        rightMotor.setSpeed( Constants.VEHICLE_ROTATE_SPEED );
+        leftMotor.setSpeed( -NavigationConstants.VEHICLE_ROTATE_SPEED );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         leftMotor.backward();
         rightMotor.forward();
     }
@@ -333,7 +338,7 @@ public class Navigator {
      * @return the tacho count that we need to rotate
      */
     public int convertAngle( double angle ) {
-        return convertDistance( Math.PI * Constants.TRACK_LENGTH * angle / 360.0 );
+        return convertDistance( Math.PI * RobotConstants.TRACK_LENGTH * angle / 360.0 );
     }
 
     /**
@@ -343,7 +348,7 @@ public class Navigator {
      * @return the tacho count that we need to rotate
      */
     public int convertDistance( double distance ) {
-        return (int) ( (180.0 * distance) / (Math.PI * Constants.WHEEL_RADIUS) );
+        return (int) ( (180.0 * distance) / (Math.PI * RobotConstants.WHEEL_RADIUS) );
     }
 
     /**
@@ -353,6 +358,10 @@ public class Navigator {
         while ( odometer.isCorrecting() ) {
             try { Thread.sleep( 10 ); } catch( Exception e ){}
         }
+    }
+
+    public void setOdometerCorrection( OdometerCorrection odometerCorrection ) {
+        this.odometerCorrection = odometerCorrection;
     }
 
     public Odometer getOdometer(){

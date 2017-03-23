@@ -1,17 +1,11 @@
 package main.util;
 
-import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.Parameters;
 import main.object.Square;
-import main.util.FieldMapper;
+import main.resource.FieldConstants;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import main.resource.Constants;
-
-import static org.mockito.Mockito.when;
 
 /**
  * A class to test the logic in the Field Mapper class
@@ -49,7 +43,7 @@ public class FieldMapperTest {
 
     @Test
     public void testCalculateCenterCoordinate() {
-        double[] expectedCenterCoordinate = { -0.5 * Constants.SQUARE_LENGTH, 3.5 * Constants.SQUARE_LENGTH };
+        double[] expectedCenterCoordinate = { -0.5 * FieldConstants.SQUARE_LENGTH, 3.5 * FieldConstants.SQUARE_LENGTH };
         // given
         Square square = new Square( 0, 4 );
         // when
@@ -138,7 +132,7 @@ public class FieldMapperTest {
         // when
         double northLine = fieldMapper.getNorthLine( square );
         // then
-        Assert.assertEquals( 4 * Constants.SQUARE_LENGTH, northLine, 0 );
+        Assert.assertEquals( 4 * FieldConstants.SQUARE_LENGTH, northLine, 0 );
     }
 
     @Test
@@ -148,7 +142,7 @@ public class FieldMapperTest {
         // when
         double southLine = fieldMapper.getSouthLine( square );
         // then
-        Assert.assertEquals( 3 * Constants.SQUARE_LENGTH, southLine, 0 );
+        Assert.assertEquals( 3 * FieldConstants.SQUARE_LENGTH, southLine, 0 );
     }
 
     @Test
@@ -168,7 +162,7 @@ public class FieldMapperTest {
         // when
         double westLine = fieldMapper.getWestLine( square );
         // then
-        Assert.assertEquals( -1 * Constants.SQUARE_LENGTH, westLine, 0 );
+        Assert.assertEquals( -1 * FieldConstants.SQUARE_LENGTH, westLine, 0 );
     }
 
     @Test

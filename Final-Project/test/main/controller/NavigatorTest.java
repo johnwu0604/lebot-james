@@ -1,12 +1,13 @@
 package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import main.object.LightSensor;
+import main.resource.RobotConstants;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import main.resource.Constants;
 
 import static org.mockito.Mockito.when;
 
@@ -64,7 +65,7 @@ public class NavigatorTest {
     @Test
     public void testConvertAngle() {
         // given
-        double angleToRotateTo = (720*Constants.WHEEL_RADIUS)/Constants.TRACK_LENGTH;
+        double angleToRotateTo = (720* RobotConstants.WHEEL_RADIUS)/RobotConstants.TRACK_LENGTH;
 
         // when
         int tachoCount = navigator.convertAngle( angleToRotateTo );

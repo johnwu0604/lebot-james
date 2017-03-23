@@ -2,6 +2,8 @@ package main.resource;
 
 /**
  * A resource class which stores all our constants related to shooting
+ *
+ * @author DurhamAbric
  */
 public class ShootingConstants {
 

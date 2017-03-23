@@ -1,32 +1,37 @@
 package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import main.resource.Constants;
+import main.object.LightSensor;
+import main.resource.FieldConstants;
 import main.resource.ShootingConstants;
 
 /**
  * A controller object to the ball
  *
- * @author dabric
+ * @author DurhamAbric
  */
 public class Launcher {
 
     private Navigator navigator;
     private EV3LargeRegulatedMotor leftLaunchMotor, rightLaunchMotor;
+    private OdometerCorrection odometerCorrection;
 
     /**
      * Constructor for launcher object, controls launching the ball
      */
-    public Launcher(EV3LargeRegulatedMotor left, EV3LargeRegulatedMotor right, Navigator navigator){
+    public Launcher(EV3LargeRegulatedMotor left, EV3LargeRegulatedMotor right, Navigator navigator, OdometerCorrection odometerCorrection ){
         this.navigator = navigator;
         this.leftLaunchMotor = left;
         this.rightLaunchMotor = right;
+        this.odometerCorrection = odometerCorrection;
     }
 
     /**
      * A method to aim at target and launch ball
      */
     public void launchBall(){
+        odometerCorrection.stopRunning();
+
         setLaunchMotorAcceleration(ShootingConstants.LAUNCH_MOTOR_ACCELERATION);
 
         double leftSpeed = leftLaunchMotor.getMaxSpeed();
@@ -40,19 +45,19 @@ public class Launcher {
 
         double distanceToTarget =  alignToTarget(); //faces target and returns distance to target
 
-        if(distanceToTarget <= 4*Constants.SQUARE_LENGTH){
+        if(distanceToTarget <= 4*FieldConstants.SQUARE_LENGTH){
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_4);
             restArm(ShootingConstants.LAUNCH_ROM_4);
-        }else if (distanceToTarget <= 5*Constants.SQUARE_LENGTH){
+        }else if (distanceToTarget <= 5*FieldConstants.SQUARE_LENGTH){
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_5);
             restArm(ShootingConstants.LAUNCH_ROM_5);
-        }else if (distanceToTarget <= 6*Constants.SQUARE_LENGTH){
+        }else if (distanceToTarget <= 6*FieldConstants.SQUARE_LENGTH){
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_6);
             restArm(ShootingConstants.LAUNCH_ROM_6);
-        }else if (distanceToTarget <= 7*Constants.SQUARE_LENGTH){
+        }else if (distanceToTarget <= 7*FieldConstants.SQUARE_LENGTH){
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_7);
             restArm(ShootingConstants.LAUNCH_ROM_7);
-        }else if (distanceToTarget <= 8*Constants.SQUARE_LENGTH){
+        }else if (distanceToTarget <= 8*FieldConstants.SQUARE_LENGTH){
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_8);
             restArm(ShootingConstants.LAUNCH_ROM_8);
         } else {
@@ -60,6 +65,7 @@ public class Launcher {
             restArm(ShootingConstants.LAUNCH_ROM_MAX);
         }
 
+        odometerCorrection.startRunning();
     }
 
     /**
@@ -124,8 +130,8 @@ public class Launcher {
      */
     private double alignToTarget(){
 
-        double deltaX = Constants.TARGET_CENTER_X_COORDINATE - navigator.getOdometer().getX();
-        double deltaY = Constants.TARGET_CENTER_Y_COORDINATE - navigator.getOdometer().getY();
+        double deltaX = FieldConstants.TARGET_CENTER_X_COORDINATE - navigator.getOdometer().getX();
+        double deltaY = FieldConstants.TARGET_CENTER_Y_COORDINATE - navigator.getOdometer().getY();
 
         double distance =  navigator.calculateDistanceToPoint(deltaX, deltaY);
         double targetAngle = navigator.calculateMinAngle(deltaX, deltaY);
