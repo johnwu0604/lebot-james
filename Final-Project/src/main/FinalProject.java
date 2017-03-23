@@ -5,12 +5,11 @@ import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
 import main.controller.*;
-import lejos.hardware.Button;
 import lejos.hardware.ev3.LocalEV3;
 import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import main.object.LightSensor;
 import main.object.OdometerDisplay;
-import main.resource.Constants;
 import main.util.EmergencyStopper;
 import main.util.FieldMapper;
 import main.wifi.WifiConnection;
@@ -78,31 +77,52 @@ public class FinalProject {
         parameters.setBallDispenserPosition(ballDispenserPosition);
         parameters.setBallDispenserOrientation("N");
 
+        // instantiate objects
+        LightSensor leftLightSensor = new LightSensor( leftColorSensor );
+        LightSensor rightLightSensor = new LightSensor( rightColorSensor );
         FieldMapper fieldMapper = new FieldMapper(parameters);
-
         Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
         Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
         OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
-        OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftColorSensor, rightColorSensor );
+        OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
+        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometerCorrection );
+        Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, 1 );
+        // start odometry threads
         odometer.start();
         odometerDisplay.start();
-
-        Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, 1 );
+        // run localization
         localizer.run();
-
-        Sound.beepSequenceUp(); //notify profs localization has completed
-
-        Launcher launcher = new Launcher(leftLaunchMotor, rightLaunchMotor, navigator);
-
+        // notify profs localization has completed
+        Sound.beepSequenceUp();
+        // start odometry correction
         odometerCorrection.start();
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        launcher.doBetaDemo(); //code to travel to shooting position and fire ball
+        doBetaDemo( navigator, launcher ); //code to travel to shooting position and fire ball
+
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
 
         //int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
+    }
+
+    /**
+     * A method to pass the beta demo
+     *
+     * @param navigator
+     * @param launcher
+     */
+    public static void doBetaDemo( Navigator navigator, Launcher launcher ){
+        navigator.travelToSquare(navigator.getOdometer().getFieldMapper().getMapping()[1][1]);
+
+        launcher.retractArm();
+        Sound.beep(); //Notify ball is ready to be placed
+        try { Thread.sleep( 5000 ); } catch( Exception e ){}
+
+        navigator.travelToSquare(navigator.getOdometer().getFieldMapper().getMapping()[1][2]);
+
+        launcher.launchBall();
     }
 
     /**

@@ -1,8 +1,10 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 import main.object.LightSensor;
-import main.resource.Constants;
+import main.resource.RobotConstants;
+import main.resource.TimeConstants;
 
 /**
  * A controller class for odometer correction
@@ -21,6 +23,7 @@ public class OdometerCorrection extends Thread {
     private boolean hasTimedOut = false;
     private boolean correctingLeft = false;
     private boolean correctingRight = false;
+    private boolean running = true;
 
     /**
      * Our main constructor method
@@ -28,11 +31,12 @@ public class OdometerCorrection extends Thread {
      * @param leftSensor the left facing sensor EV3 object used in the robot
      * @param rightSensor the right facing sensor EV3 object used in the robot
      */
-    public OdometerCorrection( Navigator navigator, Odometer odometer, SampleProvider leftSensor, SampleProvider rightSensor ) {
+    public OdometerCorrection( Navigator navigator, Odometer odometer, LightSensor leftSensor, LightSensor rightSensor ) {
         this.navigator = navigator;
+        this.navigator.setOdometerCorrection( this );
         this.odometer = odometer;
-        this.leftSensor = new LightSensor( leftSensor );
-        this.rightSensor = new LightSensor( rightSensor );
+        this.leftSensor = leftSensor;
+        this.rightSensor = rightSensor;
         this.leftSensor.start();
         this.rightSensor.start();
     }
@@ -42,16 +46,19 @@ public class OdometerCorrection extends Thread {
      */
     public void run() {
         while ( true ) {
-            if ( isLineDetectedLeft() || isLineDetectedRight() ) {
-                odometer.setCorrecting( true );
-                doCorrection();
-                odometer.setCorrecting( false );
-                try { Thread.sleep( Constants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
-                hasTimedOut = false;
-                correctingLeft = false;
-                correctingRight = false;
-                leftSensor.setLineDetected( false );
-                rightSensor.setLineDetected( false );
+            if ( running ) {
+                if ( isLineDetectedLeft() || isLineDetectedRight() ) {
+                    odometer.setCorrecting( true );
+                    doCorrection();
+                    odometer.setCorrecting( false );
+                    Sound.buzz();
+                    try { Thread.sleep( TimeConstants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
+                    hasTimedOut = false;
+                    correctingLeft = false;
+                    correctingRight = false;
+                    leftSensor.setLineDetected( false );
+                    rightSensor.setLineDetected( false );
+                }
             }
         }
     }
@@ -66,22 +73,22 @@ public class OdometerCorrection extends Thread {
 
         odometer.setTheta( correctedTheta );
         if ( correctedTheta == 0.0 ) {
-            odometer.setY( odometer.getCurrentSquare().getNorthLine() - Constants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
+            odometer.setY( odometer.getCurrentSquare().getNorthLine() - RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY+1] );
         }
         if ( correctedTheta == Math.PI/2 ) {
-            odometer.setX( odometer.getCurrentSquare().getEastLine() - Constants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
+            odometer.setX( odometer.getCurrentSquare().getEastLine() - RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX+1][currentSquareY] );
         }
         if ( correctedTheta == Math.PI ) {
-            odometer.setY( odometer.getCurrentSquare().getSouthLine() - Constants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
+            odometer.setY( odometer.getCurrentSquare().getSouthLine() - RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY-1] );
         }
         if ( correctedTheta == 3*Math.PI/2 ) {
-            odometer.setX( odometer.getCurrentSquare().getWestLine() - Constants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
+            odometer.setX( odometer.getCurrentSquare().getWestLine() - RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX-1][currentSquareY] );
         }
@@ -138,7 +145,7 @@ public class OdometerCorrection extends Thread {
      */
     public boolean hasTimedOut( double startTime ) {
         double currentTime = System.currentTimeMillis();
-        hasTimedOut = currentTime - startTime < Constants.CORRECTION_MAX_TIME ? false : true;
+        hasTimedOut = currentTime - startTime < TimeConstants.CORRECTION_MAX_TIME ? false : true;
         return hasTimedOut;
     }
 
@@ -178,9 +185,27 @@ public class OdometerCorrection extends Thread {
         if ( hasTimedOut ) {
             revertChangesFromTimeOut();
         }
-        try { Thread.sleep( Constants.LINE_DETECTION_HOLD_TIME); } catch( Exception e ){}
+        try { Thread.sleep( TimeConstants.LINE_DETECTION_HOLD_TIME); } catch( Exception e ){}
         navigator.driveForward();
         correctOdometerValues();
+    }
+
+    /**
+     * A method to temporarily stop our thread
+     */
+    public void stopRunning() {
+        leftSensor.stopRunning();
+        rightSensor.stopRunning();
+        running = false;
+    }
+
+    /**
+     * A method to restart our thread
+     */
+    public void startRunning() {
+        leftSensor.startRunning();
+        rightSensor.startRunning();
+        running = true;
     }
 
 }

@@ -1,7 +1,9 @@
 package main.object;
 
 import lejos.robotics.SampleProvider;
-import main.resource.Constants;
+import main.resource.ThresholdConstants;
+import main.resource.RobotConstants;
+import main.resource.TimeConstants;
 
 /**
  * An object class that represents an ultrasonic sensor
@@ -34,7 +36,7 @@ public class UltrasonicSensor extends Thread {
         while ( true ) {
             if ( running ) {
                 sensor.fetchSample( data, 0 );
-                try { Thread.sleep( Constants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){}
+                try { Thread.sleep( TimeConstants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){}
             }
         }
     }
@@ -52,8 +54,8 @@ public class UltrasonicSensor extends Thread {
      * @return filtered distance data
      */
     public float getFilteredSensorData() {
-        float distance = data[0]*100 + Constants.FORWARD_SENSOR_DISTANCE;
-        return distance > Constants.ULTRASONICSENSOR_MAX_DISTANCE ? Constants.ULTRASONICSENSOR_MAX_DISTANCE : distance;
+        float distance = data[0]*100 + RobotConstants.FORWARD_SENSOR_DISTANCE;
+        return distance > ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE ? ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE : distance;
     }
 
 }

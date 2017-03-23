@@ -70,8 +70,8 @@ public class FieldMapper {
      */
     public double[] calculateCenterCoordinate( Square square ) {
         double[] center = new double[2];
-        center[0] = ( square.getSquarePosition()[0] - 0.5 ) * Constants.SQUARE_LENGTH;
-        center[1] = ( square.getSquarePosition()[1] - 0.5 ) * Constants.SQUARE_LENGTH;
+        center[0] = ( square.getSquarePosition()[0] - 0.5 ) * FieldConstants.SQUARE_LENGTH;
+        center[1] = ( square.getSquarePosition()[1] - 0.5 ) * FieldConstants.SQUARE_LENGTH;
         return center;
     }
 
@@ -220,7 +220,7 @@ public class FieldMapper {
      */
     public double getNorthLine( Square square ) {
         int y = square.getSquarePosition()[1];
-        return y * Constants.SQUARE_LENGTH;
+        return y * FieldConstants.SQUARE_LENGTH;
     }
 
     /**
@@ -231,7 +231,7 @@ public class FieldMapper {
      */
     public double getSouthLine( Square square ) {
         int y = square.getSquarePosition()[1];
-        return ( y - 1 ) * Constants.SQUARE_LENGTH;
+        return ( y - 1 ) * FieldConstants.SQUARE_LENGTH;
     }
 
     /**
@@ -242,7 +242,7 @@ public class FieldMapper {
      */
     public double getEastLine( Square square ) {
         int x = square.getSquarePosition()[0];
-        return x * Constants.SQUARE_LENGTH;
+        return x * FieldConstants.SQUARE_LENGTH;
     }
 
     /**
@@ -253,7 +253,7 @@ public class FieldMapper {
      */
     public double getWestLine( Square square ) {
         int x = square.getSquarePosition()[0];
-        return ( x - 1 ) * Constants.SQUARE_LENGTH;
+        return ( x - 1 ) * FieldConstants.SQUARE_LENGTH;
     }
 
     /**

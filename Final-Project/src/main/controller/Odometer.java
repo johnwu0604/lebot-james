@@ -2,7 +2,9 @@ package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.Square;
-import main.resource.Constants;
+import main.resource.ThresholdConstants;
+import main.resource.RobotConstants;
+import main.resource.TimeConstants;
 import main.util.FieldMapper;
 
 import java.util.ArrayList;
@@ -88,9 +90,9 @@ public class Odometer extends Thread {
 
             // ensure that the odometer only runs once every period
             updateEnd = System.currentTimeMillis();
-            if ( updateEnd - updateStart < Constants.ODOMETER_PERIOD ) {
+            if ( updateEnd - updateStart < TimeConstants.ODOMETER_PERIOD ) {
                 try {
-                    Thread.sleep( Constants.ODOMETER_PERIOD - ( updateEnd - updateStart ) );
+                    Thread.sleep( TimeConstants.ODOMETER_PERIOD - ( updateEnd - updateStart ) );
                 } catch ( InterruptedException e ) {
                     // there is nothing to be done here because it is not
                     // expected that the odometer will be interrupted by
@@ -109,7 +111,7 @@ public class Odometer extends Thread {
      */
     public double calculateMotorDisplacement( int currentTachoCount , int prevTachoCount ) {
         int tachoDelta = currentTachoCount - prevTachoCount;
-        return (2*Math.PI*Constants.WHEEL_RADIUS)*tachoDelta/360;
+        return (2*Math.PI* RobotConstants.WHEEL_RADIUS)*tachoDelta/360;
     }
 
     /**
@@ -120,7 +122,7 @@ public class Odometer extends Thread {
      * @return the theta change of the robot
      */
     public double calculateThetaChange( double leftMotorDisplacement , double rightMotorDisplacement ) {
-        return ( leftMotorDisplacement - rightMotorDisplacement ) / Constants.TRACK_LENGTH;
+        return ( leftMotorDisplacement - rightMotorDisplacement ) / RobotConstants.TRACK_LENGTH;
     }
 
     /**

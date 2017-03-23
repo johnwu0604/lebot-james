@@ -2,7 +2,10 @@ package main.controller;
 
 import lejos.robotics.SampleProvider;
 import main.object.UltrasonicSensor;
-import main.resource.Constants;
+import main.resource.ThresholdConstants;
+import main.resource.FieldConstants;
+import main.resource.RobotConstants;
+import main.resource.TimeConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -95,13 +98,13 @@ public class Localizer extends Thread {
      */
     public ArrayList<SensorReading> rotateAndRecordSensorReadings() {
         ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
-        navigator.rotateCounterClockwise();
-        while ( ultrasonicSensor.getFilteredSensorData() < Constants.LOCALIZATION_WALL_DISTANCE + Constants.LOCALIZATION_NOISE_MARGIN ) {
+        navigator.rotateCounterClockwiseLocalization();
+        while ( ultrasonicSensor.getFilteredSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
             SensorReading sensorReading = new SensorReading();
             sensorReading.setDistance( ultrasonicSensor.getFilteredSensorData() );
             sensorReading.setTheta( odometer.getTheta() );
             sensorReadings.add( sensorReading );
-            try { Thread.sleep( Constants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){ }
+            try { Thread.sleep( TimeConstants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){ }
         }
         navigator.stopMotors();
         return sensorReadings;
@@ -111,11 +114,11 @@ public class Localizer extends Thread {
      * A method to rotate robot until first detection of left wall
      */
     private void rotateToLeftWall() {
-        while ( ultrasonicSensor.getFilteredSensorData() < Constants.LOCALIZATION_WALL_DISTANCE + Constants.LOCALIZATION_NOISE_MARGIN ) {
-            navigator.rotateCounterClockwise();
+        while ( ultrasonicSensor.getFilteredSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
+            navigator.rotateCounterClockwiseLocalization();
         }
-        while ( ultrasonicSensor.getFilteredSensorData() > Constants.LOCALIZATION_WALL_DISTANCE ) {
-            navigator.rotateCounterClockwise();
+        while ( ultrasonicSensor.getFilteredSensorData() > ThresholdConstants.LOCALIZATION_WALL_DISTANCE ) {
+            navigator.rotateCounterClockwiseLocalization();
         }
         navigator.stopMotors();
     }
@@ -174,16 +177,16 @@ public class Localizer extends Thread {
      */
     public double calculateStartingX( SensorReading firstMinimum, SensorReading secondMinimum ) {
         if ( corner ==  1 ) {
-            return Constants.CORNER_ONE_X - ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() - Constants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_ONE_X - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  2 ) {
-            return Constants.CORNER_TWO_X + ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() - Constants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_TWO_X + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  3 ) {
-            return Constants.CORNER_THREE_X + ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() - Constants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_THREE_X + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  4 ) {
-            return Constants.CORNER_FOUR_X - ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() - Constants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_FOUR_X - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         return 0;
     }
@@ -196,16 +199,16 @@ public class Localizer extends Thread {
      */
     public double calculateStartingY( SensorReading firstMinimum, SensorReading secondMinimum ) {
         if ( corner ==  1 ) {
-            return Constants.CORNER_ONE_Y - ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() - Constants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_ONE_Y - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  2 ) {
-            return Constants.CORNER_TWO_Y - ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() - Constants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_TWO_Y - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  3 ) {
-            return Constants.CORNER_THREE_Y + ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() - Constants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_THREE_Y + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  4 ) {
-            return Constants.CORNER_FOUR_Y + ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() - Constants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_FOUR_Y + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         return 0;
     }
@@ -260,10 +263,12 @@ public class Localizer extends Thread {
         double deviationY = centerCoordinate[1] - odometer.getY();
         if ( corner == 1 || corner == 3 ) {
             moveToCenterOfSquareX( centerCoordinate, deviationX );
+            navigator.turnTo( -Math.PI/2 );
             moveToCenterOfSquareY( centerCoordinate, deviationY );
         }
         if ( corner == 2 || corner == 4 ) {
             moveToCenterOfSquareY( centerCoordinate, deviationY );
+            navigator.turnTo( -Math.PI/2 );
             moveToCenterOfSquareX( centerCoordinate, deviationX );
         }
     }
