@@ -2,7 +2,10 @@ package main.controller;
 
 import lejos.robotics.SampleProvider;
 import main.object.UltrasonicSensor;
-import main.resource.Constants;
+import main.resource.ThresholdConstants;
+import main.resource.FieldConstants;
+import main.resource.RobotConstants;
+import main.resource.TimeConstants;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +50,7 @@ public class Localizer extends Thread {
 
             int firstMinIndex = -1;
             int secondMinIndex = -2;
-            ArrayList<SensorReading> sensorReadings = new ArrayList<>();
+            ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
 
             // repeatedly rotate until we find can precisely localize
             while ( firstMinIndex == -1 || secondMinIndex == -2 ) {
@@ -68,14 +71,15 @@ public class Localizer extends Thread {
 
             ultrasonicSensor.stopRunning();
 
-            // turn vehicle to face north
-            navigator.turnTo( calculateRemainingAngleToFaceNorth( sensorReadings.get( secondMinIndex ) ) );
+            // turn vehicle to face east
+            navigator.turnTo( calculateRemainingAngleToFaceEast( sensorReadings.get( secondMinIndex ) ) );
 
             // set our real odometer position values
             odometer.setX(calculateStartingX(sensorReadings.get(firstMinIndex), sensorReadings.get(secondMinIndex)));
             odometer.setY(calculateStartingY(sensorReadings.get(firstMinIndex), sensorReadings.get(secondMinIndex)));
             odometer.setTheta( calculateStartingTheta() );
             setStartingSquare();
+            moveToCenterOfSquare();
 
         } catch ( Exception e ) {
             try {
@@ -93,14 +97,14 @@ public class Localizer extends Thread {
      * @return an ArrayList of sensor reading objects
      */
     public ArrayList<SensorReading> rotateAndRecordSensorReadings() {
-        ArrayList<SensorReading> sensorReadings = new ArrayList<>();
-        navigator.rotateCounterClockwise();
-        while ( ultrasonicSensor.getFilteredSensorData() < Constants.LOCALIZATION_WALL_DISTANCE + Constants.LOCALIZATION_NOISE_MARGIN ) {
+        ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
+        navigator.rotateCounterClockwiseLocalization();
+        while ( ultrasonicSensor.getFilteredSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
             SensorReading sensorReading = new SensorReading();
             sensorReading.setDistance( ultrasonicSensor.getFilteredSensorData() );
             sensorReading.setTheta( odometer.getTheta() );
             sensorReadings.add( sensorReading );
-            try { Thread.sleep( Constants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){ }
+            try { Thread.sleep( TimeConstants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){ }
         }
         navigator.stopMotors();
         return sensorReadings;
@@ -110,11 +114,11 @@ public class Localizer extends Thread {
      * A method to rotate robot until first detection of left wall
      */
     private void rotateToLeftWall() {
-        while ( ultrasonicSensor.getFilteredSensorData() < Constants.LOCALIZATION_WALL_DISTANCE + Constants.LOCALIZATION_NOISE_MARGIN ) {
-            navigator.rotateCounterClockwise();
+        while ( ultrasonicSensor.getFilteredSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
+            navigator.rotateCounterClockwiseLocalization();
         }
-        while ( ultrasonicSensor.getFilteredSensorData() > Constants.LOCALIZATION_WALL_DISTANCE ) {
-            navigator.rotateCounterClockwise();
+        while ( ultrasonicSensor.getFilteredSensorData() > ThresholdConstants.LOCALIZATION_WALL_DISTANCE ) {
+            navigator.rotateCounterClockwiseLocalization();
         }
         navigator.stopMotors();
     }
@@ -173,16 +177,16 @@ public class Localizer extends Thread {
      */
     public double calculateStartingX( SensorReading firstMinimum, SensorReading secondMinimum ) {
         if ( corner ==  1 ) {
-            return Constants.CORNER_ONE_X - ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() );
+            return FieldConstants.CORNER_ONE_X - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  2 ) {
-            return Constants.CORNER_TWO_X + ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() );
+            return FieldConstants.CORNER_TWO_X + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  3 ) {
-            return Constants.CORNER_THREE_X + ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() );
+            return FieldConstants.CORNER_THREE_X + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  4 ) {
-            return Constants.CORNER_FOUR_X - ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() );
+            return FieldConstants.CORNER_FOUR_X - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         return 0;
     }
@@ -195,16 +199,16 @@ public class Localizer extends Thread {
      */
     public double calculateStartingY( SensorReading firstMinimum, SensorReading secondMinimum ) {
         if ( corner ==  1 ) {
-            return Constants.CORNER_ONE_Y - ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() );
+            return FieldConstants.CORNER_ONE_Y - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  2 ) {
-            return Constants.CORNER_TWO_Y - ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() );
+            return FieldConstants.CORNER_TWO_Y - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  3 ) {
-            return Constants.CORNER_THREE_Y + ( Constants.SQUARE_LENGTH - secondMinimum.getDistance() );
+            return FieldConstants.CORNER_THREE_Y + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         if ( corner ==  4 ) {
-            return Constants.CORNER_FOUR_Y + ( Constants.SQUARE_LENGTH - firstMinimum.getDistance() );
+            return FieldConstants.CORNER_FOUR_Y + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
         }
         return 0;
     }
@@ -216,16 +220,16 @@ public class Localizer extends Thread {
      */
     public double calculateStartingTheta() {
         if ( corner ==  1 ) {
-            return 0;
+            return Math.PI/2;
         }
         if ( corner ==  2 ) {
-            return 3*Math.PI/2;
+            return 0;
         }
         if ( corner ==  3 ) {
-            return Math.PI;
+            return 3*Math.PI/2;
         }
         if ( corner ==  4 ) {
-            return Math.PI/2;
+            return Math.PI;
         }
         return 0;
     }
@@ -251,13 +255,64 @@ public class Localizer extends Thread {
     }
 
     /**
-     * A method that calculate how much more we need to rotate to orient in northward direction after retrieving sensor data
+     * A method to move the robot to the center of the square
+     */
+    public void moveToCenterOfSquare() {
+        double[] centerCoordinate = odometer.getCurrentSquare().getCenterCoordinate();
+        double deviationX = centerCoordinate[0] - odometer.getX();
+        double deviationY = centerCoordinate[1] - odometer.getY();
+        if ( corner == 1 || corner == 3 ) {
+            moveToCenterOfSquareX( centerCoordinate, deviationX );
+            navigator.turnTo( -Math.PI/2 );
+            moveToCenterOfSquareY( centerCoordinate, deviationY );
+        }
+        if ( corner == 2 || corner == 4 ) {
+            moveToCenterOfSquareY( centerCoordinate, deviationY );
+            navigator.turnTo( -Math.PI/2 );
+            moveToCenterOfSquareX( centerCoordinate, deviationX );
+        }
+    }
+
+    /**
+     * A method to move our robot into the center of the square in the x orientation
+     *
+     * @param centerCoordinate
+     * @param deviationX
+     */
+    public void moveToCenterOfSquareX( double[] centerCoordinate, double deviationX ) {
+        if ( deviationX < 1 ) {
+            navigator.travelToXBackward( centerCoordinate[0] );
+        }
+        if ( deviationX > 1 ) {
+            navigator.travelToX( centerCoordinate[0] );
+        }
+    }
+
+    /**
+     * A method to move our robot into the center of the square in the y orientation
+     *
+     * @param centerCoordinate
+     * @param deviationY
+     */
+    public void moveToCenterOfSquareY( double[] centerCoordinate, double deviationY ) {
+        if ( deviationY < 1 ) {
+            navigator.travelToYBackward( centerCoordinate[1] );
+        }
+        if ( deviationY > 1 ) {
+            navigator.travelToY( centerCoordinate[1] );
+        }
+    }
+
+
+
+    /**
+     * A method that calculate how much more we need to rotate to orient in eastward direction after retrieving sensor data
      *
      * @param secondMinimum the sensor reading object of our second minimum
      * @return the theta value we need to rotate
      */
-    public double calculateRemainingAngleToFaceNorth(SensorReading secondMinimum ) {
-        return -(Math.PI - ( secondMinimum.getTheta() - odometer.getTheta() ) );
+    public double calculateRemainingAngleToFaceEast(SensorReading secondMinimum ) {
+        return -( (Math.PI/2) - ( secondMinimum.getTheta() - odometer.getTheta() ) );
     }
 
     /**

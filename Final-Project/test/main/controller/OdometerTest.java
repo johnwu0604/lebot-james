@@ -1,13 +1,13 @@
 package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
+import main.resource.RobotConstants;
 import main.util.FieldMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import main.resource.Constants;
 
 /**
  * A class to test the logic in the odometer class
@@ -44,7 +44,7 @@ public class OdometerTest {
 
         double displacement = odometer.calculateMotorDisplacement( currentTachoCount , prevTachoCount );
         // then
-        Assert.assertEquals( Math.PI*2*Constants.WHEEL_RADIUS , displacement , 0 );
+        Assert.assertEquals( Math.PI*2* RobotConstants.WHEEL_RADIUS , displacement , 0 );
     }
 
     @Test

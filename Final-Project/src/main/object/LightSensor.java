@@ -1,7 +1,7 @@
 package main.object;
 
 import lejos.robotics.SampleProvider;
-import main.resource.Constants;
+import main.resource.ThresholdConstants;
 
 /**
  * An object that represents a Light Sensor
@@ -35,7 +35,7 @@ public class LightSensor extends Thread {
         while ( true ) {
             if ( running ) {
                 sensor.fetchSample(data, 0);
-                if( data[0] < Constants.LINE_DETECTION_LIGHT_THRESHOLD) {
+                if( data[0] < ThresholdConstants.LINE_DETECTION) {
                     lineDetected = true;
                 }
             }

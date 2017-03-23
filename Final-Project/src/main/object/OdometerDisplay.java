@@ -2,7 +2,8 @@ package main.object;
 
 import lejos.hardware.lcd.TextLCD;
 import main.controller.Odometer;
-import main.resource.Constants;
+import main.resource.ThresholdConstants;
+import main.resource.TimeConstants;
 
 /**
  * An object class that outputs values to our odometry display
@@ -52,9 +53,9 @@ public class OdometerDisplay extends Thread {
 
             // throttle the OdometerDisplay
             displayEnd = System.currentTimeMillis();
-            if (displayEnd - displayStart < Constants.ODOMETER_PERIOD) {
+            if (displayEnd - displayStart < TimeConstants.ODOMETER_PERIOD) {
                 try {
-                    Thread.sleep(Constants.ODOMETER_PERIOD - (displayEnd - displayStart));
+                    Thread.sleep(TimeConstants.ODOMETER_PERIOD - (displayEnd - displayStart));
                 } catch (InterruptedException e) {
                     // there is nothing to be done here because it is not
                     // expected that OdometerDisplay will be interrupted
