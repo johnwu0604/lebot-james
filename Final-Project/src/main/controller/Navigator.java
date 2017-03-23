@@ -38,14 +38,14 @@ public class Navigator {
      */
     public void travelToSquare( Square square ) {
 
-        int deltaX = square.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[1];
+        int deltaX = square.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[0];
         int deltaY = square.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
 
         while (deltaX != 0 || deltaY != 0){
 
-            if(deltaX >= deltaY){
+            if(Math.abs(deltaX) > Math.abs(deltaY)){
                 moveSquareX(deltaX);
-                deltaX = square.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[1];
+                deltaX = square.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[0];
             }else{
                 moveSquareY(deltaY);
                 deltaY = square.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
@@ -148,10 +148,10 @@ public class Navigator {
         int xDestination = currentX;
         xDestination += direction > 0 ? 1 : -1;
 
-        if( isSquareAllowed( xDestination, currentY ) ){
+       // if( isSquareAllowed( xDestination, currentY ) ){
             double xCoordinate = odometer.getFieldMapper().getMapping()[xDestination][currentY].getCenterCoordinate()[0];
             travelToX(xCoordinate);
-        }
+        //}
 
     }
 
@@ -168,10 +168,10 @@ public class Navigator {
         int yDestination = currentY;
         yDestination += direction > 0 ? 1 : -1;
 
-        if( isSquareAllowed( currentX, yDestination ) ){
+        //if( isSquareAllowed( currentX, yDestination ) ){
             double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDestination].getCenterCoordinate()[1];
             travelToY(yCoorindate);
-        }
+       // }
 
     }
 
@@ -355,6 +355,15 @@ public class Navigator {
         while ( odometer.isCorrecting() ) {
             try { Thread.sleep( 10 ); } catch( Exception e ){}
         }
+    }
+
+    public Odometer getOdometer(){
+        return this.odometer;
+    }
+
+    public void stop(){
+        leftMotor.stop(true);
+        rightMotor.stop(false);
     }
 
 

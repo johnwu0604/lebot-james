@@ -75,7 +75,7 @@ public class OdometerCorrection extends Thread {
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX+1][currentSquareY] );
         }
-        if ( correctedTheta == 2*Math.PI ) {
+        if ( correctedTheta == Math.PI ) {
             odometer.setY( odometer.getCurrentSquare().getSouthLine() - Constants.LIGHT_SENSOR_TO_TRACK_DISTANCE);
             odometer.addPastSquare(odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY] );
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[currentSquareX][currentSquareY-1] );

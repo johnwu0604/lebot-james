@@ -1,5 +1,6 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.resource.Constants;
 
@@ -54,7 +55,10 @@ public class Launcher {
 
         double distanceToTarget =  alignToTarget(); //faces target and returns distance to target
 
-        if(distanceToTarget <= 5*Constants.SQUARE_LENGTH){
+        if(distanceToTarget <= 4*Constants.SQUARE_LENGTH){
+            rotate(Constants.LAUNCH_ROM_4);
+            restArm(Constants.LAUNCH_ROM_4);
+        }else if (distanceToTarget <= 5*Constants.SQUARE_LENGTH){
             rotate(Constants.LAUNCH_ROM_5);
             restArm(Constants.LAUNCH_ROM_5);
         }else if (distanceToTarget <= 6*Constants.SQUARE_LENGTH){
@@ -63,11 +67,28 @@ public class Launcher {
         }else if (distanceToTarget <= 7*Constants.SQUARE_LENGTH){
             rotate(Constants.LAUNCH_ROM_7);
             restArm(Constants.LAUNCH_ROM_7);
-        }else{
+        }else if (distanceToTarget <= 8*Constants.SQUARE_LENGTH){
             rotate(Constants.LAUNCH_ROM_8);
             restArm(Constants.LAUNCH_ROM_8);
+        } else {
+            rotate(Constants.LAUNCH_ROM_MAX);
+            restArm(Constants.LAUNCH_ROM_MAX);
         }
 
+        //navigator.travelTo(navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[0], navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[1]);
+        //navigator.stop();
+    }
+
+    public void doBetaDemo(){
+        navigator.travelToSquare(navigator.getOdometer().getFieldMapper().getMapping()[1][1]);
+
+        retractArm();
+        Sound.beep(); //Notify ball is ready to be placed
+        try { Thread.sleep( 5000 ); } catch( Exception e ){}
+
+        navigator.travelToSquare(navigator.getOdometer().getFieldMapper().getMapping()[5][1]);
+
+        launchBall();
     }
 
     /**
@@ -110,8 +131,12 @@ public class Launcher {
      * @return distance ball must travel to target
      */
     private double alignToTarget(){
-        double distance =  navigator.calculateDistanceToPoint(Constants.TARGET_CENTER_X_COORDINATE, Constants.TARGET_CENTER_Y_COORDINATE);
-        double targetAngle = navigator.calculateMinAngle(Constants.TARGET_CENTER_X_COORDINATE, Constants.TARGET_CENTER_Y_COORDINATE);
+
+        double deltaX = Constants.TARGET_CENTER_X_COORDINATE - navigator.getOdometer().getX();
+        double deltaY = Constants.TARGET_CENTER_Y_COORDINATE - navigator.getOdometer().getY();
+
+        double distance =  navigator.calculateDistanceToPoint(deltaX, deltaY);
+        double targetAngle = navigator.calculateMinAngle(deltaX, deltaY);
 
         navigator.turnTo(targetAngle);
 
