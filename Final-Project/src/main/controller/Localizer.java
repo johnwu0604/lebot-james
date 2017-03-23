@@ -47,7 +47,7 @@ public class Localizer extends Thread {
 
             int firstMinIndex = -1;
             int secondMinIndex = -2;
-            ArrayList<SensorReading> sensorReadings = new ArrayList<>();
+            ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
 
             // repeatedly rotate until we find can precisely localize
             while ( firstMinIndex == -1 || secondMinIndex == -2 ) {
@@ -94,7 +94,7 @@ public class Localizer extends Thread {
      * @return an ArrayList of sensor reading objects
      */
     public ArrayList<SensorReading> rotateAndRecordSensorReadings() {
-        ArrayList<SensorReading> sensorReadings = new ArrayList<>();
+        ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
         navigator.rotateCounterClockwise();
         while ( ultrasonicSensor.getFilteredSensorData() < Constants.LOCALIZATION_WALL_DISTANCE + Constants.LOCALIZATION_NOISE_MARGIN ) {
             SensorReading sensorReading = new SensorReading();

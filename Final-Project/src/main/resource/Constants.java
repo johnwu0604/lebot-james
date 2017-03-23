@@ -10,7 +10,7 @@ public class Constants {
     /**
      * High speed for forward movement
      */
-    public static final int VEHICLE_FORWARD_SPEED_HIGH = 400;
+    public static final int VEHICLE_FORWARD_SPEED_HIGH = 300;
 
     /**
      * Low speed for forward movement
@@ -20,7 +20,7 @@ public class Constants {
     /**
      * Vehicle rotation speed
      */
-    public static final int VEHICLE_ROTATE_SPEED = 150;
+    public static final int VEHICLE_ROTATE_SPEED = 200;
 
     /**
      * Vehicle acceleration
@@ -110,32 +110,42 @@ public class Constants {
     /**
      * angle to rotate arm before firing
      */
-    public static final int LAUNCH_RETRACTION_ROM = -250;
+    public static final int LAUNCH_RETRACTION_ROM = -260;
+
+    /**
+     * angle to rotate arm to fire 4 squares
+     */
+    public static final int LAUNCH_ROM_4 = 100;
 
     /**
      * angle to rotate arm to fire 5 squares
      */
-    public static final int LAUNCH_ROM_5 = 130;
+    public static final int LAUNCH_ROM_5 = 120;
 
     /**
      * angle to rotate arm to fire 6 squares
      */
-    public static final int LAUNCH_ROM_6 = 135;
+    public static final int LAUNCH_ROM_6 = 130;
 
     /**
      * angle to rotate arm to fire 7 squares
      */
-    public static final int LAUNCH_ROM_7 = 140;
+    public static final int LAUNCH_ROM_7 = 135;
 
     /**
      * angle to rotate arm to fire 8 squares
      */
-    public static final int LAUNCH_ROM_8 = 145;
+    public static final int LAUNCH_ROM_8 = 140;
+
+    /**
+     * angle to rotate arm to fire 8+ squares
+     */
+    public static final int LAUNCH_ROM_MAX = 145;
 
     /**
      * Threshold for reaching a point
      */
-    public static final double POINT_REACHED_THRESHOLD = 1.0;
+    public static final double POINT_REACHED_THRESHOLD = 0.5;
 
     public static final double CORRECTION_MAX_TIME = 1000;
 
@@ -155,8 +165,11 @@ public class Constants {
     public static final double CORNER_FOUR_X = 0.0;
     public static final double CORNER_FOUR_Y = 10*SQUARE_LENGTH;
     public static final double CORNER_FOUR_THETA = Math.PI;
-    public static final double TARGET_CENTER_X_COORDINATE = 5*SQUARE_LENGTH;
-    public static final double TARGET_CENTER_Y_COORDINATE = 10*SQUARE_LENGTH;
+    public static final int TARGET_CENTER_Y = 6;
+    public static final int TARGET_CENTER_X = 5;
+    public static final double TARGET_CENTER_X_COORDINATE = TARGET_CENTER_X *SQUARE_LENGTH;
+    public static final double TARGET_CENTER_Y_COORDINATE = TARGET_CENTER_Y *SQUARE_LENGTH;
+
 
 
 }

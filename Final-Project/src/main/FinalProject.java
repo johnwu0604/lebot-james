@@ -1,5 +1,6 @@
 package main;
 
+import lejos.hardware.Sound;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
 import lejos.robotics.SampleProvider;
@@ -26,6 +27,8 @@ public class FinalProject {
 
     private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "A" ));
     private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "D" ));
+    private static final EV3LargeRegulatedMotor leftLaunchMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "C" ));
+    private static final EV3LargeRegulatedMotor rightLaunchMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "B" ));
     private static final SampleProvider forwardUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S1" ) ) ).getMode("Distance");
     private static final SampleProvider leftColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S2") ) ).getMode("Red");
     private static final SampleProvider rightColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S3") ) ).getMode("Red");
@@ -52,9 +55,11 @@ public class FinalProject {
 //            OdometryDisplay odometryDisplay = new OdometryDisplay(odometer,t);
 //            odometer.start();
 //            odometryDisplay.start();
+//            Sound.beepSequenceUp();
 //
 //            Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, parameters.getForwardCorner() );
 //            localizer.run();
+//            Sound.beepSequenceUp();
 //        }
 
         /**
@@ -85,23 +90,18 @@ public class FinalProject {
         Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, 1 );
         localizer.run();
 
+        Sound.beepSequenceUp(); //notify profs localization has completed
+
+        Launcher launcher = new Launcher(leftLaunchMotor, rightLaunchMotor, navigator);
+
         odometerCorrection.start();
 
-        try { Thread.sleep( 2000 ); } catch( Exception e ){}
+        try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
+        launcher.doBetaDemo(); //code to travel to shooting position and fire ball
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
 
-//        navigator.moveSquareX(1);
-//        navigator.moveSquareY(1);
-//        navigator.moveSquareX(1);
-//        navigator.moveSquareY(1);
-//        navigator.moveSquareX(1);
-//        navigator.moveSquareY(1);
-        navigator.travelTo( 2.5 * Constants.SQUARE_LENGTH, 6.5 * Constants.SQUARE_LENGTH );
-        navigator.travelTo( -0.5 * Constants.SQUARE_LENGTH, -0.5 * Constants.SQUARE_LENGTH );
-
-
-
-        int buttonChoice = Button.waitForAnyPress();
+        //int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
     }
 
