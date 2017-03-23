@@ -51,6 +51,9 @@ public class FinalProject {
 
         retrieveStartingParameters();
 
+        // notify profs we have received parameters
+        Sound.beepSequenceUp();
+
         if ( parameters.getForwardTeam() == 11 ) {
             // instantiate objects
             LightSensor leftLightSensor = new LightSensor( leftColorSensor );
