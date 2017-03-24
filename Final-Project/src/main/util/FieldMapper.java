@@ -264,20 +264,20 @@ public class FieldMapper {
     public Square[] calculateBallDispenserApproach() {
         int ballDispenserX = parameters.getBallDispenserPosition()[0];
         int ballDispenserY = parameters.getBallDispenserPosition()[1];
-        Square[] ballDispenserApproach = new Square[4];
+        Square[] ballDispenserApproach = new Square[2];
         // dispenser lies on east/west walls taking up two squares in y direction
         if ( ballDispenserX == -1 || ballDispenserX == 11 ) {
             if ( ballDispenserX == -1 ) {
                 ballDispenserApproach[0] = squares[1][ ballDispenserY ];
                 ballDispenserApproach[1] = squares[1][ ballDispenserY + 1 ];
-                ballDispenserApproach[2] = squares[2][ ballDispenserY ];
-                ballDispenserApproach[3] = squares[2][ ballDispenserY + 1 ];
+               // ballDispenserApproach[2] = squares[2][ ballDispenserY ];
+               // ballDispenserApproach[3] = squares[2][ ballDispenserY + 1 ];
             }
             if ( ballDispenserX == 11 ) {
                 ballDispenserApproach[0] = squares[10][ ballDispenserY ];
                 ballDispenserApproach[1] = squares[10][ ballDispenserY + 1 ];
-                ballDispenserApproach[2] = squares[9][ ballDispenserY ];
-                ballDispenserApproach[3] = squares[9][ ballDispenserY + 1 ];
+                //ballDispenserApproach[2] = squares[9][ ballDispenserY ];
+                //ballDispenserApproach[3] = squares[9][ ballDispenserY + 1 ];
             }
         }
         // dispenser lies on north/south walls taking up two squares in x direction
@@ -285,14 +285,14 @@ public class FieldMapper {
             if ( ballDispenserY == -1 ) {
                 ballDispenserApproach[0] = squares[ ballDispenserX ][ 1 ];
                 ballDispenserApproach[1] = squares[ ballDispenserX + 1 ][ 1];
-                ballDispenserApproach[2] = squares[ ballDispenserX ][ 2 ];
-                ballDispenserApproach[3] = squares[ ballDispenserX + 1 ][ 2 ];
+                //ballDispenserApproach[2] = squares[ ballDispenserX ][ 2 ];
+                //ballDispenserApproach[3] = squares[ ballDispenserX + 1 ][ 2 ];
             }
             if ( ballDispenserY == 11 ) {
                 ballDispenserApproach[0] = squares[ ballDispenserX ][ 10 ];
                 ballDispenserApproach[1] = squares[ ballDispenserX + 1 ][ 10 ];
-                ballDispenserApproach[2] = squares[ ballDispenserX ][ 9 ];
-                ballDispenserApproach[3] = squares[ ballDispenserX + 1 ][ 9 ];
+                //ballDispenserApproach[2] = squares[ ballDispenserX ][ 9 ];
+                //ballDispenserApproach[3] = squares[ ballDispenserX + 1 ][ 9 ];
             }
         }
         return ballDispenserApproach;
@@ -303,8 +303,12 @@ public class FieldMapper {
      *
      * @return
      */
-    public Square[] getBallDispenserApproach() {
-        return ballDispenserApproach;
+    public Square getBallDispenserApproach(int approachDirection) {
+        if (approachDirection <= 0) {
+            return squares[ballDispenserApproach[0].getSquarePosition()[0]][ballDispenserApproach[0].getSquarePosition()[1]];
+        } else {
+            return squares[ballDispenserApproach[1].getSquarePosition()[0]][ballDispenserApproach[1].getSquarePosition()[1]];
+        }
     }
 
     /**
@@ -315,6 +319,13 @@ public class FieldMapper {
     public Square[][] getMapping() {
         return squares;
     }
+
+    /**
+     * A method that returns the parameters for the field
+     *
+     * @return
+     */
+    public Parameters getParameters() {return parameters;}
 
 
 }
