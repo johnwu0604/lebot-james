@@ -123,6 +123,12 @@ public class Localizer extends Thread {
         navigator.stopMotors();
     }
 
+    /**
+     * A method to sum all the distances in a sensor reading list
+     *
+     * @param sensorReadings
+     * @return
+     */
     public float sumDistances( List<SensorReading> sensorReadings ) {
         float sum = 0;
         for ( SensorReading sensorReading : sensorReadings ) {
@@ -318,7 +324,7 @@ public class Localizer extends Thread {
     /**
      * An object which stores all vehicle characteristics at a specific sensor reading
      */
-    public class SensorReading {
+    public static class SensorReading {
 
         private float distance;
         private double theta;
