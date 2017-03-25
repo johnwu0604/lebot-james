@@ -297,6 +297,22 @@ public class Odometer extends Thread {
         return currentSquare;
     }
 
+    public Square getEastSquare(){
+        return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0] + 1][getCurrentSquare().getSquarePosition()[1]];
+    }
+
+    public Square getWestSquare(){
+        return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0] - 1][getCurrentSquare().getSquarePosition()[1]];
+    }
+
+    public Square getNorthSquare(){
+        return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0]][getCurrentSquare().getSquarePosition()[1]+1];
+    }
+
+    public Square getSouthSquare(){
+        return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0]][getCurrentSquare().getSquarePosition()[1]-1];
+    }
+
     /**
      * A method that sets our current square
      *
