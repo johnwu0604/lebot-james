@@ -26,11 +26,12 @@ public class BallRetriever {
         alignToDispenser(currentApproachSquare);
         launcher.setLaunchMotorAcceleration(100);
         launcher.rotateLaunchMotors(40);
-        Sound.beep();
+        Sound.beep(); //Notify instructors we are ready to receive ball
 
         try { Thread.sleep( 5000 ); } catch( Exception e ){}
 
         launcher.setLaunchMotorAcceleration(50);
+        launcher.setLaunchMotorSpeed(50);
         launcher.rotateLaunchMotors(-40);
 
         navigator.travelToSquare(chooseApproach());
@@ -40,11 +41,9 @@ public class BallRetriever {
 
     private Square approachDispenser(){
 
-        double xCoordinate;
-        double yCoordinate;
-
         Square approach = chooseApproach();
-        navigator.travelToSquare(approach);
+        navigator.travelTo(navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[0],
+                navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[1]);
         return approach;
     }
 

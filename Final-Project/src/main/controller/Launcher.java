@@ -104,7 +104,7 @@ public class Launcher {
      * A method to set speed of launch motors
      * @param speed
      */
-    private void setLaunchMotorSpeed(int speed){
+    public void setLaunchMotorSpeed(int speed){
         leftLaunchMotor.setSpeed(speed);
         rightLaunchMotor.setSpeed(speed);
     }
