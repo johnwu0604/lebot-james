@@ -44,7 +44,9 @@ public class Navigator {
      * @param square
      */
     public void travelToSquare( Square square ) {
-        makeBestMoves(square);
+        while( square != odometer.getCurrentSquare() ){   //check break condition
+            makeBestMoves( square );
+        }
     }
 
 
@@ -54,37 +56,33 @@ public class Navigator {
      */
     public void makeBestMoves(Square destination){
 
-        Stack possibleMoves = getPossibleMoves(destination);
+        Stack<Square> possibleMoves = getPossibleMoves( destination );
         boolean moveCompleted = false;
 
-        while(!possibleMoves.empty() && !moveCompleted){
-            Square moveLocation = (Square) possibleMoves.pop();
+        while( !possibleMoves.empty() && !moveCompleted ){
+            Square moveLocation = possibleMoves.pop();
 
             if (moveLocation == odometer.getNorthSquare()){
                 moveCompleted = moveSquareY(1);
             } else if (moveLocation == odometer.getSouthSquare()){
                 moveCompleted = moveSquareY(-1);
-            } else if (moveLocation == odometer.getSouthSquare()){
+            } else if (moveLocation == odometer.getEastSquare()){
                 moveCompleted = moveSquareX(1);
-            } else if (moveLocation == odometer.getSouthSquare()){
+            } else if (moveLocation == odometer.getWestSquare()){
                 moveCompleted = moveSquareX(-1);
             }
-        }
-
-        if(destination != odometer.getCurrentSquare()){   //check break condition
-            makeBestMoves(destination);
         }
 
     }
 
     /**
      * A method that returns the possible moves the robot can make, with priority
-     *@param destination
-     * @return stack or prioritized moves
+     * @param destination
+     * @return stack of prioritized moves
      */
     public Stack<Square> getPossibleMoves(Square destination){
 
-        Stack possibleMoves = new Stack();
+        Stack<Square> possibleMoves = new Stack<>();
 
         possibleMoves.push(odometer.getLastSquare());
 
@@ -97,44 +95,19 @@ public class Navigator {
         Square eastSquare = odometer.getEastSquare();
         Square westSquare = odometer.getWestSquare();
 
-        if (Math.abs(getComponentDistances(destination)[0]) > Math.abs(getComponentDistances(destination)[1])){
+        int deltaX = getComponentDistances(destination)[0]; // in square values
+        int deltaY = getComponentDistances(destination)[1]; // in square values
 
-            if(getComponentDistances(destination)[0] > 0){
-                topPriority = northSquare;
-            }else if (getComponentDistances(destination)[0] < 0){
-                topPriority = southSquare;
-            } else {
-                topPriority = odometer.getCurrentSquare();
-            }
-
-            if(getComponentDistances(destination)[1] > 0){
-                secondPriority = eastSquare;
-            }else if (getComponentDistances(destination)[1] < 0){
-                secondPriority = westSquare;
-            } else {
-                secondPriority = odometer.getCurrentSquare();
-            }
-
-        } else {
-
-            if(getComponentDistances(destination)[1] > 0){
-                topPriority = northSquare;
-            }else if (getComponentDistances(destination)[1] < 0){
-                topPriority = southSquare;
-            } else {
-                topPriority = odometer.getCurrentSquare();
-            }
-
-            if(getComponentDistances(destination)[0] > 0){
-                secondPriority = eastSquare;
-            }else if (getComponentDistances(destination)[0] < 0){
-                secondPriority = westSquare;
-            } else {
-                secondPriority = odometer.getCurrentSquare();
-            }
-
+        // greater distance to travel in x
+        if ( Math.abs( deltaX ) > Math.abs( deltaY ) ){
+            topPriority = deltaX > 0 ? eastSquare : westSquare;
+            secondPriority = deltaY > 0 ? northSquare : southSquare;
+        } else { // greater distance to travel in y
+            topPriority = deltaY > 0 ? northSquare : southSquare;
+            secondPriority = deltaX > 0 ? eastSquare : westSquare;
         }
 
+        // set last square remaining as third priority
         if (northSquare != topPriority && northSquare != secondPriority && northSquare != odometer.getLastSquare()){
             thirdPriority = northSquare;
         } else if (southSquare != topPriority && southSquare != secondPriority && southSquare != odometer.getLastSquare()){
@@ -144,7 +117,6 @@ public class Navigator {
         } else {
             thirdPriority = westSquare;
         }
-
 
         possibleMoves.push(thirdPriority);
         possibleMoves.push(secondPriority);
