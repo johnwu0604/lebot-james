@@ -95,7 +95,7 @@ public class Launcher {
      * A method to set acceleration of launch motors
      * @param acceleration
      */
-    private void setLaunchMotorAcceleration(int acceleration){
+    public void setLaunchMotorAcceleration(int acceleration){
         leftLaunchMotor.setAcceleration(acceleration);
         rightLaunchMotor.setAcceleration(acceleration);
     }
@@ -104,7 +104,7 @@ public class Launcher {
      * A method to set speed of launch motors
      * @param speed
      */
-    private void setLaunchMotorSpeed(int speed){
+    public void setLaunchMotorSpeed(int speed){
         leftLaunchMotor.setSpeed(speed);
         rightLaunchMotor.setSpeed(speed);
     }
@@ -113,7 +113,7 @@ public class Launcher {
      * A method to rotate launch motors
      * @param degrees
      */
-    private void rotateLaunchMotors(int degrees){
+    public void rotateLaunchMotors(int degrees){
         leftLaunchMotor.rotate(degrees, true);
         rightLaunchMotor.rotate(degrees, false);
     }
@@ -142,5 +142,9 @@ public class Launcher {
         odometerCorrection.stopRunning();
 
         return distance;
+    }
+
+    public Navigator getNavigator(){
+        return this.navigator;
     }
 }
