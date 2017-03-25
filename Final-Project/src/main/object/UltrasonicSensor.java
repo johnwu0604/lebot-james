@@ -54,7 +54,7 @@ public class UltrasonicSensor extends Thread {
      * @return filtered distance data
      */
     public float getFilteredSensorData() {
-        float distance = data[0]*100 + RobotConstants.FORWARD_SENSOR_DISTANCE;
+        float distance = data[0]*100 + RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE;
         return distance > ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE ? ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE : distance;
     }
 

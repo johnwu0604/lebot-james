@@ -183,16 +183,16 @@ public class Localizer extends Thread {
      */
     public double calculateStartingX( SensorReading firstMinimum, SensorReading secondMinimum ) {
         if ( corner ==  1 ) {
-            return FieldConstants.CORNER_ONE_X - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_ONE_X - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() );
         }
         if ( corner ==  2 ) {
-            return FieldConstants.CORNER_TWO_X + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_TWO_X + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() );
         }
         if ( corner ==  3 ) {
-            return FieldConstants.CORNER_THREE_X + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_THREE_X + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() );
         }
         if ( corner ==  4 ) {
-            return FieldConstants.CORNER_FOUR_X - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_FOUR_X - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() );
         }
         return 0;
     }
@@ -205,16 +205,16 @@ public class Localizer extends Thread {
      */
     public double calculateStartingY( SensorReading firstMinimum, SensorReading secondMinimum ) {
         if ( corner ==  1 ) {
-            return FieldConstants.CORNER_ONE_Y - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_ONE_Y - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() );
         }
         if ( corner ==  2 ) {
-            return FieldConstants.CORNER_TWO_Y - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_TWO_Y - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() );
         }
         if ( corner ==  3 ) {
-            return FieldConstants.CORNER_THREE_Y + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_THREE_Y + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() );
         }
         if ( corner ==  4 ) {
-            return FieldConstants.CORNER_FOUR_Y + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_FOUR_Y + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() );
         }
         return 0;
     }
