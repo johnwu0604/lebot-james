@@ -1,8 +1,8 @@
 package main.controller;
 
-import lejos.hardware.Sound;
 import main.object.Square;
 import main.object.UltrasonicSensor;
+import main.resource.FieldConstants;
 import main.resource.RobotConstants;
 import main.resource.ThresholdConstants;
 import main.resource.TimeConstants;
@@ -19,6 +19,7 @@ public class ObstacleAvoider extends Thread {
     private UltrasonicSensor leftSensor;
     private UltrasonicSensor frontSensor;
     private Odometer odometer;
+    private Navigator navigator;
 
     // variables
     private volatile boolean running = true;
@@ -37,17 +38,26 @@ public class ObstacleAvoider extends Thread {
     }
 
     /**
+     * A method to instantiate our navigator in the class
+     *
+     * @param navigator
+     */
+    public void setNavigator( Navigator navigator ) {
+        this.navigator = navigator;
+    }
+
+    /**
      * Our main thread that scans for obstacles on the left while moving
      */
     public void run() {
         while ( true ) {
             ArrayList<SensorReading> sensorReadings = new ArrayList<>();
             while ( running ) {
-                if ( leftSensor.getFilteredSensorDataAvoidance() < ThresholdConstants.OBSTACLE_TRACKING ) {
+                if ( leftSensor.getFilteredLeftSensorData() < ThresholdConstants.OBSTACLE_TRACKING ) {
                     int numberTimesAboveThreshold = 0;
                     double startTime = System.currentTimeMillis();
-                    while ( !hasTimedOut( startTime ) ) {
-                        float distance = leftSensor.getFilteredSensorDataAvoidance();
+                    while ( !detectionTimedOut( startTime ) ) {
+                        float distance = leftSensor.getFilteredLeftSensorData();
                         if ( distance > ThresholdConstants.OBSTACLE_TRACKING ) {
                             numberTimesAboveThreshold ++;
                         }
@@ -82,14 +92,97 @@ public class ObstacleAvoider extends Thread {
     }
 
     /**
+     * A method to scan a square for obstacles and returns whether there is an obstacle or not
+     *
+     * @param square
+     * @return whether there is an obstacle
+     */
+    public boolean scanSquare( Square square ) {
+        double x = square.getCenterCoordinate()[0];
+        double y = square.getCenterCoordinate()[1];
+        navigator.turnTo( navigator.calculateMinAngle( x, y ) );
+        if ( scanSlightLeft() ) {
+            updateMapping( square );
+            return true;
+        }
+        if ( scanSlightRight() ) {
+            updateMapping( square );
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * A method to scan slightly left for obstacles
+     *
+     * @return
+     */
+    public boolean scanSlightLeft() {
+        double startTime = System.currentTimeMillis();
+        // rotate left
+        while ( !scanTimedOut( startTime ) ) {
+            navigator.rotateCounterClockwise();
+            float distance = frontSensor.getFilteredFrontSensorData();
+            if ( distance < 1.5 * FieldConstants.SQUARE_LENGTH ) {
+                return true;
+            }
+        }
+        navigator.stop();
+        // rotate back
+        startTime = System.currentTimeMillis();
+        while ( !scanTimedOut( startTime ) ) {
+            navigator.rotateClockwise();
+        }
+        navigator.stop();
+        return false;
+    }
+
+    /**
+     * A method to scan slightly right for obstacles
+     *
+     * @return
+     */
+    public boolean scanSlightRight() {
+        double startTime = System.currentTimeMillis();
+        // rotate left
+        while ( !scanTimedOut( startTime ) ) {
+            navigator.rotateClockwise();
+            float distance = frontSensor.getFilteredFrontSensorData();
+            if ( distance < 1.5 * FieldConstants.SQUARE_LENGTH ) {
+                return true;
+            }
+        }
+        navigator.stop();
+        // rotate back
+        startTime = System.currentTimeMillis();
+        while ( !scanTimedOut( startTime ) ) {
+            navigator.rotateCounterClockwise();
+        }
+        navigator.stop();
+        return false;
+    }
+
+
+    /**
      * A method to determine if our obstacle detection has timed out or not
      *
      * @param startTime
      * @return whether the detection has timed out
      */
-    public boolean hasTimedOut( double startTime ) {
+    public boolean detectionTimedOut(double startTime ) {
         double currentTime = System.currentTimeMillis();
         return currentTime - startTime < TimeConstants.OBSTACLE_DETECTION_TIME ? false : true;
+    }
+
+    /**
+     * A method to determine if obstacle scan has timed out or not
+     *
+     * @param startTime
+     * @return whether thescan has timed out
+     */
+    public boolean scanTimedOut( double startTime ) {
+        double currentTime = System.currentTimeMillis();
+        return currentTime - startTime < TimeConstants.OBSTACLE_SCAN_TIME ? false : true;
     }
 
     /**
@@ -148,7 +241,17 @@ public class ObstacleAvoider extends Thread {
         return sum / sensorReadings.size();
     }
 
-
+    /**
+     * A method to update our mapping when an obstacle is detected
+     *
+     * @param square
+     */
+    public void updateMapping( Square square ) {
+        int x = square.getSquarePosition()[0];
+        int y = square.getSquarePosition()[1];
+        odometer.getFieldMapper().getMapping()[x][y].setAllowed( false );
+        odometer.getFieldMapper().getMapping()[x][y].setObstacle( true );
+    }
 
     /**
      * A method to update our mapping when an obstacle is detected

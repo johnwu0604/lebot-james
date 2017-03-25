@@ -39,21 +39,21 @@ public class UltrasonicSensor extends Thread {
     }
 
     /**
-     * A method which filters our data for the distance in terms of localization (distance to track)
+     * A method which filters our data for the front sensor (distance to track)
      *
      * @return filtered distance data
      */
-    public float getFilteredSensorDataLocalization() {
+    public float getFilteredFrontSensorData() {
         float distance = data[0]*100 + RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE;
         return distance > ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE ? ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE : distance;
     }
 
     /**
-     * A method which filters our data for the distance in terms of obstacle avoidance
+     * A method which filters our data for the left sensor (distance to sensor)
      *
      * @return filtered distance data
      */
-    public float getFilteredSensorDataAvoidance() {
+    public float getFilteredLeftSensorData() {
         float distance = data[0]*100;
         return distance > ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE ? ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE : distance;
     }

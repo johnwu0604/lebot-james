@@ -20,6 +20,7 @@ public class Navigator {
     private Odometer odometer;
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
     private OdometerCorrection odometerCorrection;
+    private ObstacleAvoider obstacleAvoider;
 
     /**
      * Default constructor for Navigator object.
@@ -28,10 +29,13 @@ public class Navigator {
      * @param rightMotor the right motor EV3 object used in the robot
      * @param odometer the odometer controller used in the robot
      */
-    public Navigator( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor , Odometer odometer ) {
+    public Navigator( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Odometer odometer,
+                      ObstacleAvoider obstacleAvoider ) {
         this.odometer = odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
+        this.obstacleAvoider = obstacleAvoider;
+        obstacleAvoider.setNavigator( this );
     }
 
     /**
@@ -382,6 +386,26 @@ public class Navigator {
         rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
         leftMotor.backward();
         rightMotor.backward();
+    }
+
+    /**
+     * A method to rotate our vehicle counter-clockwise
+     */
+    public void rotateCounterClockwise() {
+        leftMotor.setSpeed( -NavigationConstants.VEHICLE_ROTATE_SPEED );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
+        leftMotor.backward();
+        rightMotor.forward();
+    }
+
+    /**
+     * A method to rotate our vehicle clockwise
+     */
+    public void rotateClockwise() {
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
+        rightMotor.setSpeed( -NavigationConstants.VEHICLE_ROTATE_SPEED );
+        leftMotor.backward();
+        rightMotor.forward();
     }
 
     /**

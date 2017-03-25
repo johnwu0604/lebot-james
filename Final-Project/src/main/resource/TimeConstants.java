@@ -37,5 +37,10 @@ public class TimeConstants {
      */
     public static final double OBSTACLE_DETECTION_TIME = 500;
 
+    /**
+     * The time to scan for obstacles
+     */
+    public static final double OBSTACLE_SCAN_TIME = 1000;
+
 
 }

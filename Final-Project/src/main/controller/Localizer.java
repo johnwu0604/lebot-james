@@ -1,6 +1,5 @@
 package main.controller;
 
-import lejos.robotics.SampleProvider;
 import main.object.UltrasonicSensor;
 import main.resource.ThresholdConstants;
 import main.resource.FieldConstants;
@@ -95,9 +94,9 @@ public class Localizer extends Thread {
     public ArrayList<SensorReading> rotateAndRecordSensorReadings() {
         ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
         navigator.rotateCounterClockwiseLocalization();
-        while ( ultrasonicSensor.getFilteredSensorDataLocalization() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
+        while ( ultrasonicSensor.getFilteredFrontSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
             SensorReading sensorReading = new SensorReading();
-            sensorReading.setDistance( ultrasonicSensor.getFilteredSensorDataLocalization() );
+            sensorReading.setDistance( ultrasonicSensor.getFilteredFrontSensorData() );
             sensorReading.setTheta( odometer.getTheta() );
             sensorReadings.add( sensorReading );
             try { Thread.sleep( TimeConstants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){ }
@@ -110,10 +109,10 @@ public class Localizer extends Thread {
      * A method to rotate robot until first detection of left wall
      */
     private void rotateToLeftWall() {
-        while ( ultrasonicSensor.getFilteredSensorDataLocalization() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
+        while ( ultrasonicSensor.getFilteredFrontSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
             navigator.rotateCounterClockwiseLocalizationFast();
         }
-        while ( ultrasonicSensor.getFilteredSensorDataLocalization() > ThresholdConstants.LOCALIZATION_WALL_DISTANCE + 5*ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
+        while ( ultrasonicSensor.getFilteredFrontSensorData() > ThresholdConstants.LOCALIZATION_WALL_DISTANCE + 5*ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
             navigator.rotateCounterClockwiseLocalizationFast();
         }
         navigator.stopMotors();
