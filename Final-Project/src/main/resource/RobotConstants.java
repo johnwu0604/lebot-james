@@ -27,4 +27,9 @@ public class RobotConstants {
      */
     public static final float FRONT_US_SENSOR_TO_TRACK_DISTANCE = 11;
 
+    /**
+     * Distance from left sensor to center of robot
+     */
+    public static final float LEFT_US_SENSOR_TO_ROBOT_DISTANCE = 11;
+
 }

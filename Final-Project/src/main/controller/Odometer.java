@@ -307,52 +307,6 @@ public class Odometer extends Thread {
     }
 
     /**
-     * A method to return the square to our left
-     *
-     * @return square or null if there is no square
-     */
-    public Square getLeftSquare() {
-
-        String currentDirection = getCurrentDirection();
-        int currentX = currentSquare.getSquarePosition()[0];
-        int currentY = currentSquare.getSquarePosition()[1];
-
-        if ( currentDirection.equals( "north" ) ) {
-            if ( currentSquare.getSquarePosition()[0] == 0 ) {
-                return null;
-            } else {
-                return fieldMapper.getMapping()[currentX-1][currentY];
-            }
-        }
-
-        if ( currentDirection.equals( "south" ) ) {
-            if ( currentSquare.getSquarePosition()[0] == 11 ) {
-                return null;
-            } else {
-                return fieldMapper.getMapping()[currentX+1][currentY];
-            }
-        }
-
-        if ( currentDirection.equals( "east" ) ) {
-            if ( currentSquare.getSquarePosition()[1] == 11 ) {
-                return null;
-            } else {
-                return fieldMapper.getMapping()[currentX][currentY+1];
-            }
-        }
-
-        if ( currentDirection.equals( "west" ) ) {
-            if ( currentSquare.getSquarePosition()[1] == 0 ) {
-                return null;
-            } else {
-                return fieldMapper.getMapping()[currentX][currentY-1];
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * A method to determine the current direction that our vehicle is heading towards
      *
      * @return north, south, east, west, or error

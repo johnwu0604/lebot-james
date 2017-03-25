@@ -1,7 +1,5 @@
 package main.controller;
 
-import lejos.hardware.Sound;
-import lejos.robotics.SampleProvider;
 import main.object.LightSensor;
 import main.resource.RobotConstants;
 import main.resource.TimeConstants;

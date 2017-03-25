@@ -17,7 +17,6 @@ public class UltrasonicSensor extends Thread {
 
     // variables
     private float[] data;
-    private boolean running = true;
 
     /**
      * Our main constructor method
@@ -34,28 +33,30 @@ public class UltrasonicSensor extends Thread {
      */
     public void run() {
         while ( true ) {
-            if ( running ) {
-                sensor.fetchSample( data, 0 );
-                try { Thread.sleep( TimeConstants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){}
-            }
+            sensor.fetchSample( data, 0 );
+            try { Thread.sleep( TimeConstants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){}
         }
     }
 
     /**
-     * A method that stops our thread
-     */
-    public void stopRunning() {
-        running = false;
-    }
-
-    /**
-     * A method which filters our data for the distance
+     * A method which filters our data for the distance in terms of localization (distance to track)
      *
      * @return filtered distance data
      */
-    public float getFilteredSensorData() {
+    public float getFilteredSensorDataLocalization() {
         float distance = data[0]*100 + RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE;
         return distance > ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE ? ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE : distance;
     }
+
+    /**
+     * A method which filters our data for the distance in terms of obstacle avoidance
+     *
+     * @return filtered distance data
+     */
+    public float getFilteredSensorDataAvoidance() {
+        float distance = data[0]*100 + RobotConstants.LEFT_US_SENSOR_TO_ROBOT_DISTANCE;
+        return distance > ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE ? ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE : distance;
+    }
+
 
 }
