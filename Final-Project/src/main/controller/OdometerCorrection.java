@@ -65,7 +65,7 @@ public class OdometerCorrection extends Thread {
     /**
      * A method to correct our odometer values
      */
-    public void correctOdometerValues() {
+    public void correctOdometerValues() throws Exception {
         double correctedTheta = calculateCorrectionTheta();
         int currentSquareX = odometer.getCurrentSquare().getSquarePosition()[0];
         int currentSquareY = odometer.getCurrentSquare().getSquarePosition()[1];
@@ -118,22 +118,20 @@ public class OdometerCorrection extends Thread {
      * @return the correct theta value
      */
     public double calculateCorrectionTheta() {
-        if ( odometer.getTheta() >= 7*Math.PI/4 && odometer.getTheta() < 2*Math.PI ) {
+        String currentDirection = odometer.getCurrentDirection();
+        if ( currentDirection.equals( "north" )) {
             return 0.0;
         }
-        if ( odometer.getTheta() >= 0 && odometer.getTheta() < Math.PI/4 ) {
-            return 0.0;
-        }
-        if ( odometer.getTheta() >= Math.PI/4 && odometer.getTheta() < 3*Math.PI/4 ) {
+        if ( currentDirection.equals( "east" ) ) {
             return Math.PI/2;
         }
-        if ( odometer.getTheta() >= 3*Math.PI/4 && odometer.getTheta() < 5*Math.PI/4 ) {
+        if ( currentDirection.equals( "south" ) ) {
             return Math.PI;
         }
-        if ( odometer.getTheta() >= 5*Math.PI/4 && odometer.getTheta() < 7*Math.PI/4 ) {
+        if ( currentDirection.equals( "west" ) ) {
             return 3*Math.PI/2;
         }
-        return 0.0;
+        return 0.0; // should never happen
     }
 
     /**
@@ -172,28 +170,33 @@ public class OdometerCorrection extends Thread {
      * A method to do our odometry correction
      */
     public void doCorrection() {
-        boolean wentIntoTimedOutMethod = false;
-        double startTime = System.currentTimeMillis();
-        while ( !isLineDetectedLeft() && !hasTimedOut( startTime ) ) {
-            navigator.stopRightMotor();
-            correctingLeft = true;
+        try {
+            boolean wentIntoTimedOutMethod = false;
+            double startTime = System.currentTimeMillis();
+            while ( !isLineDetectedLeft() && !hasTimedOut( startTime ) ) {
+                navigator.stopRightMotor();
+                correctingLeft = true;
+            }
+            while ( !isLineDetectedRight() && !hasTimedOut( startTime ) ) {
+                navigator.stopLeftMotor();
+                correctingRight = true;
+            }
+            if ( hasTimedOut ) {
+                wentIntoTimedOutMethod = true;
+                revertChangesFromTimeOut();
+            } else {
+                try { Thread.sleep( TimeConstants.LINE_DETECTION_HOLD_TIME); } catch( Exception e ){}
+            }
+            double thetaAfterTimeOut = odometer.getTheta();
+            navigator.driveForward();
+            correctOdometerValues();
+            if ( wentIntoTimedOutMethod ) {
+                odometer.setTheta( thetaAfterTimeOut );
+            }
+        } catch ( Exception e ) {
+            System.out.println( e );
         }
-        while ( !isLineDetectedRight() && !hasTimedOut( startTime ) ) {
-            navigator.stopLeftMotor();
-            correctingRight = true;
-        }
-        if ( hasTimedOut ) {
-            wentIntoTimedOutMethod = true;
-            revertChangesFromTimeOut();
-        } else {
-            try { Thread.sleep( TimeConstants.LINE_DETECTION_HOLD_TIME); } catch( Exception e ){}
-        }
-        double thetaAfterTimeOut = odometer.getTheta();
-        navigator.driveForward();
-        correctOdometerValues();
-        if ( wentIntoTimedOutMethod ) {
-            odometer.setTheta( thetaAfterTimeOut );
-        }
+
     }
 
     /**

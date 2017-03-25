@@ -8,6 +8,7 @@ import main.resource.TimeConstants;
 import main.util.FieldMapper;
 
 import java.util.ArrayList;
+import java.util.concurrent.Exchanger;
 
 /**
  * Odometer object used to keep track of vehicle position at all times.
@@ -303,5 +304,75 @@ public class Odometer extends Thread {
      */
     public void setCurrentSquare(Square currentSquare) {
         this.currentSquare = currentSquare;
+    }
+
+    /**
+     * A method to return the square to our left
+     *
+     * @return square or null if there is no square
+     */
+    public Square getLeftSquare() {
+
+        String currentDirection = getCurrentDirection();
+        int currentX = currentSquare.getSquarePosition()[0];
+        int currentY = currentSquare.getSquarePosition()[1];
+
+        if ( currentDirection.equals( "north" ) ) {
+            if ( currentSquare.getSquarePosition()[0] == 0 ) {
+                return null;
+            } else {
+                return fieldMapper.getMapping()[currentX-1][currentY];
+            }
+        }
+
+        if ( currentDirection.equals( "south" ) ) {
+            if ( currentSquare.getSquarePosition()[0] == 11 ) {
+                return null;
+            } else {
+                return fieldMapper.getMapping()[currentX+1][currentY];
+            }
+        }
+
+        if ( currentDirection.equals( "east" ) ) {
+            if ( currentSquare.getSquarePosition()[1] == 11 ) {
+                return null;
+            } else {
+                return fieldMapper.getMapping()[currentX][currentY+1];
+            }
+        }
+
+        if ( currentDirection.equals( "west" ) ) {
+            if ( currentSquare.getSquarePosition()[1] == 0 ) {
+                return null;
+            } else {
+                return fieldMapper.getMapping()[currentX][currentY-1];
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * A method to determine the current direction that our vehicle is heading towards
+     *
+     * @return north, south, east, west, or error
+     */
+    public String getCurrentDirection() {
+        if ( getTheta() >= 7*Math.PI/4 && getTheta() < 2*Math.PI ) {
+            return "north";
+        }
+        if ( getTheta() >= 0 && getTheta() < Math.PI/4 ) {
+            return "north";
+        }
+        if ( getTheta() >= Math.PI/4 && getTheta() < 3*Math.PI/4 ) {
+            return "east";
+        }
+        if ( getTheta() >= 3*Math.PI/4 && getTheta() < 5*Math.PI/4 ) {
+            return "south";
+        }
+        if ( getTheta() >= 5*Math.PI/4 && getTheta() < 7*Math.PI/4 ) {
+            return "west";
+        }
+        return "error"; // this should never happen
     }
 }
