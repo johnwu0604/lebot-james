@@ -3,6 +3,7 @@ package main.controller;
 import lejos.hardware.Sound;
 import main.Parameters;
 import main.object.Square;
+import main.resource.ShootingConstants;
 
 /**
  * Created by Durham Abric on 3/24/17.
@@ -24,15 +25,14 @@ public class BallRetriever {
 
         Square currentApproachSquare = approachDispenser();
         alignToDispenser(currentApproachSquare);
-        launcher.setLaunchMotorAcceleration(100);
-        launcher.rotateLaunchMotors(40);
+        launcher.setLaunchMotorAcceleration(2*ShootingConstants.BALL_LOWERING_ACCELERATION);
+        launcher.rotateLaunchMotors(ShootingConstants.BALL_RETRIEVAL_ANGLE);
         Sound.beep(); //Notify instructors we are ready to receive ball
 
         try { Thread.sleep( 5000 ); } catch( Exception e ){}
 
-        launcher.setLaunchMotorAcceleration(50);
-        launcher.setLaunchMotorSpeed(50);
-        launcher.rotateLaunchMotors(-40);
+        launcher.setLaunchMotorAcceleration(ShootingConstants.BALL_LOWERING_ACCELERATION);
+        launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
 
         navigator.travelToSquare(chooseApproach());
         odometerCorrection.startRunning();
@@ -104,20 +104,11 @@ public class BallRetriever {
 
     private Square chooseApproach(){
 
-        int currentX = navigator.getOdometer().getCurrentSquare().getSquarePosition()[0];
-        int currentY = navigator.getOdometer().getCurrentSquare().getSquarePosition()[1];
-
         Square approach1 = navigator.getOdometer().getFieldMapper().calculateBallDispenserApproach()[0];
         Square approach2 = navigator.getOdometer().getFieldMapper().calculateBallDispenserApproach()[1];
 
-        int approach1X = approach1.getSquarePosition()[0];
-        int approach1Y = approach1.getSquarePosition()[1];
-
-        int approach2X = approach2.getSquarePosition()[0];
-        int approach2Y = approach2.getSquarePosition()[1];
-
-        double dist1 = Math.hypot((currentX - approach1X), (currentY-approach1Y));
-        double dist2 = Math.hypot((currentX - approach2X), (currentY-approach2Y));
+        double dist1 = Math.hypot(navigator.getComponentDistances(approach1)[0], navigator.getComponentDistances(approach1)[1]);
+        double dist2 = Math.hypot(navigator.getComponentDistances(approach2)[0], navigator.getComponentDistances(approach2)[1]);
 
         if(dist1 >= dist2){
             return approach1;
