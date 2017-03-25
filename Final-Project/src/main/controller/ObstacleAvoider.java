@@ -1,7 +1,9 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import main.object.Square;
 import main.object.UltrasonicSensor;
+import main.resource.RobotConstants;
 import main.resource.ThresholdConstants;
 import main.resource.TimeConstants;
 
@@ -19,7 +21,7 @@ public class ObstacleAvoider extends Thread {
     private Odometer odometer;
 
     // variables
-    private volatile boolean running;
+    private volatile boolean running = true;
 
     /**
      * Main constructor class for our obstacle avoider
@@ -42,14 +44,22 @@ public class ObstacleAvoider extends Thread {
             ArrayList<SensorReading> sensorReadings = new ArrayList<>();
             while ( running ) {
                 if ( leftSensor.getFilteredSensorDataAvoidance() < ThresholdConstants.OBSTACLE_TRACKING ) {
+                    int numberTimesAboveThreshold = 0;
                     double startTime = System.currentTimeMillis();
                     while ( !hasTimedOut( startTime ) ) {
-                        SensorReading currentReading = new SensorReading( odometer.getX(),
-                                odometer.getY(), odometer.getTheta(), leftSensor.getFilteredSensorDataAvoidance() );
+                        float distance = leftSensor.getFilteredSensorDataAvoidance();
+                        if ( distance > ThresholdConstants.OBSTACLE_TRACKING ) {
+                            numberTimesAboveThreshold ++;
+                        }
+                        double[] sensorCoordinate = calculateLeftSensorCoordinate( odometer.getX(), odometer.getY() );
+                        SensorReading currentReading = new SensorReading( sensorCoordinate[0],
+                                sensorCoordinate[1], odometer.getTheta(), distance );
                         sensorReadings.add( currentReading );
                     }
-                    if ( calculateAverageDistance( sensorReadings ) < ThresholdConstants.OBSTACLE_TRACKING ) {
-                        updateMapping( sensorReadings );
+                    if ( numberTimesAboveThreshold < sensorReadings.size()*0.2 ) {
+                        if ( calculateAverageDistance( sensorReadings ) < ThresholdConstants.OBSTACLE_TRACKING ) {
+                            updateMapping( sensorReadings );
+                        }
                     }
                     sensorReadings.clear();
                 }
@@ -181,7 +191,7 @@ public class ObstacleAvoider extends Thread {
         int x = square.getSquarePosition()[0];
         int y = square.getSquarePosition()[1];
         odometer.getFieldMapper().getMapping()[x][y].setObstacle( true );
-        odometer.getFieldMapper().getMapping()[x][y].setAllowed( true );
+        odometer.getFieldMapper().getMapping()[x][y].setAllowed( false );
     }
 
     /**
@@ -202,6 +212,35 @@ public class ObstacleAvoider extends Thread {
         coordinates[0] = x + distance * ( Math.sin( thetaOfSensor ) );
         coordinates[1] = y + distance * ( Math.cos( thetaOfSensor ) );
         return coordinates;
+    }
+
+    /**
+     * Calculate the actual coordinate of the sensor
+     *
+     * @param odometerX
+     * @param odometerY
+     * @return
+     */
+    public double[] calculateLeftSensorCoordinate( double odometerX, double odometerY ) {
+        String direction = odometer.getCurrentDirection();
+        double[] coordinate = new double[2];
+        if ( direction.equals( "north" ) ) {
+            coordinate[0] = odometerX - RobotConstants.LEFT_US_SENSOR_TO_ROBOT_DISTANCE_HORIZONTAL;
+            coordinate[1] = odometerY + RobotConstants.LEFT_US_SENSOR_TO_ROBOT_DISTANCE_VERTICAL;
+        }
+        if ( direction.equals( "south" ) ) {
+            coordinate[0] = odometerX + RobotConstants.LEFT_US_SENSOR_TO_ROBOT_DISTANCE_HORIZONTAL;
+            coordinate[1] = odometerY - RobotConstants.LEFT_US_SENSOR_TO_ROBOT_DISTANCE_VERTICAL;
+        }
+        if ( direction.equals( "east" ) ) {
+            coordinate[0] = odometerX + RobotConstants.LEFT_US_SENSOR_TO_ROBOT_DISTANCE_VERTICAL;
+            coordinate[1] = odometerY + RobotConstants.LEFT_US_SENSOR_TO_ROBOT_DISTANCE_HORIZONTAL;
+        }
+        if ( direction.equals( "west" ) ) {
+            coordinate[0] = odometerX - RobotConstants.LEFT_US_SENSOR_TO_ROBOT_DISTANCE_VERTICAL;
+            coordinate[1] = odometerY - RobotConstants.LEFT_US_SENSOR_TO_ROBOT_DISTANCE_HORIZONTAL;
+        }
+        return coordinate;
     }
 
 

@@ -32,9 +32,9 @@ public class Localizer extends Thread {
      * @param ultrasonicSensor front facing ultrasonic sensor object used in the robot
      * @param navigator navigator controller used in the robot
      */
-    public Localizer( Odometer odometer, SampleProvider ultrasonicSensor, Navigator navigator, int corner ) {
+    public Localizer( Odometer odometer, UltrasonicSensor ultrasonicSensor, Navigator navigator, int corner ) {
         this.odometer = odometer;
-        this.ultrasonicSensor = new UltrasonicSensor( ultrasonicSensor );
+        this.ultrasonicSensor = ultrasonicSensor;
         this.navigator = navigator;
         this.corner = corner;
     }
@@ -45,7 +45,6 @@ public class Localizer extends Thread {
     public void run() {
 
         try {
-            ultrasonicSensor.start();
 
             int firstMinIndex = -1;
             int secondMinIndex = -2;

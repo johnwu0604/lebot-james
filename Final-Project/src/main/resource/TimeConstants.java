@@ -35,7 +35,7 @@ public class TimeConstants {
     /**
      * The max time to detect an obstacle
      */
-    public static final double OBSTACLE_DETECTION_TIME = 1000;
+    public static final double OBSTACLE_DETECTION_TIME = 500;
 
 
 }

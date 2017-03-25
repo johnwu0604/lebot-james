@@ -1,5 +1,6 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.Square;
 import main.resource.ThresholdConstants;
@@ -18,6 +19,10 @@ public class Navigator {
     private Odometer odometer;
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
     private OdometerCorrection odometerCorrection;
+    private ObstacleAvoider obstacleAvoider;
+
+    //temporary variable for testing
+    private boolean detectedObstacle = false;
 
     /**
      * Default constructor for Navigator object.
@@ -26,10 +31,11 @@ public class Navigator {
      * @param rightMotor the right motor EV3 object used in the robot
      * @param odometer the odometer controller used in the robot
      */
-    public Navigator( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor , Odometer odometer ) {
+    public Navigator( EV3LargeRegulatedMotor leftMotor , EV3LargeRegulatedMotor rightMotor , Odometer odometer, ObstacleAvoider obstacleAvoider ) {
         this.odometer = odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
+        this.obstacleAvoider = obstacleAvoider;
     }
 
     /**
@@ -46,13 +52,20 @@ public class Navigator {
 
             if(Math.abs(deltaX) > Math.abs(deltaY)){
                 moveSquareX(deltaX);
+                if ( detectedObstacle ) {
+                    break;
+                }
                 deltaX = square.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[0];
             }else{
                 moveSquareY(deltaY);
+                if ( detectedObstacle ) {
+                    break;
+                }
                 deltaY = square.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
             }
 
         }
+        detectedObstacle = false;
     }
 
     /**
@@ -149,10 +162,12 @@ public class Navigator {
         int xDestination = currentX;
         xDestination += direction > 0 ? 1 : -1;
 
-       // if( isSquareAllowed( xDestination, currentY ) ){
+        if( isSquareAllowed( xDestination, currentY ) ){
             double xCoordinate = odometer.getFieldMapper().getMapping()[xDestination][currentY].getCenterCoordinate()[0];
             travelToX(xCoordinate);
-        //}
+        } else {
+            detectedObstacle = true;
+        }
 
     }
 
@@ -169,10 +184,12 @@ public class Navigator {
         int yDestination = currentY;
         yDestination += direction > 0 ? 1 : -1;
 
-        //if( isSquareAllowed( currentX, yDestination ) ){
+        if( isSquareAllowed( currentX, yDestination ) ){
             double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDestination].getCenterCoordinate()[1];
             travelToY(yCoorindate);
-       // }
+        } else {
+            detectedObstacle = true;
+        }
 
     }
 
@@ -194,6 +211,7 @@ public class Navigator {
      */
     public void turnTo( double theta ) {
         odometerCorrection.stopRunning();
+        obstacleAvoider.stopRunning();
         leftMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         rightMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         if( theta < 0 ) { // if angle is negative, turn to the left
@@ -205,6 +223,7 @@ public class Navigator {
             rightMotor.rotate( -convertAngle( (theta*180)/Math.PI ) , false);
         }
         odometerCorrection.startRunning();
+        obstacleAvoider.startRunning();
     }
 
     /**

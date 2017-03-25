@@ -1,6 +1,7 @@
 package main.controller;
 
 import lejos.robotics.SampleProvider;
+import main.object.UltrasonicSensor;
 import main.resource.FieldConstants;
 import main.resource.RobotConstants;
 import org.junit.Assert;
@@ -20,7 +21,7 @@ public class LocalizerTest {
     private Odometer odometer;
 
     @Mock
-    private SampleProvider ultrasonicSensor;
+    private UltrasonicSensor ultrasonicSensor;
 
     @Mock
     private Navigator navigator;

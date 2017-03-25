@@ -10,7 +10,7 @@ public class ThresholdConstants {
     /**
      * Value in localization that determines a wall has been detected
      */
-    public static final double LOCALIZATION_WALL_DISTANCE = 55;
+    public static final double LOCALIZATION_WALL_DISTANCE = 100;
 
     /**
      * Value in localization for the noise margin

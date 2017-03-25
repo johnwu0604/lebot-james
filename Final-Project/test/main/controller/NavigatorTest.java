@@ -25,6 +25,9 @@ public class NavigatorTest {
     private EV3LargeRegulatedMotor rightMotor;
 
     @Mock
+    private ObstacleAvoider obstacleAvoider;
+
+    @Mock
     private Odometer odometer;
 
     Navigator navigator;
@@ -32,7 +35,7 @@ public class NavigatorTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        navigator = new Navigator( leftMotor, rightMotor, odometer );
+        navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider );
     }
 
     @Test

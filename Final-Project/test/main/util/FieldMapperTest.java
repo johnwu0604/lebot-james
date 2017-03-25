@@ -165,25 +165,5 @@ public class FieldMapperTest {
         Assert.assertEquals( -1 * FieldConstants.SQUARE_LENGTH, westLine, 0 );
     }
 
-    @Test
-    public void calculateBallDispenserApproach() {
-        Square[] expectedBallDispenserApproach = new Square[4];
-        expectedBallDispenserApproach[0] = fieldMapper.getMapping()[1][4];
-        expectedBallDispenserApproach[1] = fieldMapper.getMapping()[1][5];
-        expectedBallDispenserApproach[2] = fieldMapper.getMapping()[2][4];
-        expectedBallDispenserApproach[3] = fieldMapper.getMapping()[2][5];
-        // when
-        Square[] actualBallDispenserApproach = fieldMapper.getBallDispenserApproach();
-        // then
-        Assert.assertEquals( expectedBallDispenserApproach.length, actualBallDispenserApproach.length );
-        for ( int i = 0; i < expectedBallDispenserApproach.length; i++ ) {
-            Assert.assertTrue( expectedBallDispenserApproach[i].equals( actualBallDispenserApproach[i] ) );
-        }
-
-    }
-
-
-
-
 
 }

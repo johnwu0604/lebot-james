@@ -1,5 +1,6 @@
 package main;
 
+import lejos.hardware.Button;
 import lejos.hardware.Sound;
 import lejos.hardware.sensor.EV3ColorSensor;
 import lejos.hardware.sensor.EV3UltrasonicSensor;
@@ -10,6 +11,7 @@ import lejos.hardware.lcd.TextLCD;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.LightSensor;
 import main.object.OdometerDisplay;
+import main.object.UltrasonicSensor;
 import main.util.EmergencyStopper;
 import main.util.FieldMapper;
 import main.wifi.WifiConnection;
@@ -29,6 +31,7 @@ public class FinalProject {
     private static final EV3LargeRegulatedMotor leftLaunchMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "C" ));
     private static final EV3LargeRegulatedMotor rightLaunchMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "B" ));
     private static final SampleProvider forwardUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S1" ) ) ).getMode("Distance");
+    private static final SampleProvider leftUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S4" ) ) ).getMode("Distance");
     private static final SampleProvider leftColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S2") ) ).getMode("Red");
     private static final SampleProvider rightColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S3") ) ).getMode("Red");
 
@@ -46,85 +49,96 @@ public class FinalProject {
         /**
          * Uncomment for wifi code
          */
-        EmergencyStopper emergencyStopper = new EmergencyStopper();
-        emergencyStopper.start();
-
-        retrieveStartingParameters();
-
-        // notify profs we have received parameters
-        Sound.beepSequenceUp();
-
-        if ( parameters.getForwardTeam() == 11 ) {
-            // instantiate objects
-            LightSensor leftLightSensor = new LightSensor( leftColorSensor );
-            LightSensor rightLightSensor = new LightSensor( rightColorSensor );
-            FieldMapper fieldMapper = new FieldMapper(parameters);
-            Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
-            Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
-            OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
-            OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
-            Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometerCorrection );
-            Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, parameters.getForwardCorner() );
-            // start odometry threads
-            odometer.start();
-            odometerDisplay.start();
-            // run localization
-            localizer.run();
-            // notify profs localization has completed
-            Sound.beepSequenceUp();
-            // start odometry correction
-            odometerCorrection.start();
-
-            try { Thread.sleep( 1000 ); } catch( Exception e ){}
-
-            doBetaDemo( navigator, launcher ); //code to travel to shooting position and fire ball
-
-            navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
-        }
+//        EmergencyStopper emergencyStopper = new EmergencyStopper();
+//        emergencyStopper.start();
+//
+//        retrieveStartingParameters();
+//
+//        // notify profs we have received parameters
+//        Sound.beepSequenceUp();
+//
+//        if ( parameters.getForwardTeam() == 11 ) {
+//            // instantiate objects
+//            LightSensor leftLightSensor = new LightSensor( leftColorSensor );
+//            LightSensor rightLightSensor = new LightSensor( rightColorSensor );
+//            FieldMapper fieldMapper = new FieldMapper(parameters);
+//            Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
+//            Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
+//            OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
+//            OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
+//            Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometerCorrection );
+//            Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, parameters.getForwardCorner() );
+//            // start odometry threads
+//            odometer.start();
+//            odometerDisplay.start();
+//            // run localization
+//            localizer.run();
+//            // notify profs localization has completed
+//            Sound.beepSequenceUp();
+//            // start odometry correction
+//            odometerCorrection.start();
+//
+//            try { Thread.sleep( 1000 ); } catch( Exception e ){}
+//
+//            doBetaDemo( navigator, launcher ); //code to travel to shooting position and fire ball
+//
+//            navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
+//        }
 
         /**
          * Uncomment for non-wifi code
          */
-//        EmergencyStopper emergencyStopper = new EmergencyStopper();
-//        emergencyStopper.start();
-//
-//        int[] defenderZone = {4,4};
-//        int[] ballDispenserPosition  = {-1,4};
-//        Parameters parameters = new Parameters();
-//        parameters.setForwardCorner(1);
-//        parameters.setForwardLine(7);
-//        parameters.setForwardTeam(11);
-//        parameters.setDefenderZone(defenderZone);
-//        parameters.setBallDispenserPosition(ballDispenserPosition);
-//        parameters.setBallDispenserOrientation("N");
-//
-//        // instantiate objects
-//        LightSensor leftLightSensor = new LightSensor( leftColorSensor );
-//        LightSensor rightLightSensor = new LightSensor( rightColorSensor );
-//        FieldMapper fieldMapper = new FieldMapper(parameters);
-//        Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
-//        Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
-//        OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
-//        OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
-//        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometerCorrection );
-//        Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, 1 );
-//        // start odometry threads
-//        odometer.start();
-//        odometerDisplay.start();
-//        // run localization
-//        localizer.run();
-//        // notify profs localization has completed
-//        Sound.beepSequenceUp();
-//        // start odometry correction
-//        odometerCorrection.start();
-//
-//        try { Thread.sleep( 1000 ); } catch( Exception e ){}
-//
-//        doBetaDemo( navigator, launcher ); //code to travel to shooting position and fire ball
-//
-//        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
+        EmergencyStopper emergencyStopper = new EmergencyStopper();
+        emergencyStopper.start();
 
-        //int buttonChoice = Button.waitForAnyPress();
+        int[] defenderZone = {4,4};
+        int[] ballDispenserPosition  = {-1,4};
+        Parameters parameters = new Parameters();
+        parameters.setForwardCorner(1);
+        parameters.setForwardLine(7);
+        parameters.setForwardTeam(11);
+        parameters.setDefenderZone(defenderZone);
+        parameters.setBallDispenserPosition(ballDispenserPosition);
+        parameters.setBallDispenserOrientation("N");
+
+        // instantiate objects
+        LightSensor leftLightSensor = new LightSensor( leftColorSensor );
+        LightSensor rightLightSensor = new LightSensor( rightColorSensor );
+        UltrasonicSensor forwardUSSensor = new UltrasonicSensor( forwardUltrasonicSensor );
+        UltrasonicSensor leftUSSensor = new UltrasonicSensor( leftUltrasonicSensor );
+        FieldMapper fieldMapper = new FieldMapper(parameters);
+        Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
+        ObstacleAvoider obstacleAvoider = new ObstacleAvoider( leftUSSensor, forwardUSSensor, odometer );
+        Navigator navigator = new Navigator(leftMotor,rightMotor,odometer,obstacleAvoider);
+        OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
+        OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
+        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometerCorrection );
+        Localizer localizer = new Localizer( odometer, forwardUSSensor, navigator, 1 );
+        // start odometry threads
+        odometer.start();
+        odometerDisplay.start();
+        // start sensor threads
+        forwardUSSensor.start();
+        // run localization
+        localizer.run();
+
+        // start odometry correction
+        odometerCorrection.start();
+
+        try { Thread.sleep( 1000 ); } catch( Exception e ){}
+
+        leftUSSensor.start();
+        obstacleAvoider.start();
+
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][0]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][1]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[2][1]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][2]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][2]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][1]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
+
+        int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
     }
 
