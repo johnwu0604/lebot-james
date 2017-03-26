@@ -75,6 +75,7 @@ public class Localizer extends Thread {
             odometer.setTheta( calculateStartingTheta() );
             setStartingSquare();
             moveToCenterOfSquare();
+            odometer.addPastSquare( odometer.getCurrentSquare() );
 
         } catch ( Exception e ) {
             try {

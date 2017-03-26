@@ -177,7 +177,7 @@ public class Odometer extends Thread {
     }
 
     public Square getLastSquare(){
-        return this.pastSquares.get(this.pastSquares.size());
+        return pastSquares.get( pastSquares.size() - 1 );
     }
 
     public void addPastSquare(Square lastSquare){
@@ -298,19 +298,35 @@ public class Odometer extends Thread {
     }
 
     public Square getEastSquare(){
-        return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0] + 1][getCurrentSquare().getSquarePosition()[1]];
+        if ( getCurrentSquare().getSquarePosition()[0] != 11 ) {
+            return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0] + 1][getCurrentSquare().getSquarePosition()[1]];
+        } else {
+            return null; // wall
+        }
     }
 
     public Square getWestSquare(){
-        return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0] - 1][getCurrentSquare().getSquarePosition()[1]];
+        if ( getCurrentSquare().getSquarePosition()[0] != 0 ) {
+            return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0] - 1][getCurrentSquare().getSquarePosition()[1]];
+        } else {
+            return null; // wall
+        }
     }
 
     public Square getNorthSquare(){
-        return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0]][getCurrentSquare().getSquarePosition()[1]+1];
+        if ( getCurrentSquare().getSquarePosition()[1] != 11 ) {
+            return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0]][getCurrentSquare().getSquarePosition()[1]+1];
+        } else {
+            return null; // wall
+        }
     }
 
     public Square getSouthSquare(){
-        return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0]][getCurrentSquare().getSquarePosition()[1]-1];
+        if ( getCurrentSquare().getSquarePosition()[1] != 0 ) {
+            return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0]][getCurrentSquare().getSquarePosition()[1]-1];
+        } else {
+            return null; // wall
+        }
     }
 
     /**

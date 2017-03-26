@@ -1,6 +1,5 @@
 package main.controller;
 
-import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.Square;
 import main.resource.ThresholdConstants;
@@ -84,7 +83,7 @@ public class Navigator {
 
         Stack<Square> possibleMoves = new Stack<>();
 
-        possibleMoves.push(odometer.getLastSquare());
+        possibleMoves.push( odometer.getLastSquare() );
 
         Square topPriority;
         Square secondPriority;
@@ -99,13 +98,14 @@ public class Navigator {
         int deltaY = getComponentDistances(destination)[1]; // in square values
 
         // greater distance to travel in x
-        if ( Math.abs( deltaX ) > Math.abs( deltaY ) ){
+        if ( Math.abs( deltaX ) > Math.abs( deltaY ) ) {
             topPriority = deltaX > 0 ? eastSquare : westSquare;
             secondPriority = deltaY > 0 ? northSquare : southSquare;
         } else { // greater distance to travel in y
             topPriority = deltaY > 0 ? northSquare : southSquare;
             secondPriority = deltaX > 0 ? eastSquare : westSquare;
         }
+
 
         // set last square remaining as third priority
         if (northSquare != topPriority && northSquare != secondPriority && northSquare != odometer.getLastSquare()){
@@ -118,7 +118,10 @@ public class Navigator {
             thirdPriority = westSquare;
         }
 
-        possibleMoves.push(thirdPriority);
+        // third priority might be a wall (null)
+        if ( thirdPriority != null ) {
+            possibleMoves.push(thirdPriority);
+        }
         possibleMoves.push(secondPriority);
         possibleMoves.push(topPriority);
 
@@ -221,15 +224,16 @@ public class Navigator {
         int xDestination = currentX;
         xDestination += direction > 0 ? 1 : -1;
 
-        scanSquare(odometer.getFieldMapper().getMapping()[xDestination][currentY]);
+        Square destinationSquare = odometer.getFieldMapper().getMapping()[xDestination][currentY];
 
         if( isSquareAllowed( xDestination, currentY ) ){
-            double xCoordinate = odometer.getFieldMapper().getMapping()[xDestination][currentY].getCenterCoordinate()[0];
-            travelToX(xCoordinate);
-            return true;
-        } else {
-            return false;
+            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+                travelToX( destinationSquare.getCenterCoordinate()[0] );
+                return true;
+            }
         }
+
+        return false;
 
     }
 
@@ -247,16 +251,15 @@ public class Navigator {
         int yDestination = currentY;
         yDestination += direction > 0 ? 1 : -1;
 
-        scanSquare(odometer.getFieldMapper().getMapping()[currentX][yDestination]);
+        Square destinationSquare = odometer.getFieldMapper().getMapping()[currentX][yDestination];
 
         if( isSquareAllowed( currentX, yDestination ) ){
-            double yCoorindate = odometer.getFieldMapper().getMapping()[currentX][yDestination].getCenterCoordinate()[1];
-            travelToY(yCoorindate);
-            return true;
-        } else{
-            return false;
+            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+                travelToY( destinationSquare.getCenterCoordinate()[1] );
+                return true;
+            }
         }
-
+        return false;
     }
 
     /**
@@ -270,15 +273,6 @@ public class Navigator {
         return odometer.getFieldMapper().getMapping()[x][y].isAllowed();
     }
 
-
-    /**
-     * A method to determine if the square we want to move to contains an obstacle or not
-     *
-     * @param target
-     */
-    public void scanSquare(Square target){
-
-    }
 
     /**
      * A method to turn our vehicle to a certain angle in either direction
@@ -376,8 +370,8 @@ public class Navigator {
     public void rotateClockwise() {
         leftMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         rightMotor.setSpeed( -NavigationConstants.VEHICLE_ROTATE_SPEED );
-        leftMotor.backward();
-        rightMotor.forward();
+        leftMotor.forward();
+        rightMotor.backward();
     }
 
     /**

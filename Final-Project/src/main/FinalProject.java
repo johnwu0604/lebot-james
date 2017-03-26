@@ -130,13 +130,7 @@ public class FinalProject {
         leftUSSensor.start();
         obstacleAvoider.start();
 
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][0]);
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][1]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[2][1]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][2]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][2]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][1]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);

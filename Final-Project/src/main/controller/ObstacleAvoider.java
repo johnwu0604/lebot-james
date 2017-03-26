@@ -95,27 +95,27 @@ public class ObstacleAvoider extends Thread {
      * A method to scan a square for obstacles and returns whether there is an obstacle or not
      *
      * @param square
-     * @return whether there is an obstacle
+     * @return whether the move is available
      */
     public boolean scanSquare( Square square ) {
         double x = square.getCenterCoordinate()[0];
         double y = square.getCenterCoordinate()[1];
-        navigator.turnTo( navigator.calculateMinAngle( x, y ) );
+        navigator.turnTo( navigator.calculateMinAngle( x - odometer.getX(), y - odometer.getY() ) );
         if ( scanSlightLeft() ) {
             updateMapping( square );
-            return true;
+            return false;
         }
         if ( scanSlightRight() ) {
             updateMapping( square );
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
      * A method to scan slightly left for obstacles
      *
-     * @return
+     * @return whether there is an obstacle
      */
     public boolean scanSlightLeft() {
         double startTime = System.currentTimeMillis();
@@ -140,7 +140,7 @@ public class ObstacleAvoider extends Thread {
     /**
      * A method to scan slightly right for obstacles
      *
-     * @return
+     * @return whether there is an obstacle
      */
     public boolean scanSlightRight() {
         double startTime = System.currentTimeMillis();
