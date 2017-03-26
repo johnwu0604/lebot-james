@@ -46,8 +46,21 @@ public class Navigator {
      * @param square
      */
     public void travelToSquare( Square square ) {
-        while( square != odometer.getCurrentSquare() ){   //check break condition
-            makeBestMoves( square );
+        if(square == odometer.getLastSquare()){
+            Square lastSquare = odometer.getLastSquare();
+            int[] components = getComponentDistances(lastSquare);
+
+            if(components[0] != 0){
+                moveSquareX(components[0]);
+            } else {
+                moveSquareY(components[1]);
+            }
+
+        } else {
+
+            while (square != odometer.getCurrentSquare()) {   //check break condition
+                makeBestMoves(square);
+            }
         }
     }
 
@@ -266,17 +279,16 @@ public class Navigator {
 
         Square destinationSquare = odometer.getFieldMapper().getMapping()[xDestination][currentY];
 
-//        if( isSquareAllowed( xDestination, currentY ) ){
-//            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
-//                travelToX( destinationSquare.getCenterCoordinate()[0] );
-//                return true;
-//            }
-//        }
-//
-//        return false;
-
-        travelToX( destinationSquare.getCenterCoordinate()[0] );
-        return true;
+        if( isSquareAllowed( xDestination, currentY ) ){
+            if(odometer.getPastSquares().contains(destinationSquare)){
+                travelToX( destinationSquare.getCenterCoordinate()[0] );
+                return true;
+            } else if ( obstacleAvoider.scanSquare( destinationSquare )) {
+                travelToX( destinationSquare.getCenterCoordinate()[0] );
+                return true;
+            }
+        }
+        return false;
 
     }
 
@@ -296,16 +308,16 @@ public class Navigator {
 
         Square destinationSquare = odometer.getFieldMapper().getMapping()[currentX][yDestination];
 
-//        if( isSquareAllowed( currentX, yDestination ) ){
-//            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
-//                travelToY( destinationSquare.getCenterCoordinate()[1] );
-//                return true;
-//            }
-//        }
-//        return false;
-
-        travelToY( destinationSquare.getCenterCoordinate()[1] );
-        return true;
+        if( isSquareAllowed( currentX, yDestination ) ){
+            if(odometer.getPastSquares().contains(destinationSquare)){
+                travelToY( destinationSquare.getCenterCoordinate()[1] );
+                return true;
+            }else if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+                travelToY( destinationSquare.getCenterCoordinate()[1] );
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

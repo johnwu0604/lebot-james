@@ -142,7 +142,7 @@ public class FinalProject {
         localizer.start();
 
         odometerCorrection.start(); // waits until further instruction to actually start
-        //obstacleMapper.startRunning();
+        obstacleMapper.startRunning();
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
