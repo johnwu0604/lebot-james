@@ -12,10 +12,12 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.LightSensor;
 import main.object.OdometerDisplay;
 import main.object.UltrasonicSensor;
+import main.resource.FieldConstants;
 import main.util.EmergencyStopper;
 import main.util.FieldMapper;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
+import main.resource.ShootingConstants;
 
 import java.util.Map;
 
@@ -144,7 +146,7 @@ public class FinalProject {
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        retriever.getBall();
+//        retriever.getBall();
 
        /* navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][7]);
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][7]);
@@ -159,7 +161,20 @@ public class FinalProject {
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][0]);
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]); */
 
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][3]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][1]);
+        launcher.retractArm();
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][4]);
+        navigator.setCorrectionNeeded( false );
+        navigator.travelTo( 0.5 * FieldConstants.SQUARE_LENGTH, 4 * FieldConstants.SQUARE_LENGTH);
+        launcher.setLaunchMotorAcceleration(2*ShootingConstants.BALL_LOWERING_ACCELERATION);
+        launcher.rotateLaunchMotors(ShootingConstants.BALL_RETRIEVAL_ANGLE);
+        Sound.beep(); //Notify instructors we are ready to receive ball
+
+        try { Thread.sleep( 5000 ); } catch( Exception e ){}
+
+        launcher.setLaunchMotorAcceleration(ShootingConstants.BALL_LOWERING_ACCELERATION);
+        launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
+        navigator.setCorrectionNeeded( true );
 
         Sound.beepSequence();
 
