@@ -8,6 +8,7 @@ import main.resource.TimeConstants;
 import main.util.FieldMapper;
 
 import java.util.ArrayList;
+import java.util.concurrent.Exchanger;
 
 /**
  * Odometer object used to keep track of vehicle position at all times.
@@ -176,7 +177,7 @@ public class Odometer extends Thread {
     }
 
     public Square getLastSquare(){
-        return this.pastSquares.get(this.pastSquares.size());
+        return pastSquares.get( pastSquares.size() - 1 );
     }
 
     public void addPastSquare(Square lastSquare){
@@ -296,6 +297,38 @@ public class Odometer extends Thread {
         return currentSquare;
     }
 
+    public Square getEastSquare(){
+        if ( getCurrentSquare().getSquarePosition()[0] != 11 ) {
+            return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0] + 1][getCurrentSquare().getSquarePosition()[1]];
+        } else {
+            return null; // wall
+        }
+    }
+
+    public Square getWestSquare(){
+        if ( getCurrentSquare().getSquarePosition()[0] != 0 ) {
+            return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0] - 1][getCurrentSquare().getSquarePosition()[1]];
+        } else {
+            return null; // wall
+        }
+    }
+
+    public Square getNorthSquare(){
+        if ( getCurrentSquare().getSquarePosition()[1] != 11 ) {
+            return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0]][getCurrentSquare().getSquarePosition()[1]+1];
+        } else {
+            return null; // wall
+        }
+    }
+
+    public Square getSouthSquare(){
+        if ( getCurrentSquare().getSquarePosition()[1] != 0 ) {
+            return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0]][getCurrentSquare().getSquarePosition()[1]-1];
+        } else {
+            return null; // wall
+        }
+    }
+
     /**
      * A method that sets our current square
      *
@@ -303,5 +336,29 @@ public class Odometer extends Thread {
      */
     public void setCurrentSquare(Square currentSquare) {
         this.currentSquare = currentSquare;
+    }
+
+    /**
+     * A method to determine the current direction that our vehicle is heading towards
+     *
+     * @return north, south, east, west, or error
+     */
+    public String getCurrentDirection() {
+        if ( getTheta() >= 7*Math.PI/4 && getTheta() < 2*Math.PI ) {
+            return "north";
+        }
+        if ( getTheta() >= 0 && getTheta() < Math.PI/4 ) {
+            return "north";
+        }
+        if ( getTheta() >= Math.PI/4 && getTheta() < 3*Math.PI/4 ) {
+            return "east";
+        }
+        if ( getTheta() >= 3*Math.PI/4 && getTheta() < 5*Math.PI/4 ) {
+            return "south";
+        }
+        if ( getTheta() >= 5*Math.PI/4 && getTheta() < 7*Math.PI/4 ) {
+            return "west";
+        }
+        return "error"; // this should never happen
     }
 }

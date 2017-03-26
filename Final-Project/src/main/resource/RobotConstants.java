@@ -18,12 +18,20 @@ public class RobotConstants {
     public static final double WHEEL_RADIUS = 2.093;
 
     /**
-     * Distance from forward sensor to middle of vehicle (cm)
+     * The distance from our light sensors to the track
      */
-    public static final float FORWARD_SENSOR_DISTANCE = 7;
-
     public static final double LIGHT_SENSOR_TO_TRACK_DISTANCE = 3.0;
 
-    public static final double FRONT_US_SENSOR_TO_TRACK_DISTANCE = 11.3;
+    /**
+     * Distance from forward sensor to track
+     */
+    public static final float FRONT_US_SENSOR_TO_TRACK_DISTANCE = 11;
+
+    /**
+     * Distance from left sensor to center of robot horizontally
+     */
+    public static final float LEFT_US_SENSOR_TO_ROBOT_DISTANCE_HORIZONTAL = 10;
+
+    public static final double LEFT_US_SENSOR_TO_ROBOT_DISTANCE_VERTICAL = 3.5;
 
 }

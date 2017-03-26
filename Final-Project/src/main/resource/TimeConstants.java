@@ -32,5 +32,15 @@ public class TimeConstants {
      */
     public static final double CORRECTION_MAX_TIME = 1000;
 
+    /**
+     * The max time to detect an obstacle
+     */
+    public static final double OBSTACLE_DETECTION_TIME = 500;
+
+    /**
+     * The time to scan for obstacles
+     */
+    public static final double OBSTACLE_SCAN_TIME = 350;
+
 
 }
