@@ -277,10 +277,10 @@ public class ObstacleAvoider extends Thread {
         Square obstacle1 = odometer.getFieldMapper().getSquareOfCoordinate( coordinates1[0], coordinates1[1] );
         Square obstacle2 = odometer.getFieldMapper().getSquareOfCoordinate( coordinates2[0], coordinates2[1] );
         // update mapping
-        if ( obstacle1 != null && !odometer.getFieldMapper().isEdgeSquare( obstacle1 ) ) {
+        if ( obstacle1 != null && odometer.isAdjacentSquare( obstacle1 ) && !odometer.getFieldMapper().isEdgeSquare( obstacle1 ) ) {
             declareObstacleInMapping( obstacle1 );
         }
-        if ( obstacle2 != null && !odometer.getFieldMapper().isEdgeSquare( obstacle2 ) ) {
+        if ( obstacle2 != null && odometer.isAdjacentSquare( obstacle2 ) && !odometer.getFieldMapper().isEdgeSquare( obstacle2 ) ) {
             declareObstacleInMapping( obstacle2 );
         }
     }
