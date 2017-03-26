@@ -361,4 +361,17 @@ public class Odometer extends Thread {
         }
         return "error"; // this should never happen
     }
+
+    /**
+     * A method to determine whether the current square is adjacent to an input square or not
+     *
+     * @param square
+     * @return isAdjacent
+     */
+    public boolean isAdjacentSquare( Square square ) {
+        if ( square == getNorthSquare() || square == getSouthSquare() || square == getEastSquare() || square == getWestSquare() ) {
+            return true;
+        }
+        return false;
+    }
 }
