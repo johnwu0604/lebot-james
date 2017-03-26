@@ -92,7 +92,7 @@ public class FinalProject {
         emergencyStopper.start();
 
         int[] defenderZone = {4,4};
-        int[] ballDispenserPosition  = {-1,4};
+        int[] ballDispenserPosition  = {-1,3};
         Parameters parameters = new Parameters();
         parameters.setForwardCorner(1);
         parameters.setForwardLine(7);
@@ -123,6 +123,7 @@ public class FinalProject {
 
         // instantiate launcher
         Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator );
+        BallRetriever retriever = new BallRetriever(launcher);
 
         // start threads (except correction, start that after localizing)
         leftLightSensor.start(); // waits until further instruction to actually start
@@ -139,14 +140,26 @@ public class FinalProject {
         localizer.start();
 
         odometerCorrection.start(); // waits until further instruction to actually start
-        obstacleMapper.startRunning();
+        //obstacleMapper.startRunning();
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][1]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][0]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][1]);
+        retriever.getBall();
+
+       /* navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][7]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][7]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][0]);
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][7]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][7]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][0]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][7]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][7]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][0]);
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]); */
+
+        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][3]);
 
         Sound.beepSequence();
 

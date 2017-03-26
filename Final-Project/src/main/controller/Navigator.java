@@ -22,6 +22,8 @@ public class Navigator {
     private OdometerCorrection odometerCorrection;
     private ObstacleAvoider obstacleAvoider;
 
+    private boolean correctionNeeded = true;
+
     /**
      * Default constructor for Navigator object.
      *
@@ -175,7 +177,9 @@ public class Navigator {
         // turn to the minimum angle
         turnTo( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
         // move to the specified point
-        odometerCorrection.startRunning();
+        if ( correctionNeeded ) {
+            odometerCorrection.startRunning();
+        }
         driveForward();
         while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
@@ -183,7 +187,9 @@ public class Navigator {
             }
         }
         stopMotors();
-        odometerCorrection.stopRunning();
+        if ( correctionNeeded ) {
+            odometerCorrection.stopRunning();
+        }
     }
 
     /**
@@ -194,7 +200,9 @@ public class Navigator {
     public void travelToY( double yCoordinate ) {
         // turn to the minimum angle
         turnTo( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
-        odometerCorrection.startRunning();
+        if ( correctionNeeded ) {
+            odometerCorrection.startRunning();
+        }
         // move to the specified point
         driveForward();
         while ( Math.abs( odometer.getY() - yCoordinate ) > ThresholdConstants.POINT_REACHED) {
@@ -203,7 +211,9 @@ public class Navigator {
             }
         }
         stopMotors();
-        odometerCorrection.stopRunning();
+        if ( correctionNeeded ) {
+            odometerCorrection.stopRunning();
+        }
     }
 
     /**
@@ -256,14 +266,17 @@ public class Navigator {
 
         Square destinationSquare = odometer.getFieldMapper().getMapping()[xDestination][currentY];
 
-        if( isSquareAllowed( xDestination, currentY ) ){
-            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
-                travelToX( destinationSquare.getCenterCoordinate()[0] );
-                return true;
-            }
-        }
+//        if( isSquareAllowed( xDestination, currentY ) ){
+//            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+//                travelToX( destinationSquare.getCenterCoordinate()[0] );
+//                return true;
+//            }
+//        }
+//
+//        return false;
 
-        return false;
+        travelToX( destinationSquare.getCenterCoordinate()[0] );
+        return true;
 
     }
 
@@ -283,13 +296,16 @@ public class Navigator {
 
         Square destinationSquare = odometer.getFieldMapper().getMapping()[currentX][yDestination];
 
-        if( isSquareAllowed( currentX, yDestination ) ){
-            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
-                travelToY( destinationSquare.getCenterCoordinate()[1] );
-                return true;
-            }
-        }
-        return false;
+//        if( isSquareAllowed( currentX, yDestination ) ){
+//            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+//                travelToY( destinationSquare.getCenterCoordinate()[1] );
+//                return true;
+//            }
+//        }
+//        return false;
+
+        travelToY( destinationSquare.getCenterCoordinate()[1] );
+        return true;
     }
 
     /**
@@ -505,7 +521,25 @@ public class Navigator {
         }
     }
 
-    public void setOdometerCorrection( OdometerCorrection odometerCorrection ) {
+    /**
+     * A method that returns whether correction is needed for the current movement
+     *
+     * @return
+     */
+    public boolean isCorrectionNeeded() {
+        return correctionNeeded;
+    }
+
+    /**
+     * A method to declare that correction is not needed for the current movement
+     *
+     * @param correctionNeeded
+     */
+    public void setCorrectionNeeded( boolean correctionNeeded ) {
+        this.correctionNeeded = correctionNeeded;
+    }
+
+    public void setOdometerCorrection(OdometerCorrection odometerCorrection ) {
         this.odometerCorrection = odometerCorrection;
     }
 

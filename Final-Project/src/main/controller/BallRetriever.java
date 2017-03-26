@@ -39,10 +39,8 @@ public class BallRetriever {
 
     private Square approachDispenser(){
 
-        Square approach = chooseApproach();
-        navigator.travelTo(navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[0],
-                navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[1]);
-        return approach;
+        navigator.travelToSquare(chooseApproach());
+        return chooseApproach();
     }
 
     private void alignToDispenser(Square currentSquare){
