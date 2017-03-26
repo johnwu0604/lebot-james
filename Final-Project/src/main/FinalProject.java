@@ -120,7 +120,7 @@ public class FinalProject {
         // start sensor threads
         forwardUSSensor.start();
         // run localization
-        localizer.run();
+        localizer.start();
 
         // start odometry correction
         odometerCorrection.start();

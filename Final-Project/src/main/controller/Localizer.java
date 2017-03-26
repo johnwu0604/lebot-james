@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author JohnWu
  */
-public class Localizer extends Thread {
+public class Localizer {
 
     // objects
     private Odometer odometer;
@@ -41,7 +41,7 @@ public class Localizer extends Thread {
     /**
      * The main method for localizing our robot
      */
-    public void run() {
+    public void start() {
 
         try {
 
