@@ -253,7 +253,10 @@ public class Navigator {
         Square destinationSquare = odometer.getFieldMapper().getMapping()[xDestination][currentY];
 
         if( isSquareAllowed( xDestination, currentY ) ){
-            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+            if(odometer.getPastSquares().contains(destinationSquare)){
+                travelToX( destinationSquare.getCenterCoordinate()[0] );
+                return true;
+            } else if ( obstacleAvoider.scanSquare( destinationSquare )) {
                 travelToX( destinationSquare.getCenterCoordinate()[0] );
                 return true;
             }
@@ -280,7 +283,10 @@ public class Navigator {
         Square destinationSquare = odometer.getFieldMapper().getMapping()[currentX][yDestination];
 
         if( isSquareAllowed( currentX, yDestination ) ){
-            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+            if(odometer.getPastSquares().contains(destinationSquare)){
+                travelToY( destinationSquare.getCenterCoordinate()[1] );
+                return true;
+            }else if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
                 travelToY( destinationSquare.getCenterCoordinate()[1] );
                 return true;
             }
