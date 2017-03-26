@@ -175,6 +175,7 @@ public class Navigator {
         // turn to the minimum angle
         turnTo( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
         // move to the specified point
+        odometerCorrection.startRunning();
         driveForward();
         while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
@@ -182,6 +183,7 @@ public class Navigator {
             }
         }
         stopMotors();
+        odometerCorrection.stopRunning();
     }
 
     /**
@@ -192,6 +194,7 @@ public class Navigator {
     public void travelToY( double yCoordinate ) {
         // turn to the minimum angle
         turnTo( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
+        odometerCorrection.startRunning();
         // move to the specified point
         driveForward();
         while ( Math.abs( odometer.getY() - yCoordinate ) > ThresholdConstants.POINT_REACHED) {
@@ -200,6 +203,7 @@ public class Navigator {
             }
         }
         stopMotors();
+        odometerCorrection.stopRunning();
     }
 
     /**
@@ -306,7 +310,6 @@ public class Navigator {
      * @param theta the theta angle that we want to turn our vehicle
      */
     public void turnTo( double theta ) {
-        odometerCorrection.stopRunning();
         leftMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         rightMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         if( theta < 0 ) { // if angle is negative, turn to the left
@@ -317,7 +320,6 @@ public class Navigator {
             leftMotor.rotate( convertAngle( (theta*180)/Math.PI ) , true);
             rightMotor.rotate( -convertAngle( (theta*180)/Math.PI ) , false);
         }
-        odometerCorrection.startRunning();
     }
 
     /**

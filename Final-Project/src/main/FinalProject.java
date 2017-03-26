@@ -101,34 +101,47 @@ public class FinalProject {
         parameters.setBallDispenserPosition(ballDispenserPosition);
         parameters.setBallDispenserOrientation("N");
 
-        // instantiate objects
+
+        // map field
+        FieldMapper fieldMapper = new FieldMapper(parameters);
+
+        // instantiate sensor objects
         LightSensor leftLightSensor = new LightSensor( leftColorSensor );
         LightSensor rightLightSensor = new LightSensor( rightColorSensor );
         UltrasonicSensor forwardUSSensor = new UltrasonicSensor( forwardUltrasonicSensor );
         UltrasonicSensor leftUSSensor = new UltrasonicSensor( leftUltrasonicSensor );
-        FieldMapper fieldMapper = new FieldMapper(parameters);
+
+        // instantiate continuous threads
         Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
-        ObstacleAvoider obstacleAvoider = new ObstacleAvoider( leftUSSensor, forwardUSSensor, odometer );
-        Navigator navigator = new Navigator(leftMotor,rightMotor,odometer,obstacleAvoider);
         OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
+
+        // instantiate movement controllers
+        ObstacleAvoider obstacleAvoider = new ObstacleAvoider( forwardUSSensor, odometer );
+        ObstacleMapper obstacleMapper = new ObstacleMapper( leftUSSensor, odometer );
+        Navigator navigator = new Navigator(leftMotor,rightMotor,odometer,obstacleAvoider);
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
-        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometerCorrection );
+
+        // instantiate launcher
+        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator );
+
+        // start threads (except correction, start that after localizing)
+        leftLightSensor.start(); // waits until further instruction to actually start
+        rightLightSensor.start(); // waits until further instruction to actually start
+        forwardUSSensor.start(); // waits until further instruction to actually start
+        leftUSSensor.start(); // waits until further instruction to actually start
+        odometer.start(); // starts immediately
+        odometerDisplay.start(); // starts immediately
+        obstacleMapper.start(); // waits until further instruction to actually start
+
+
+        // localize
         Localizer localizer = new Localizer( odometer, forwardUSSensor, navigator, 1 );
-        // start odometry threads
-        odometer.start();
-        odometerDisplay.start();
-        // start sensor threads
-        forwardUSSensor.start();
-        // run localization
         localizer.start();
 
-        // start odometry correction
-        odometerCorrection.start();
+        odometerCorrection.start(); // waits until further instruction to actually start
+        obstacleMapper.startRunning();
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
-
-        leftUSSensor.start();
-        obstacleAvoider.start();
 
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][1]);
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][0]);

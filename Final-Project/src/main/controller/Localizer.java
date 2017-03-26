@@ -45,6 +45,8 @@ public class Localizer {
 
         try {
 
+            ultrasonicSensor.startRunning();
+
             int firstMinIndex = -1;
             int secondMinIndex = -2;
             ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
@@ -76,6 +78,8 @@ public class Localizer {
             setStartingSquare();
             moveToCenterOfSquare();
             odometer.addPastSquare( odometer.getCurrentSquare() );
+
+            ultrasonicSensor.stopRunning();
 
         } catch ( Exception e ) {
             try {
