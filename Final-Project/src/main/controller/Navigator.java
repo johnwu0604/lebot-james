@@ -22,6 +22,8 @@ public class Navigator {
     private OdometerCorrection odometerCorrection;
     private ObstacleAvoider obstacleAvoider;
 
+    private boolean correctionNeeded = true;
+
     /**
      * Default constructor for Navigator object.
      *
@@ -188,6 +190,9 @@ public class Navigator {
         // turn to the minimum angle
         turnTo( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
         // move to the specified point
+        if ( correctionNeeded ) {
+            odometerCorrection.startRunning();
+        }
         driveForward();
         while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
@@ -195,6 +200,9 @@ public class Navigator {
             }
         }
         stopMotors();
+        if ( correctionNeeded ) {
+            odometerCorrection.stopRunning();
+        }
     }
 
     /**
@@ -205,6 +213,9 @@ public class Navigator {
     public void travelToY( double yCoordinate ) {
         // turn to the minimum angle
         turnTo( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
+        if ( correctionNeeded ) {
+            odometerCorrection.startRunning();
+        }
         // move to the specified point
         driveForward();
         while ( Math.abs( odometer.getY() - yCoordinate ) > ThresholdConstants.POINT_REACHED) {
@@ -213,6 +224,9 @@ public class Navigator {
             }
         }
         stopMotors();
+        if ( correctionNeeded ) {
+            odometerCorrection.stopRunning();
+        }
     }
 
     /**
@@ -274,7 +288,6 @@ public class Navigator {
                 return true;
             }
         }
-
         return false;
 
     }
@@ -325,7 +338,6 @@ public class Navigator {
      * @param theta the theta angle that we want to turn our vehicle
      */
     public void turnTo( double theta ) {
-        odometerCorrection.stopRunning();
         leftMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         rightMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         if( theta < 0 ) { // if angle is negative, turn to the left
@@ -336,7 +348,6 @@ public class Navigator {
             leftMotor.rotate( convertAngle( (theta*180)/Math.PI ) , true);
             rightMotor.rotate( -convertAngle( (theta*180)/Math.PI ) , false);
         }
-        odometerCorrection.startRunning();
     }
 
     /**
@@ -522,7 +533,25 @@ public class Navigator {
         }
     }
 
-    public void setOdometerCorrection( OdometerCorrection odometerCorrection ) {
+    /**
+     * A method that returns whether correction is needed for the current movement
+     *
+     * @return
+     */
+    public boolean isCorrectionNeeded() {
+        return correctionNeeded;
+    }
+
+    /**
+     * A method to declare that correction is not needed for the current movement
+     *
+     * @param correctionNeeded
+     */
+    public void setCorrectionNeeded( boolean correctionNeeded ) {
+        this.correctionNeeded = correctionNeeded;
+    }
+
+    public void setOdometerCorrection(OdometerCorrection odometerCorrection ) {
         this.odometerCorrection = odometerCorrection;
     }
 

@@ -18,16 +18,14 @@ public class Launcher {
 
     private Navigator navigator;
     private EV3LargeRegulatedMotor leftLaunchMotor, rightLaunchMotor;
-    private OdometerCorrection odometerCorrection;
 
     /**
      * Constructor for launcher object, controls launching the ball
      */
-    public Launcher(EV3LargeRegulatedMotor left, EV3LargeRegulatedMotor right, Navigator navigator, OdometerCorrection odometerCorrection ){
+    public Launcher(EV3LargeRegulatedMotor left, EV3LargeRegulatedMotor right, Navigator navigator ){
         this.navigator = navigator;
         this.leftLaunchMotor = left;
         this.rightLaunchMotor = right;
-        this.odometerCorrection = odometerCorrection;
     }
 
     /**
@@ -67,7 +65,6 @@ public class Launcher {
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_MAX);
             restArm(ShootingConstants.LAUNCH_ROM_MAX);
         }
-        odometerCorrection.startRunning();
     }
 
     /**
@@ -139,7 +136,6 @@ public class Launcher {
         double targetAngle = navigator.calculateMinAngle(deltaX, deltaY);
 
         navigator.turnTo(targetAngle);
-        odometerCorrection.stopRunning();
 
         return distance;
     }

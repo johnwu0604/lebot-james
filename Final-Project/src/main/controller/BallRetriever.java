@@ -14,12 +14,10 @@ public class BallRetriever {
 
     private Launcher launcher;
     private Navigator navigator;
-    private OdometerCorrection odometerCorrection;
 
-    public BallRetriever(Launcher launcher, OdometerCorrection odoCorrection){
+    public BallRetriever(Launcher launcher){
         this.launcher = launcher;
         this.navigator = launcher.getNavigator();
-        this.odometerCorrection = odoCorrection;
     }
 
     public void getBall(){
@@ -36,21 +34,16 @@ public class BallRetriever {
         launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
 
         navigator.travelToSquare(chooseApproach());
-        odometerCorrection.startRunning();
 
     }
 
     private Square approachDispenser(){
 
-        Square approach = chooseApproach();
-        navigator.travelTo(navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[0],
-                navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[1]);
-        return approach;
+        navigator.travelToSquare(chooseApproach());
+        return chooseApproach();
     }
 
     private void alignToDispenser(Square currentSquare){
-
-        odometerCorrection.stopRunning();
 
         launcher.retractArm();
 
