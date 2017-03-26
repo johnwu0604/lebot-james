@@ -44,8 +44,21 @@ public class Navigator {
      * @param square
      */
     public void travelToSquare( Square square ) {
-        while( square != odometer.getCurrentSquare() ){   //check break condition
-            makeBestMoves( square );
+        if(square == odometer.getLastSquare()){
+            Square lastSquare = odometer.getLastSquare();
+            int[] components = getComponentDistances(lastSquare);
+
+            if(components[0] != 0){
+                moveSquareX(components[0]);
+            } else {
+                moveSquareY(components[1]);
+            }
+
+        } else {
+
+            while (square != odometer.getCurrentSquare()) {   //check break condition
+                makeBestMoves(square);
+            }
         }
     }
 
