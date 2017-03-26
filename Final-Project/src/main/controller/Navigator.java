@@ -106,7 +106,6 @@ public class Navigator {
             secondPriority = deltaX > 0 ? eastSquare : westSquare;
         }
 
-
         // set last square remaining as third priority
         if (northSquare != topPriority && northSquare != secondPriority && northSquare != odometer.getLastSquare()){
             thirdPriority = northSquare;
@@ -118,12 +117,18 @@ public class Navigator {
             thirdPriority = westSquare;
         }
 
+        //
+
         // third priority might be a wall (null)
-        if ( thirdPriority != null ) {
+        if ( thirdPriority != null && thirdPriority != odometer.getLastSquare() ) {
             possibleMoves.push(thirdPriority);
         }
-        possibleMoves.push(secondPriority);
-        possibleMoves.push(topPriority);
+        if ( secondPriority != null && secondPriority != odometer.getLastSquare() ) {
+            possibleMoves.push(secondPriority);
+        }
+        if ( topPriority != null && topPriority != odometer.getLastSquare() ) {
+            possibleMoves.push(topPriority);
+        }
 
         return possibleMoves;
 

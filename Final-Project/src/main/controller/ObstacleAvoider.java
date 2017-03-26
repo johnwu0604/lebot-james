@@ -123,7 +123,7 @@ public class ObstacleAvoider extends Thread {
         while ( !scanTimedOut( startTime ) ) {
             navigator.rotateCounterClockwise();
             float distance = frontSensor.getFilteredFrontSensorData();
-            if ( distance < 1.5 * FieldConstants.SQUARE_LENGTH ) {
+            if ( distance < 1.2 * FieldConstants.SQUARE_LENGTH ) {
                 return true;
             }
         }
@@ -148,7 +148,7 @@ public class ObstacleAvoider extends Thread {
         while ( !scanTimedOut( startTime ) ) {
             navigator.rotateClockwise();
             float distance = frontSensor.getFilteredFrontSensorData();
-            if ( distance < 1.5 * FieldConstants.SQUARE_LENGTH ) {
+            if ( distance < 1.2 * FieldConstants.SQUARE_LENGTH ) {
                 return true;
             }
         }
@@ -277,10 +277,10 @@ public class ObstacleAvoider extends Thread {
         Square obstacle1 = odometer.getFieldMapper().getSquareOfCoordinate( coordinates1[0], coordinates1[1] );
         Square obstacle2 = odometer.getFieldMapper().getSquareOfCoordinate( coordinates2[0], coordinates2[1] );
         // update mapping
-        if ( obstacle1 != null ) {
+        if ( obstacle1 != null && !odometer.getFieldMapper().isEdgeSquare( obstacle1 ) ) {
             declareObstacleInMapping( obstacle1 );
         }
-        if ( obstacle2 != null ) {
+        if ( obstacle2 != null && !odometer.getFieldMapper().isEdgeSquare( obstacle2 ) ) {
             declareObstacleInMapping( obstacle2 );
         }
     }

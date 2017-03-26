@@ -362,5 +362,21 @@ public class FieldMapper {
         return false;
     }
 
+    /**
+     * Determines whether a square is one of the squares along the wall or not
+     *
+     * @param square
+     * @return whether it is an edge square
+     */
+    public boolean isEdgeSquare( Square square ) {
+        int x = square.getSquarePosition()[0];
+        int y = square.getSquarePosition()[1];
+        if ( x == 0 || x == 11 || y == 0 || y == 11 ) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
 
 }
