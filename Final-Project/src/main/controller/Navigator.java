@@ -261,7 +261,6 @@ public class Navigator {
                 return true;
             }
         }
-
         return false;
 
     }

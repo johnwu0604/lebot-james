@@ -43,14 +43,11 @@ public class BallRetriever {
     private Square approachDispenser(){
 
         Square approach = chooseApproach();
-        navigator.travelTo(navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[0],
-                navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[1]);
+        navigator.travelToSquare(approach);
         return approach;
     }
 
     private void alignToDispenser(Square currentSquare){
-
-        odometerCorrection.stopRunning();
 
         launcher.retractArm();
 
@@ -111,7 +108,7 @@ public class BallRetriever {
         double dist1 = Math.hypot(navigator.getComponentDistances(approach1)[0], navigator.getComponentDistances(approach1)[1]);
         double dist2 = Math.hypot(navigator.getComponentDistances(approach2)[0], navigator.getComponentDistances(approach2)[1]);
 
-        if(dist1 >= dist2){
+        if(dist1 <= dist2){
             return approach1;
         } else {
             return approach2;
