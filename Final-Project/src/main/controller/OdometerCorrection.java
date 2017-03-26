@@ -35,8 +35,6 @@ public class OdometerCorrection extends Thread {
         this.odometer = odometer;
         this.leftSensor = leftSensor;
         this.rightSensor = rightSensor;
-        this.leftSensor.start();
-        this.rightSensor.start();
     }
 
     /**

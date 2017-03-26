@@ -148,6 +148,8 @@ public class FinalProject {
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][1]);
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
 
+        Sound.beepSequence();
+
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
     }
