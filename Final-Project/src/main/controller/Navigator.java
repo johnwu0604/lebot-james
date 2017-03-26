@@ -6,6 +6,7 @@ import main.resource.ThresholdConstants;
 import main.resource.NavigationConstants;
 import main.resource.RobotConstants;
 import java.util.Stack;
+import java.util.ArrayList;
 
 
 /**
@@ -81,13 +82,13 @@ public class Navigator {
      */
     public Stack<Square> getPossibleMoves(Square destination){
 
-        Stack<Square> possibleMoves = new Stack<>();
+        Stack<Square> possibleMoves = new Stack<Square>();
 
         possibleMoves.push( odometer.getLastSquare() );
 
         Square topPriority;
-        Square secondPriority;
-        Square thirdPriority;
+        Square secondPriority = null;
+        Square thirdPriority = null;
 
         Square northSquare = odometer.getNorthSquare();
         Square southSquare = odometer.getSouthSquare();
@@ -100,24 +101,44 @@ public class Navigator {
         // greater distance to travel in x
         if ( Math.abs( deltaX ) > Math.abs( deltaY ) ) {
             topPriority = deltaX > 0 ? eastSquare : westSquare;
-            secondPriority = deltaY > 0 ? northSquare : southSquare;
+            if(deltaY != 0){
+                secondPriority = deltaY > 0 ? northSquare : southSquare;
+            }
         } else { // greater distance to travel in y
             topPriority = deltaY > 0 ? northSquare : southSquare;
-            secondPriority = deltaX > 0 ? eastSquare : westSquare;
+            if(deltaX != 0) {
+                secondPriority = deltaX > 0 ? eastSquare : westSquare;
+            }
         }
+
+        ArrayList<Square> thirdPriorities = new ArrayList<Square>();
 
         // set last square remaining as third priority
         if (northSquare != topPriority && northSquare != secondPriority && northSquare != odometer.getLastSquare()){
-            thirdPriority = northSquare;
+            thirdPriorities.add(northSquare);
         } else if (southSquare != topPriority && southSquare != secondPriority && southSquare != odometer.getLastSquare()){
-            thirdPriority = southSquare;
+            thirdPriorities.add(southSquare);
         } else if (eastSquare != topPriority && eastSquare != secondPriority && eastSquare != odometer.getLastSquare()){
-            thirdPriority = eastSquare;
+            thirdPriorities.add(eastSquare);
         } else {
-            thirdPriority = westSquare;
+            thirdPriorities.add(westSquare);
         }
 
-        //
+        if(thirdPriorities.size() == 1) {
+            thirdPriority = thirdPriorities.get(0);
+        }else if (thirdPriorities.size() == 2){
+
+            double distOne = Math.hypot((double) thirdPriorities.get(0).getSquarePosition()[0], (double) thirdPriorities.get(0).getSquarePosition()[1]);
+            double distTwo = Math.hypot((double) thirdPriorities.get(1).getSquarePosition()[0], (double) thirdPriorities.get(1).getSquarePosition()[1]);
+
+            if(distOne <= distTwo){
+                secondPriority = thirdPriorities.get(0);
+                thirdPriority = thirdPriorities.get(1);
+            } else {
+                secondPriority = thirdPriorities.get(1);
+                thirdPriority = thirdPriorities.get(0);
+            }
+        }
 
         // third priority might be a wall (null)
         if ( thirdPriority != null && thirdPriority != odometer.getLastSquare() ) {

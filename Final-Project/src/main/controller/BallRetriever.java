@@ -6,9 +6,10 @@ import main.object.Square;
 import main.resource.ShootingConstants;
 
 /**
- * Created by Durham Abric on 3/24/17.
+ * A class that locates, and retrieves ball from retriever
+ *
+ * @author Durham Abric
  */
-
 public class BallRetriever {
 
     private Launcher launcher;
