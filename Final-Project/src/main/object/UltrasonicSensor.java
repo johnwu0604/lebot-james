@@ -17,7 +17,6 @@ public class UltrasonicSensor extends Thread {
 
     // variables
     private float[] data;
-    private boolean running = true;
 
     /**
      * Our main constructor method
@@ -34,28 +33,30 @@ public class UltrasonicSensor extends Thread {
      */
     public void run() {
         while ( true ) {
-            if ( running ) {
-                sensor.fetchSample( data, 0 );
-                try { Thread.sleep( TimeConstants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){}
-            }
+            sensor.fetchSample( data, 0 );
+            try { Thread.sleep( TimeConstants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){}
         }
     }
 
     /**
-     * A method that stops our thread
-     */
-    public void stopRunning() {
-        running = false;
-    }
-
-    /**
-     * A method which filters our data for the distance
+     * A method which filters our data for the front sensor (distance to track)
      *
      * @return filtered distance data
      */
-    public float getFilteredSensorData() {
-        float distance = data[0]*100 + RobotConstants.FORWARD_SENSOR_DISTANCE;
+    public float getFilteredFrontSensorData() {
+        float distance = data[0]*100 + RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE;
         return distance > ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE ? ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE : distance;
     }
+
+    /**
+     * A method which filters our data for the left sensor (distance to sensor)
+     *
+     * @return filtered distance data
+     */
+    public float getFilteredLeftSensorData() {
+        float distance = data[0]*100;
+        return distance > ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE ? ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE : distance;
+    }
+
 
 }

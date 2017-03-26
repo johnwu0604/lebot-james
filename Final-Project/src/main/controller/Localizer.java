@@ -1,10 +1,8 @@
 package main.controller;
 
-import lejos.robotics.SampleProvider;
 import main.object.UltrasonicSensor;
 import main.resource.ThresholdConstants;
 import main.resource.FieldConstants;
-import main.resource.RobotConstants;
 import main.resource.TimeConstants;
 
 import java.util.ArrayList;
@@ -33,9 +31,9 @@ public class Localizer extends Thread {
      * @param ultrasonicSensor front facing ultrasonic sensor object used in the robot
      * @param navigator navigator controller used in the robot
      */
-    public Localizer( Odometer odometer, SampleProvider ultrasonicSensor, Navigator navigator, int corner ) {
+    public Localizer( Odometer odometer, UltrasonicSensor ultrasonicSensor, Navigator navigator, int corner ) {
         this.odometer = odometer;
-        this.ultrasonicSensor = new UltrasonicSensor( ultrasonicSensor );
+        this.ultrasonicSensor = ultrasonicSensor;
         this.navigator = navigator;
         this.corner = corner;
     }
@@ -46,7 +44,6 @@ public class Localizer extends Thread {
     public void run() {
 
         try {
-            ultrasonicSensor.start();
 
             int firstMinIndex = -1;
             int secondMinIndex = -2;
@@ -69,8 +66,6 @@ public class Localizer extends Thread {
                 }
             }
 
-            ultrasonicSensor.stopRunning();
-
             // turn vehicle to face east
             navigator.turnTo( calculateRemainingAngleToFaceEast( sensorReadings.get( secondMinIndex ) ) );
 
@@ -80,6 +75,7 @@ public class Localizer extends Thread {
             odometer.setTheta( calculateStartingTheta() );
             setStartingSquare();
             moveToCenterOfSquare();
+            odometer.addPastSquare( odometer.getCurrentSquare() );
 
         } catch ( Exception e ) {
             try {
@@ -99,9 +95,9 @@ public class Localizer extends Thread {
     public ArrayList<SensorReading> rotateAndRecordSensorReadings() {
         ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
         navigator.rotateCounterClockwiseLocalization();
-        while ( ultrasonicSensor.getFilteredSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
+        while ( ultrasonicSensor.getFilteredFrontSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
             SensorReading sensorReading = new SensorReading();
-            sensorReading.setDistance( ultrasonicSensor.getFilteredSensorData() );
+            sensorReading.setDistance( ultrasonicSensor.getFilteredFrontSensorData() );
             sensorReading.setTheta( odometer.getTheta() );
             sensorReadings.add( sensorReading );
             try { Thread.sleep( TimeConstants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){ }
@@ -114,15 +110,21 @@ public class Localizer extends Thread {
      * A method to rotate robot until first detection of left wall
      */
     private void rotateToLeftWall() {
-        while ( ultrasonicSensor.getFilteredSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
+        while ( ultrasonicSensor.getFilteredFrontSensorData() < ThresholdConstants.LOCALIZATION_WALL_DISTANCE + ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
             navigator.rotateCounterClockwiseLocalizationFast();
         }
-        while ( ultrasonicSensor.getFilteredSensorData() > ThresholdConstants.LOCALIZATION_WALL_DISTANCE + 5*ThresholdConstants.LOCALIZATION_NOISE_MARGIN) {
+        while ( ultrasonicSensor.getFilteredFrontSensorData() > ThresholdConstants.LOCALIZATION_WALL_DISTANCE + 5*ThresholdConstants.LOCALIZATION_NOISE_MARGIN ) {
             navigator.rotateCounterClockwiseLocalizationFast();
         }
         navigator.stopMotors();
     }
 
+    /**
+     * A method to sum all the distances in a sensor reading list
+     *
+     * @param sensorReadings
+     * @return
+     */
     public float sumDistances( List<SensorReading> sensorReadings ) {
         float sum = 0;
         for ( SensorReading sensorReading : sensorReadings ) {
@@ -177,16 +179,16 @@ public class Localizer extends Thread {
      */
     public double calculateStartingX( SensorReading firstMinimum, SensorReading secondMinimum ) {
         if ( corner ==  1 ) {
-            return FieldConstants.CORNER_ONE_X - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_ONE_X - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() );
         }
         if ( corner ==  2 ) {
-            return FieldConstants.CORNER_TWO_X + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_TWO_X + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() );
         }
         if ( corner ==  3 ) {
-            return FieldConstants.CORNER_THREE_X + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_THREE_X + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() );
         }
         if ( corner ==  4 ) {
-            return FieldConstants.CORNER_FOUR_X - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_FOUR_X - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() );
         }
         return 0;
     }
@@ -199,16 +201,16 @@ public class Localizer extends Thread {
      */
     public double calculateStartingY( SensorReading firstMinimum, SensorReading secondMinimum ) {
         if ( corner ==  1 ) {
-            return FieldConstants.CORNER_ONE_Y - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_ONE_Y - ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() );
         }
         if ( corner ==  2 ) {
-            return FieldConstants.CORNER_TWO_Y - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_TWO_Y - ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() );
         }
         if ( corner ==  3 ) {
-            return FieldConstants.CORNER_THREE_Y + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_THREE_Y + ( FieldConstants.SQUARE_LENGTH - secondMinimum.getDistance() );
         }
         if ( corner ==  4 ) {
-            return FieldConstants.CORNER_FOUR_Y + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4 );
+            return FieldConstants.CORNER_FOUR_Y + ( FieldConstants.SQUARE_LENGTH - firstMinimum.getDistance() );
         }
         return 0;
     }
@@ -318,7 +320,7 @@ public class Localizer extends Thread {
     /**
      * An object which stores all vehicle characteristics at a specific sensor reading
      */
-    public class SensorReading {
+    public static class SensorReading {
 
         private float distance;
         private double theta;

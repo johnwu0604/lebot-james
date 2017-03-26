@@ -327,5 +327,40 @@ public class FieldMapper {
      */
     public Parameters getParameters() {return parameters;}
 
+    /**
+     * A method to get the square that the coordinate belongs too
+     *
+     * @return square of a coordinate
+     */
+    public Square getSquareOfCoordinate( double x, double y ) {
+        for ( int i = 0; i < 12; i ++ ) {
+            for ( int j = 0; j < 12; j++ ) {
+                if ( isCoordinateInSquare( x, y, squares[i][j] ) ) {
+                    return squares[i][j];
+                }
+            }
+        }
+        return null; // the square is out of bounds or too close to a boundary
+    }
+
+    /**
+     * A method to determine if two coordinates are in the square
+     *
+     * @param x
+     * @param y
+     * @param square
+     * @return whether the coordinate is in the square
+     */
+    public boolean isCoordinateInSquare( double x, double y, Square square ) {
+        double leftBoundary = square.getWestLine() + ThresholdConstants.COORDINATE_IN_SQUARE;
+        double rightBoundary = square.getEastLine() - ThresholdConstants.COORDINATE_IN_SQUARE;
+        double upperBoundary = square.getNorthLine() - ThresholdConstants.COORDINATE_IN_SQUARE;
+        double lowerBoundary = square.getSouthLine() + ThresholdConstants.COORDINATE_IN_SQUARE;
+        if ( x > leftBoundary && x < rightBoundary && y < upperBoundary && y > lowerBoundary ) {
+            return true;
+        }
+        return false;
+    }
+
 
 }
