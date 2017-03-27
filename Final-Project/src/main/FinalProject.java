@@ -120,12 +120,12 @@ public class FinalProject {
         // instantiate movement controllers
         ObstacleAvoider obstacleAvoider = new ObstacleAvoider( forwardUSSensor, odometer );
         ObstacleMapper obstacleMapper = new ObstacleMapper( leftUSSensor, odometer );
-        Navigator navigator = new Navigator(leftMotor,rightMotor,odometer,obstacleAvoider);
+        Navigator navigator = new Navigator(leftMotor,rightMotor,odometer,obstacleAvoider,obstacleMapper);
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
 
         // instantiate launcher
         Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer );
-        BallRetriever retriever = new BallRetriever(launcher, odometer, navigator);
+        BallRetriever retriever = new BallRetriever(launcher, odometer, navigator, leftLightSensor, rightLightSensor );
 
         // start threads (except correction, start that after localizing)
         leftLightSensor.start(); // waits until further instruction to actually start
@@ -142,7 +142,6 @@ public class FinalProject {
         localizer.start();
 
         odometerCorrection.start(); // waits until further instruction to actually start
-        obstacleMapper.startRunning();
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
