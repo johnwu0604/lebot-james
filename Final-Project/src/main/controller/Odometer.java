@@ -172,14 +172,29 @@ public class Odometer extends Thread {
         return result;
     }
 
+    /**
+     * Returns the list of the past squares we have travelled
+     *
+     * @return pastSquares
+     */
     public ArrayList<Square> getPastSquares(){
         return this.pastSquares;
     }
 
+    /**
+     * Returns the square we last travelled to
+     *
+     * @return lastSquare
+     */
     public Square getLastSquare(){
         return pastSquares.get( pastSquares.size() - 1 );
     }
 
+    /**
+     * Adds a square to the list of past squares
+     *
+     * @param lastSquare
+     */
     public void addPastSquare(Square lastSquare){
         this.pastSquares.add(lastSquare);
     }

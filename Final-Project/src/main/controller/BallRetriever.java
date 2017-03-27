@@ -12,10 +12,18 @@ import main.resource.ShootingConstants;
  */
 public class BallRetriever {
 
+    // objects
     private Launcher launcher;
     private Navigator navigator;
     private Odometer odometer;
 
+    /**
+     * Main constuctor for the ball retreiver class
+     *
+     * @param launcher
+     * @param odo
+     * @param nav
+     */
     public BallRetriever(Launcher launcher, Odometer odo, Navigator nav){
         this.launcher = launcher;
         this.navigator = nav;
@@ -23,6 +31,9 @@ public class BallRetriever {
 
     }
 
+    /**
+     * A method to retrieve the ball
+     */
     public void getBall(){
 
         Square currentApproachSquare = approachDispenser();
@@ -41,6 +52,11 @@ public class BallRetriever {
 
     }
 
+    /**
+     * A method to approach the dispenser
+     *
+     * @return
+     */
     private Square approachDispenser(){
 
         Square approach = chooseApproach();
@@ -49,6 +65,11 @@ public class BallRetriever {
 
     }
 
+    /**
+     * A method to align to the dispenser
+     *
+     * @param currentSquare
+     */
     private void alignToDispenser(Square currentSquare){
 
         navigator.setCorrectionNeeded(false);
@@ -103,6 +124,11 @@ public class BallRetriever {
 
     }
 
+    /**
+     * A method to decide which square to use as our approach
+     *
+     * @return
+     */
     private Square chooseApproach(){
 
         Square approach1 = odometer.getFieldMapper().calculateBallDispenserApproach()[0];

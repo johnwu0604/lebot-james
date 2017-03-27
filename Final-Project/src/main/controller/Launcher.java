@@ -10,22 +10,25 @@ import java.sql.Time;
 import java.util.concurrent.TimeUnit;
 
 /**
- * A controller object to the ball
+ * A controller object to launch the ball
  *
  * @author DurhamAbric
  */
 public class Launcher {
 
+    // objects
     private Navigator navigator;
+    private Odometer odometer;
     private EV3LargeRegulatedMotor leftLaunchMotor, rightLaunchMotor;
 
     /**
-     * Constructor for launcher object, controls launching the ball
+     * Constructor for launcher object
      */
-    public Launcher(EV3LargeRegulatedMotor left, EV3LargeRegulatedMotor right, Navigator navigator ){
+    public Launcher(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Navigator navigator, Odometer odometer ){
         this.navigator = navigator;
-        this.leftLaunchMotor = left;
-        this.rightLaunchMotor = right;
+        this.odometer = odometer;
+        this.leftLaunchMotor = leftMotor;
+        this.rightLaunchMotor = rightMotor;
     }
 
     /**
@@ -33,7 +36,7 @@ public class Launcher {
      */
     public void launchBall(){
 
-        setLaunchMotorAcceleration(ShootingConstants.LAUNCH_MOTOR_ACCELERATION);
+        setLaunchMotorAcceleration( ShootingConstants.LAUNCH_MOTOR_ACCELERATION );
 
         double leftSpeed = leftLaunchMotor.getMaxSpeed();
         double rightSpeed = rightLaunchMotor.getMaxSpeed();
@@ -129,18 +132,15 @@ public class Launcher {
      */
     private double alignToTarget(){
 
-        double deltaX = FieldConstants.TARGET_CENTER_X_COORDINATE - navigator.getOdometer().getX();
-        double deltaY = FieldConstants.TARGET_CENTER_Y_COORDINATE - navigator.getOdometer().getY();
+        double deltaX = FieldConstants.TARGET_CENTER_X_COORDINATE - odometer.getX();
+        double deltaY = FieldConstants.TARGET_CENTER_Y_COORDINATE - odometer.getY();
 
-        double distance =  navigator.calculateDistanceToPoint(deltaX, deltaY);
-        double targetAngle = navigator.calculateMinAngle(deltaX, deltaY);
+        double distance =  navigator.calculateDistanceToPoint( deltaX, deltaY );
+        double targetAngle = navigator.calculateMinAngle( deltaX, deltaY );
 
-        navigator.turnTo(targetAngle);
+        navigator.turnTo( targetAngle );
 
         return distance;
     }
 
-    public Navigator getNavigator(){
-        return this.navigator;
-    }
 }
