@@ -45,7 +45,7 @@ public class ObstacleAvoider {
         frontSensor.startRunning();
         double x = square.getCenterCoordinate()[0];
         double y = square.getCenterCoordinate()[1];
-        navigator.turnTo( navigator.calculateMinAngle( x - odometer.getX(), y - odometer.getY() ) );
+        navigator.turnRobot( navigator.calculateMinAngle( x - odometer.getX(), y - odometer.getY() ) );
         if ( scanSlightLeft() ) {
             updateMapping( square );
             return false;

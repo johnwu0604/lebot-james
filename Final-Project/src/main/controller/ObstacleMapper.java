@@ -1,5 +1,6 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import main.object.Square;
 import main.object.UltrasonicSensor;
 import main.resource.FieldConstants;
@@ -20,7 +21,6 @@ public class ObstacleMapper extends Thread {
     // objects
     private UltrasonicSensor leftSensor;
     private Odometer odometer;
-    private Navigator navigator;
 
     // variables
     private volatile boolean running = false;
@@ -86,17 +86,18 @@ public class ObstacleMapper extends Thread {
      * A method to temporarily stop our thread
      */
     public void stopRunning() {
-        leftSensor.stopRunning();
-        running = false;
+        synchronized ( this ) {
+            leftSensor.stopRunning();
+            running = false;
+        }
     }
 
     /**
      * A method to restart our thread
      */
     public void startRunning() {
-        leftSensor.startRunning();
-        running = true;
         synchronized (this) {
+            leftSensor.startRunning();
             notify();
         }
     }
@@ -194,9 +195,11 @@ public class ObstacleMapper extends Thread {
         Square obstacle2 = odometer.getFieldMapper().getSquareOfCoordinate( coordinates2[0], coordinates2[1] );
         // update mapping
         if ( obstacle1 != null && odometer.isAdjacentSquare( obstacle1 ) && !odometer.getFieldMapper().isEdgeSquare( obstacle1 ) ) {
+            Sound.beepSequence();
             declareObstacleInMapping( obstacle1 );
         }
         if ( obstacle2 != null && odometer.isAdjacentSquare( obstacle2 ) && !odometer.getFieldMapper().isEdgeSquare( obstacle2 ) ) {
+            Sound.beepSequence();
             declareObstacleInMapping( obstacle2 );
         }
     }

@@ -68,8 +68,8 @@ public class Localizer {
                 }
             }
 
-            // turn vehicle to face east
-            navigator.turnTo( calculateRemainingAngleToFaceEast( sensorReadings.get( secondMinIndex ) ) );
+            // turnRobot vehicle to face east
+            navigator.turnRobot( calculateRemainingAngleToFaceEast( sensorReadings.get( secondMinIndex ) ) );
 
             // set our real odometer position values
             odometer.setX(calculateStartingX(sensorReadings.get(firstMinIndex), sensorReadings.get(secondMinIndex)));
@@ -250,13 +250,13 @@ public class Localizer {
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[0][0] );
         }
         if ( corner ==  2 ) {
-            odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[0][11] );
+            odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[11][0] );
         }
         if ( corner ==  3 ) {
             odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[11][11] );
         }
         if ( corner ==  4 ) {
-            odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[11][0] );
+            odometer.setCurrentSquare( odometer.getFieldMapper().getMapping()[0][11] );
         }
     }
 
@@ -269,12 +269,12 @@ public class Localizer {
         double deviationY = centerCoordinate[1] - odometer.getY();
         if ( corner == 1 || corner == 3 ) {
             moveToCenterOfSquareX( centerCoordinate, deviationX );
-            navigator.turnTo( -Math.PI/2 );
+            navigator.turnRobot( -Math.PI/2 );
             moveToCenterOfSquareY( centerCoordinate, deviationY );
         }
         if ( corner == 2 || corner == 4 ) {
             moveToCenterOfSquareY( centerCoordinate, deviationY );
-            navigator.turnTo( -Math.PI/2 );
+            navigator.turnRobot( -Math.PI/2 );
             moveToCenterOfSquareX( centerCoordinate, deviationX );
         }
     }

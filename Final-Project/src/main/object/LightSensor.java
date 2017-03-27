@@ -79,15 +79,17 @@ public class LightSensor extends Thread {
      * A method to temporarily stop our thread
      */
     public void stopRunning() {
-        running = false;
+        synchronized ( this ) {
+            running = false;
+        }
     }
 
     /**
      * A method to restart our thread
      */
     public void startRunning() {
-        running = true;
         synchronized (this) {
+            lineDetected = false;
             notify();
         }
     }
