@@ -3,11 +3,7 @@ package main.controller;
 import main.object.Square;
 import main.object.UltrasonicSensor;
 import main.resource.FieldConstants;
-import main.resource.RobotConstants;
 import main.resource.TimeConstants;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A controller class that maps obstacles along the field

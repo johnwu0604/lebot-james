@@ -86,6 +86,7 @@ public class ObstacleMapper extends Thread {
      * A method to temporarily stop our thread
      */
     public void stopRunning() {
+        leftSensor.stopRunning();
         running = false;
     }
 
@@ -93,6 +94,7 @@ public class ObstacleMapper extends Thread {
      * A method to restart our thread
      */
     public void startRunning() {
+        leftSensor.startRunning();
         running = true;
         synchronized (this) {
             notify();

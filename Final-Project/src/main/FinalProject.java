@@ -124,7 +124,7 @@ public class FinalProject {
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
 
         // instantiate launcher
-        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator );
+        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer );
         BallRetriever retriever = new BallRetriever(launcher, odometer, navigator);
 
         // start threads (except correction, start that after localizing)
@@ -180,24 +180,6 @@ public class FinalProject {
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
-    }
-
-    /**
-     * A method to pass the beta demo
-     *
-     * @param navigator
-     * @param launcher
-     */
-    public static void doBetaDemo( Navigator navigator, Launcher launcher ){
-        navigator.travelToSquare(navigator.getOdometer().getFieldMapper().getMapping()[1][1]);
-
-        launcher.retractArm();
-        Sound.beep(); //Notify ball is ready to be placed
-        try { Thread.sleep( 5000 ); } catch( Exception e ){}
-
-        navigator.travelToSquare(navigator.getOdometer().getFieldMapper().getMapping()[5][1]);
-
-        launcher.launchBall();
     }
 
     /**

@@ -22,6 +22,7 @@ public class Navigator {
     private OdometerCorrection odometerCorrection;
     private ObstacleAvoider obstacleAvoider;
 
+    // variables
     private boolean correctionNeeded = true;
 
     /**
@@ -67,6 +68,7 @@ public class Navigator {
 
     /**
      * A method to recursively execute the best allowed move until destination is reached
+     *
      * @param destination
      */
     public void makeBestMoves(Square destination){
@@ -87,11 +89,11 @@ public class Navigator {
                 moveCompleted = moveSquareX(-1);
             }
         }
-
     }
 
     /**
      * A method that returns the possible moves the robot can make, with priority
+     *
      * @param destination
      * @return stack of prioritized moves
      */
@@ -534,15 +536,6 @@ public class Navigator {
     }
 
     /**
-     * A method that returns whether correction is needed for the current movement
-     *
-     * @return
-     */
-    public boolean isCorrectionNeeded() {
-        return correctionNeeded;
-    }
-
-    /**
      * A method to declare that correction is not needed for the current movement
      *
      * @param correctionNeeded
@@ -555,22 +548,24 @@ public class Navigator {
         this.odometerCorrection = odometerCorrection;
     }
 
-    public Odometer getOdometer(){
-        return this.odometer;
-    }
-
+    /**
+     * A method to stop both motors
+     */
     public void stop(){
         leftMotor.stop(true);
         rightMotor.stop(false);
     }
 
-    public int[] getComponentDistances(Square destination){
-
+    /**
+     * A method to return the components distances to a destination in square units
+     *
+     * @param destination
+     * @return componentDistances in square units
+     */
+    public int[] getComponentDistances( Square destination ){
         int components[] = new int[2];
-
         components[0] = destination.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[0];
         components[1] = destination.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
-
         return components;
     }
 
