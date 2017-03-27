@@ -172,14 +172,29 @@ public class Odometer extends Thread {
         return result;
     }
 
+    /**
+     * Returns the list of the past squares we have travelled
+     *
+     * @return pastSquares
+     */
     public ArrayList<Square> getPastSquares(){
         return this.pastSquares;
     }
 
+    /**
+     * Returns the square we last travelled to
+     *
+     * @return lastSquare
+     */
     public Square getLastSquare(){
         return pastSquares.get( pastSquares.size() - 1 );
     }
 
+    /**
+     * Adds a square to the list of past squares
+     *
+     * @param lastSquare
+     */
     public void addPastSquare(Square lastSquare){
         this.pastSquares.add(lastSquare);
     }
@@ -297,6 +312,11 @@ public class Odometer extends Thread {
         return currentSquare;
     }
 
+    /**
+     * A method that returns the square directly east of the current one
+     *
+     * @return eastSquare or null of it is a wall
+     */
     public Square getEastSquare(){
         if ( getCurrentSquare().getSquarePosition()[0] != 11 ) {
             return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0] + 1][getCurrentSquare().getSquarePosition()[1]];
@@ -305,6 +325,11 @@ public class Odometer extends Thread {
         }
     }
 
+    /**
+     * A method that returns the square directly west of the current one
+     *
+     * @return westSquare or null of it is a wall
+     */
     public Square getWestSquare(){
         if ( getCurrentSquare().getSquarePosition()[0] != 0 ) {
             return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0] - 1][getCurrentSquare().getSquarePosition()[1]];
@@ -313,6 +338,11 @@ public class Odometer extends Thread {
         }
     }
 
+    /**
+     * A method that returns the square directly north of the current one
+     *
+     * @return northSquare or null of it is a wall
+     */
     public Square getNorthSquare(){
         if ( getCurrentSquare().getSquarePosition()[1] != 11 ) {
             return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0]][getCurrentSquare().getSquarePosition()[1]+1];
@@ -321,6 +351,11 @@ public class Odometer extends Thread {
         }
     }
 
+    /**
+     * A method that returns the square directly south of the current one
+     *
+     * @return southSquare or null of it is a wall
+     */
     public Square getSouthSquare(){
         if ( getCurrentSquare().getSquarePosition()[1] != 0 ) {
             return getFieldMapper().getMapping()[getCurrentSquare().getSquarePosition()[0]][getCurrentSquare().getSquarePosition()[1]-1];
@@ -360,5 +395,18 @@ public class Odometer extends Thread {
             return "west";
         }
         return "error"; // this should never happen
+    }
+
+    /**
+     * A method to determine whether the current square is adjacent to an input square or not
+     *
+     * @param square
+     * @return isAdjacent
+     */
+    public boolean isAdjacentSquare( Square square ) {
+        if ( square == getNorthSquare() || square == getSouthSquare() || square == getEastSquare() || square == getWestSquare() ) {
+            return true;
+        }
+        return false;
     }
 }

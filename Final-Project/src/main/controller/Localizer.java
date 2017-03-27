@@ -13,7 +13,7 @@ import java.util.List;
  *
  * @author JohnWu
  */
-public class Localizer extends Thread {
+public class Localizer {
 
     // objects
     private Odometer odometer;
@@ -41,15 +41,17 @@ public class Localizer extends Thread {
     /**
      * The main method for localizing our robot
      */
-    public void run() {
+    public void start() {
 
         try {
+
+            ultrasonicSensor.startRunning();
 
             int firstMinIndex = -1;
             int secondMinIndex = -2;
             ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
 
-            // repeatedly rotate until we find can precisely localize
+            // repeatedly rotate until we can precisely localize
             while ( firstMinIndex == -1 || secondMinIndex == -2 ) {
                 try {
                     // rotate to the left wall where we will start recording our sensor readings
@@ -76,6 +78,8 @@ public class Localizer extends Thread {
             setStartingSquare();
             moveToCenterOfSquare();
             odometer.addPastSquare( odometer.getCurrentSquare() );
+
+            ultrasonicSensor.stopRunning();
 
         } catch ( Exception e ) {
             try {
@@ -144,7 +148,7 @@ public class Localizer extends Thread {
         for ( int i=20; i<sensorReadings.size()-30; i++ ) {
             float sumLeft = sumDistances( sensorReadings.subList( i-20, i ) );
             float sumRight = sumDistances( sensorReadings.subList( i+1, i+21 ) );
-            if ( Math.abs( sumLeft - sumRight ) < 1.5 ) {
+            if ( Math.abs( sumLeft - sumRight ) < 2.0 ) {
                 minimumIndex = i;
                 break;
             }
@@ -163,7 +167,7 @@ public class Localizer extends Thread {
         int secondMinimumIndex = -2;
         double secondMinimumIndexAngle = sensorReadings.get( firstMinimumIndex ).getTheta() - Math.PI/2;
         for ( int i=firstMinimumIndex; i<sensorReadings.size(); i++ ) {
-            if ( Math.abs( secondMinimumIndexAngle - sensorReadings.get( i ).getTheta() ) < 0.01 ) {
+            if ( Math.abs( secondMinimumIndexAngle - sensorReadings.get( i ).getTheta() ) < 0.05 ) {
                 secondMinimumIndex = i;
                 break;
             }
@@ -222,16 +226,16 @@ public class Localizer extends Thread {
      */
     public double calculateStartingTheta() {
         if ( corner ==  1 ) {
-            return Math.PI/2;
+            return FieldConstants.CORNER_ONE_THETA;
         }
         if ( corner ==  2 ) {
-            return 0;
+            return FieldConstants.CORNER_TWO_THETA;
         }
         if ( corner ==  3 ) {
-            return 3*Math.PI/2;
+            return FieldConstants.CORNER_THREE_THETA;
         }
         if ( corner ==  4 ) {
-            return Math.PI;
+            return FieldConstants.CORNER_FOUR_THETA;
         }
         return 0;
     }

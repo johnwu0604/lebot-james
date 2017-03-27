@@ -21,7 +21,7 @@ public class OdometerCorrection extends Thread {
     private boolean hasTimedOut = false;
     private boolean correctingLeft = false;
     private boolean correctingRight = false;
-    private boolean running = true;
+    private volatile boolean running = false;
 
     /**
      * Our main constructor method
@@ -35,27 +35,28 @@ public class OdometerCorrection extends Thread {
         this.odometer = odometer;
         this.leftSensor = leftSensor;
         this.rightSensor = rightSensor;
-        this.leftSensor.start();
-        this.rightSensor.start();
     }
 
     /**
-     * Main thread
+     * Main thread. Must use method startRunning() to begin execution
      */
     public void run() {
         while ( true ) {
-            if ( running ) {
-                if ( isLineDetectedLeft() || isLineDetectedRight() ) {
-                    odometer.setCorrecting( true );
-                    doCorrection();
-                    odometer.setCorrecting( false );
-                    try { Thread.sleep( TimeConstants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
-                    hasTimedOut = false;
-                    correctingLeft = false;
-                    correctingRight = false;
-                    leftSensor.setLineDetected( false );
-                    rightSensor.setLineDetected( false );
-                }
+            // pause thread if it is not running
+            if ( !running ) {
+                try { pauseThread(); } catch ( Exception e ) {}
+            }
+            // check for line detection
+            if ( isLineDetectedLeft() || isLineDetectedRight() ) {
+                odometer.setCorrecting( true );
+                doCorrection();
+                odometer.setCorrecting( false );
+                try { Thread.sleep( TimeConstants.COLOR_SENSOR_HOLD_TIME ); } catch( Exception e ){}
+                hasTimedOut = false;
+                correctingLeft = false;
+                correctingRight = false;
+                leftSensor.setLineDetected( false );
+                rightSensor.setLineDetected( false );
             }
         }
     }
@@ -198,6 +199,18 @@ public class OdometerCorrection extends Thread {
     }
 
     /**
+     * A method to temporarily pause our thread
+     */
+    public void pauseThread() throws InterruptedException {
+        synchronized (this) {
+            while ( !running ) {
+                wait();
+            }
+            running = true;
+        }
+    }
+
+    /**
      * A method to temporarily stop our thread
      */
     public void stopRunning() {
@@ -213,6 +226,9 @@ public class OdometerCorrection extends Thread {
         leftSensor.startRunning();
         rightSensor.startRunning();
         running = true;
+        synchronized (this) {
+            notify();
+        }
     }
 
 }

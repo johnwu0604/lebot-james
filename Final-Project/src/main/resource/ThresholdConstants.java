@@ -35,7 +35,7 @@ public class ThresholdConstants {
     /**
      * The maximum distance we want to track obstacles
      */
-    public static final double OBSTACLE_TRACKING = 100;
+    public static final double OBSTACLE_TRACKING = 75;
 
     /**
      * The threshold for determining which square a coordinate is in.

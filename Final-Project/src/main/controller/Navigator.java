@@ -6,6 +6,7 @@ import main.resource.ThresholdConstants;
 import main.resource.NavigationConstants;
 import main.resource.RobotConstants;
 import java.util.Stack;
+import java.util.ArrayList;
 
 
 /**
@@ -20,6 +21,9 @@ public class Navigator {
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
     private OdometerCorrection odometerCorrection;
     private ObstacleAvoider obstacleAvoider;
+
+    // variables
+    private boolean correctionNeeded = true;
 
     /**
      * Default constructor for Navigator object.
@@ -43,14 +47,28 @@ public class Navigator {
      * @param square
      */
     public void travelToSquare( Square square ) {
-        while( square != odometer.getCurrentSquare() ){   //check break condition
-            makeBestMoves( square );
+        if(square == odometer.getLastSquare()){
+            Square lastSquare = odometer.getLastSquare();
+            int[] components = getComponentDistances(lastSquare);
+
+            if(components[0] != 0){
+                moveSquareX(components[0]);
+            } else {
+                moveSquareY(components[1]);
+            }
+
+        } else {
+
+            while (square != odometer.getCurrentSquare()) {   //check break condition
+                makeBestMoves(square);
+            }
         }
     }
 
 
     /**
      * A method to recursively execute the best allowed move until destination is reached
+     *
      * @param destination
      */
     public void makeBestMoves(Square destination){
@@ -71,23 +89,23 @@ public class Navigator {
                 moveCompleted = moveSquareX(-1);
             }
         }
-
     }
 
     /**
      * A method that returns the possible moves the robot can make, with priority
+     *
      * @param destination
      * @return stack of prioritized moves
      */
     public Stack<Square> getPossibleMoves(Square destination){
 
-        Stack<Square> possibleMoves = new Stack<>();
+        Stack<Square> possibleMoves = new Stack<Square>();
 
         possibleMoves.push( odometer.getLastSquare() );
 
         Square topPriority;
-        Square secondPriority;
-        Square thirdPriority;
+        Square secondPriority = null;
+        Square thirdPriority = null;
 
         Square northSquare = odometer.getNorthSquare();
         Square southSquare = odometer.getSouthSquare();
@@ -100,24 +118,44 @@ public class Navigator {
         // greater distance to travel in x
         if ( Math.abs( deltaX ) > Math.abs( deltaY ) ) {
             topPriority = deltaX > 0 ? eastSquare : westSquare;
-            secondPriority = deltaY > 0 ? northSquare : southSquare;
+            if(deltaY != 0){
+                secondPriority = deltaY > 0 ? northSquare : southSquare;
+            }
         } else { // greater distance to travel in y
             topPriority = deltaY > 0 ? northSquare : southSquare;
-            secondPriority = deltaX > 0 ? eastSquare : westSquare;
+            if(deltaX != 0) {
+                secondPriority = deltaX > 0 ? eastSquare : westSquare;
+            }
         }
+
+        ArrayList<Square> thirdPriorities = new ArrayList<Square>();
 
         // set last square remaining as third priority
         if (northSquare != topPriority && northSquare != secondPriority && northSquare != odometer.getLastSquare()){
-            thirdPriority = northSquare;
+            thirdPriorities.add(northSquare);
         } else if (southSquare != topPriority && southSquare != secondPriority && southSquare != odometer.getLastSquare()){
-            thirdPriority = southSquare;
+            thirdPriorities.add(southSquare);
         } else if (eastSquare != topPriority && eastSquare != secondPriority && eastSquare != odometer.getLastSquare()){
-            thirdPriority = eastSquare;
+            thirdPriorities.add(eastSquare);
         } else {
-            thirdPriority = westSquare;
+            thirdPriorities.add(westSquare);
         }
 
-        //
+        if(thirdPriorities.size() == 1) {
+            thirdPriority = thirdPriorities.get(0);
+        }else if (thirdPriorities.size() == 2){
+
+            double distOne = Math.hypot((double) thirdPriorities.get(0).getSquarePosition()[0], (double) thirdPriorities.get(0).getSquarePosition()[1]);
+            double distTwo = Math.hypot((double) thirdPriorities.get(1).getSquarePosition()[0], (double) thirdPriorities.get(1).getSquarePosition()[1]);
+
+            if(distOne <= distTwo){
+                secondPriority = thirdPriorities.get(0);
+                thirdPriority = thirdPriorities.get(1);
+            } else {
+                secondPriority = thirdPriorities.get(1);
+                thirdPriority = thirdPriorities.get(0);
+            }
+        }
 
         // third priority might be a wall (null)
         if ( thirdPriority != null && thirdPriority != odometer.getLastSquare() ) {
@@ -154,6 +192,9 @@ public class Navigator {
         // turn to the minimum angle
         turnTo( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
         // move to the specified point
+        if ( correctionNeeded ) {
+            odometerCorrection.startRunning();
+        }
         driveForward();
         while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
@@ -161,6 +202,9 @@ public class Navigator {
             }
         }
         stopMotors();
+        if ( correctionNeeded ) {
+            odometerCorrection.stopRunning();
+        }
     }
 
     /**
@@ -171,6 +215,9 @@ public class Navigator {
     public void travelToY( double yCoordinate ) {
         // turn to the minimum angle
         turnTo( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
+        if ( correctionNeeded ) {
+            odometerCorrection.startRunning();
+        }
         // move to the specified point
         driveForward();
         while ( Math.abs( odometer.getY() - yCoordinate ) > ThresholdConstants.POINT_REACHED) {
@@ -179,6 +226,9 @@ public class Navigator {
             }
         }
         stopMotors();
+        if ( correctionNeeded ) {
+            odometerCorrection.stopRunning();
+        }
     }
 
     /**
@@ -232,12 +282,14 @@ public class Navigator {
         Square destinationSquare = odometer.getFieldMapper().getMapping()[xDestination][currentY];
 
         if( isSquareAllowed( xDestination, currentY ) ){
-            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+            if(odometer.getPastSquares().contains(destinationSquare)){
+                travelToX( destinationSquare.getCenterCoordinate()[0] );
+                return true;
+            } else if ( obstacleAvoider.scanSquare( destinationSquare )) {
                 travelToX( destinationSquare.getCenterCoordinate()[0] );
                 return true;
             }
         }
-
         return false;
 
     }
@@ -259,7 +311,10 @@ public class Navigator {
         Square destinationSquare = odometer.getFieldMapper().getMapping()[currentX][yDestination];
 
         if( isSquareAllowed( currentX, yDestination ) ){
-            if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+            if(odometer.getPastSquares().contains(destinationSquare)){
+                travelToY( destinationSquare.getCenterCoordinate()[1] );
+                return true;
+            }else if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
                 travelToY( destinationSquare.getCenterCoordinate()[1] );
                 return true;
             }
@@ -285,7 +340,6 @@ public class Navigator {
      * @param theta the theta angle that we want to turn our vehicle
      */
     public void turnTo( double theta ) {
-        odometerCorrection.stopRunning();
         leftMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         rightMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         if( theta < 0 ) { // if angle is negative, turn to the left
@@ -296,7 +350,6 @@ public class Navigator {
             leftMotor.rotate( convertAngle( (theta*180)/Math.PI ) , true);
             rightMotor.rotate( -convertAngle( (theta*180)/Math.PI ) , false);
         }
-        odometerCorrection.startRunning();
     }
 
     /**
@@ -482,26 +535,37 @@ public class Navigator {
         }
     }
 
-    public void setOdometerCorrection( OdometerCorrection odometerCorrection ) {
+    /**
+     * A method to declare that correction is not needed for the current movement
+     *
+     * @param correctionNeeded
+     */
+    public void setCorrectionNeeded( boolean correctionNeeded ) {
+        this.correctionNeeded = correctionNeeded;
+    }
+
+    public void setOdometerCorrection(OdometerCorrection odometerCorrection ) {
         this.odometerCorrection = odometerCorrection;
     }
 
-    public Odometer getOdometer(){
-        return this.odometer;
-    }
-
+    /**
+     * A method to stop both motors
+     */
     public void stop(){
         leftMotor.stop(true);
         rightMotor.stop(false);
     }
 
-    public int[] getComponentDistances(Square destination){
-
+    /**
+     * A method to return the components distances to a destination in square units
+     *
+     * @param destination
+     * @return componentDistances in square units
+     */
+    public int[] getComponentDistances( Square destination ){
         int components[] = new int[2];
-
         components[0] = destination.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[0];
         components[1] = destination.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
-
         return components;
     }
 

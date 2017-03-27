@@ -6,21 +6,34 @@ import main.object.Square;
 import main.resource.ShootingConstants;
 
 /**
- * Created by Durham Abric on 3/24/17.
+ * A class that locates, and retrieves ball from retriever
+ *
+ * @author Durham Abric
  */
-
 public class BallRetriever {
 
+    // objects
     private Launcher launcher;
     private Navigator navigator;
-    private OdometerCorrection odometerCorrection;
+    private Odometer odometer;
 
-    public BallRetriever(Launcher launcher, OdometerCorrection odoCorrection){
+    /**
+     * Main constuctor for the ball retreiver class
+     *
+     * @param launcher
+     * @param odo
+     * @param nav
+     */
+    public BallRetriever(Launcher launcher, Odometer odo, Navigator nav){
         this.launcher = launcher;
-        this.navigator = launcher.getNavigator();
-        this.odometerCorrection = odoCorrection;
+        this.navigator = nav;
+        this.odometer = odo;
+
     }
 
+    /**
+     * A method to retrieve the ball
+     */
     public void getBall(){
 
         Square currentApproachSquare = approachDispenser();
@@ -35,57 +48,66 @@ public class BallRetriever {
         launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
 
         navigator.travelToSquare(chooseApproach());
-        odometerCorrection.startRunning();
+        navigator.setCorrectionNeeded(true);
 
     }
 
+    /**
+     * A method to approach the dispenser
+     *
+     * @return
+     */
     private Square approachDispenser(){
 
         Square approach = chooseApproach();
-        navigator.travelTo(navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[0],
-                navigator.getOdometer().getCurrentSquare().getCenterCoordinate()[1]);
+        navigator.travelToSquare(approach);
         return approach;
+
     }
 
+    /**
+     * A method to align to the dispenser
+     *
+     * @param currentSquare
+     */
     private void alignToDispenser(Square currentSquare){
 
-        odometerCorrection.stopRunning();
-
+        navigator.setCorrectionNeeded(false);
         launcher.retractArm();
 
-        Parameters parameters = navigator.getOdometer().getFieldMapper().getParameters();
+        Parameters parameters = odometer.getFieldMapper().getParameters();
         String dispDirection = parameters.getBallDispenserOrientation();
 
         if (dispDirection.equals("N")){
 
-            if (navigator.getOdometer().getCurrentSquare().getSquarePosition()[0] == parameters.getBallDispenserPosition()[0]) {
-                navigator.travelToX(navigator.getOdometer().getCurrentSquare().getEastLine());
+            if (odometer.getCurrentSquare().getSquarePosition()[0] == parameters.getBallDispenserPosition()[0]) {
+                navigator.travelToX(odometer.getCurrentSquare().getEastLine());
             } else {
-                navigator.travelToX(navigator.getOdometer().getCurrentSquare().getWestLine());
+                navigator.travelToX(odometer.getCurrentSquare().getWestLine());
             }
 
         } else if (dispDirection.equals("S")){
 
-            if (navigator.getOdometer().getCurrentSquare().getSquarePosition()[0] == parameters.getBallDispenserPosition()[0]) {
-                navigator.travelToX(navigator.getOdometer().getCurrentSquare().getEastLine());
+            if (odometer.getCurrentSquare().getSquarePosition()[0] == parameters.getBallDispenserPosition()[0]) {
+                navigator.travelToX(odometer.getCurrentSquare().getEastLine());
             } else {
-                navigator.travelToX(navigator.getOdometer().getCurrentSquare().getWestLine());
+                navigator.travelToX(odometer.getCurrentSquare().getWestLine());
             }
 
         } else if (dispDirection.equals("E")){
 
-            if (navigator.getOdometer().getCurrentSquare().getSquarePosition()[1] == parameters.getBallDispenserPosition()[1]) {
-                navigator.travelToY(navigator.getOdometer().getCurrentSquare().getNorthLine());
+            if (odometer.getCurrentSquare().getSquarePosition()[1] == parameters.getBallDispenserPosition()[1]) {
+                navigator.travelToY(odometer.getCurrentSquare().getNorthLine());
             } else {
-                navigator.travelToY(navigator.getOdometer().getCurrentSquare().getSouthLine());
+                navigator.travelToY(odometer.getCurrentSquare().getSouthLine());
             }
 
         } else if (dispDirection.equals("W")){
 
-            if (navigator.getOdometer().getCurrentSquare().getSquarePosition()[1] == parameters.getBallDispenserPosition()[1]) {
-                navigator.travelToY(navigator.getOdometer().getCurrentSquare().getNorthLine());
+            if (odometer.getCurrentSquare().getSquarePosition()[1] == parameters.getBallDispenserPosition()[1]) {
+                navigator.travelToY(odometer.getCurrentSquare().getNorthLine());
             } else {
-                navigator.travelToY(navigator.getOdometer().getCurrentSquare().getSouthLine());
+                navigator.travelToY(odometer.getCurrentSquare().getSouthLine());
             }
 
         }
@@ -93,24 +115,29 @@ public class BallRetriever {
         if(dispDirection.equals("N")){
             navigator.turnTo(0);
         } else if (dispDirection.equals("S")){
-            navigator.turnTo(180);
+            navigator.turnTo(Math.PI);
         } else if (dispDirection.equals("E")){
-            navigator.turnTo(90);
+            navigator.turnTo(Math.PI / 2);
         } else if (dispDirection.equals("W")){
-            navigator.turnTo(270);
+            navigator.turnTo(3*Math.PI/2);
         }
 
     }
 
+    /**
+     * A method to decide which square to use as our approach
+     *
+     * @return
+     */
     private Square chooseApproach(){
 
-        Square approach1 = navigator.getOdometer().getFieldMapper().calculateBallDispenserApproach()[0];
-        Square approach2 = navigator.getOdometer().getFieldMapper().calculateBallDispenserApproach()[1];
+        Square approach1 = odometer.getFieldMapper().calculateBallDispenserApproach()[0];
+        Square approach2 = odometer.getFieldMapper().calculateBallDispenserApproach()[1];
 
         double dist1 = Math.hypot(navigator.getComponentDistances(approach1)[0], navigator.getComponentDistances(approach1)[1]);
         double dist2 = Math.hypot(navigator.getComponentDistances(approach2)[0], navigator.getComponentDistances(approach2)[1]);
 
-        if(dist1 >= dist2){
+        if(dist1 <= dist2){
             return approach1;
         } else {
             return approach2;
