@@ -125,7 +125,7 @@ public class FinalProject {
 
         // instantiate launcher
         Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator );
-        BallRetriever retriever = new BallRetriever(launcher);
+        BallRetriever retriever = new BallRetriever(launcher, odometer, navigator);
 
         // start threads (except correction, start that after localizing)
         leftLightSensor.start(); // waits until further instruction to actually start
