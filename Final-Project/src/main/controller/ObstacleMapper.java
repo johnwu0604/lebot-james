@@ -40,7 +40,7 @@ public class ObstacleMapper extends Thread {
      * Main thread. Must use method startRunning() to begin execution
      */
     public void run() {
-        ArrayList<SensorReading> sensorReadings = new ArrayList<>();
+        ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
         while ( true ) {
             // pause thread if it is not running
             if ( !running ) {

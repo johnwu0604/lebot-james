@@ -34,6 +34,7 @@ public class BallRetriever {
         launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
 
         navigator.travelToSquare(chooseApproach());
+        navigator.setCorrectionNeeded(true);
 
     }
 
@@ -47,6 +48,7 @@ public class BallRetriever {
 
     private void alignToDispenser(Square currentSquare){
 
+        navigator.setCorrectionNeeded(false);
         launcher.retractArm();
 
         Parameters parameters = navigator.getOdometer().getFieldMapper().getParameters();

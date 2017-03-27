@@ -94,7 +94,7 @@ public class FinalProject {
         emergencyStopper.start();
 
         int[] defenderZone = {4,4};
-        int[] ballDispenserPosition  = {-1,3};
+        int[] ballDispenserPosition  = {4,7};
         Parameters parameters = new Parameters();
         parameters.setForwardCorner(1);
         parameters.setForwardLine(7);
@@ -146,7 +146,7 @@ public class FinalProject {
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-//        retriever.getBall();
+        retriever.getBall();
 
        /* navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][7]);
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][7]);
@@ -161,7 +161,7 @@ public class FinalProject {
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][0]);
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]); */
 
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][1]);
+       /* navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][1]);
         launcher.retractArm();
         navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][4]);
         navigator.setCorrectionNeeded( false );
@@ -174,9 +174,9 @@ public class FinalProject {
 
         launcher.setLaunchMotorAcceleration(ShootingConstants.BALL_LOWERING_ACCELERATION);
         launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
-        navigator.setCorrectionNeeded( true );
+        navigator.setCorrectionNeeded( true );*/
 
-        Sound.beepSequence();
+       // Sound.beepSequence();
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
