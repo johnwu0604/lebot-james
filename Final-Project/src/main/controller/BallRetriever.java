@@ -94,11 +94,11 @@ public class BallRetriever {
         if(dispDirection.equals("N")){
             navigator.turnTo(0);
         } else if (dispDirection.equals("S")){
-            navigator.turnTo(180);
+            navigator.turnTo(Math.PI);
         } else if (dispDirection.equals("E")){
-            navigator.turnTo(90);
+            navigator.turnTo(Math.PI / 2);
         } else if (dispDirection.equals("W")){
-            navigator.turnTo(270);
+            navigator.turnTo(3*Math.PI/2);
         }
 
     }

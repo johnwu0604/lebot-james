@@ -101,7 +101,7 @@ public class FinalProject {
         parameters.setForwardTeam(11);
         parameters.setDefenderZone(defenderZone);
         parameters.setBallDispenserPosition(ballDispenserPosition);
-        parameters.setBallDispenserOrientation("N");
+        parameters.setBallDispenserOrientation("E");
 
 
         // map field
