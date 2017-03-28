@@ -4,6 +4,7 @@ import main.object.Square;
 import main.object.UltrasonicSensor;
 import main.resource.FieldConstants;
 import main.resource.TimeConstants;
+import main.resource.ThresholdConstants;
 
 /**
  * A controller class that maps obstacles along the field
