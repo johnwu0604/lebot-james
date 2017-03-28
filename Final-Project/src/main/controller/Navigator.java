@@ -21,7 +21,9 @@ public class Navigator {
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
     private OdometerCorrection odometerCorrection;
     private ObstacleAvoider obstacleAvoider;
+    private ObstacleMapper obstacleMapper;
 
+    // variables
     private boolean correctionNeeded = true;
 
     /**
@@ -32,11 +34,12 @@ public class Navigator {
      * @param odometer the odometer controller used in the robot
      */
     public Navigator( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Odometer odometer,
-                      ObstacleAvoider obstacleAvoider ) {
+                      ObstacleAvoider obstacleAvoider, ObstacleMapper obstacleMapper ) {
         this.odometer = odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.obstacleAvoider = obstacleAvoider;
+        this.obstacleMapper = obstacleMapper;
         obstacleAvoider.setNavigator( this );
     }
 
@@ -67,6 +70,7 @@ public class Navigator {
 
     /**
      * A method to recursively execute the best allowed move until destination is reached
+     *
      * @param destination
      */
     public void makeBestMoves(Square destination){
@@ -87,11 +91,11 @@ public class Navigator {
                 moveCompleted = moveSquareX(-1);
             }
         }
-
     }
 
     /**
      * A method that returns the possible moves the robot can make, with priority
+     *
      * @param destination
      * @return stack of prioritized moves
      */
@@ -189,12 +193,13 @@ public class Navigator {
      * @param xCoordinate the x coordinate we want to travel to
      */
     public void travelToX( double xCoordinate ) {
-        // turn to the minimum angle
-        turnTo( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
+        // turnRobot to the minimum angle
+        turnRobot( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
         // move to the specified point
         if ( correctionNeeded ) {
             odometerCorrection.startRunning();
         }
+        obstacleMapper.startRunning();
         driveForward();
         while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
@@ -205,6 +210,7 @@ public class Navigator {
         if ( correctionNeeded ) {
             odometerCorrection.stopRunning();
         }
+        obstacleMapper.stopRunning();
     }
 
     /**
@@ -213,8 +219,8 @@ public class Navigator {
      * @param yCoordinate the y coordinate we want to travel to
      */
     public void travelToY( double yCoordinate ) {
-        // turn to the minimum angle
-        turnTo( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
+        // turnRobot to the minimum angle
+        turnRobot( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
         if ( correctionNeeded ) {
             odometerCorrection.startRunning();
         }
@@ -239,8 +245,8 @@ public class Navigator {
     public void travelToXBackward( double xCoordinate ) {
         double minAngle = calculateMinAngle( xCoordinate - odometer.getX(), 0 );
         minAngle += minAngle < 0 ? Math.PI : - Math.PI;
-        // turn to the minimum angle
-        turnTo( minAngle );
+        // turnRobot to the minimum angle
+        turnRobot( minAngle );
         // move to the specified point
         while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             driveBackward();
@@ -256,8 +262,8 @@ public class Navigator {
     public void travelToYBackward( double yCoordinate ) {
         double minAngle = calculateMinAngle( 0, yCoordinate - odometer.getY() );
         minAngle += minAngle < 0 ? Math.PI : - Math.PI;
-        // turn to the minimum angle
-        turnTo( minAngle );
+        // turnRobot to the minimum angle
+        turnRobot( minAngle );
         // move to the specified point
         while ( Math.abs( odometer.getY() - yCoordinate ) > ThresholdConstants.POINT_REACHED) {
             driveBackward();
@@ -335,38 +341,38 @@ public class Navigator {
 
 
     /**
-     * A method to turn our vehicle to a certain angle in either direction
+     * A method to turnRobot our vehicle to a certain angle in either direction
      *
-     * @param theta the theta angle that we want to turn our vehicle
+     * @param theta the theta angle that we want to turnRobot our vehicle
      */
-    public void turnTo( double theta ) {
+    public void turnRobot(double theta ) {
         leftMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         rightMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
-        if( theta < 0 ) { // if angle is negative, turn to the left
+        if( theta < 0 ) { // if angle is negative, turnRobot to the left
             leftMotor.rotate( -convertAngle( -(theta*180)/Math.PI ) , true );
             rightMotor.rotate( convertAngle( -(theta*180)/Math.PI ) , false );
         }
-        else { // angle is positive, turn to the right
+        else { // angle is positive, turnRobot to the right
             leftMotor.rotate( convertAngle( (theta*180)/Math.PI ) , true);
             rightMotor.rotate( -convertAngle( (theta*180)/Math.PI ) , false);
         }
     }
 
     /**
-     * A method to rotate the left motor forward
+     * A method to rotate the left motor forward slowly
      */
-    public void rotateLeftMotorForward() {
-        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
-        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
+    public void rotateLeftMotorForwardSlow() {
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
         leftMotor.forward();
     }
 
     /**
-     * A method to rotate the right motor forward
+     * A method to rotate the right motor forward slowly
      */
-    public void rotateRightMotorForward() {
-        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
-        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
+    public void rotateRightMotorForwardSlow() {
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
         rightMotor.forward();
     }
 
@@ -389,6 +395,24 @@ public class Navigator {
     }
 
     /**
+     * A method to rotate the left motor backward slowly
+     */
+    public void rotateLeftMotorBackwardSlow() {
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
+        leftMotor.backward();
+    }
+
+    /**
+     * A method to rotate the right motor backward slowly
+     */
+    public void rotateRightMotorBackwardSlow() {
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
+        rightMotor.backward();
+    }
+
+    /**
      * A method to drive the vehicle forward
      */
     public void driveForward() {
@@ -396,6 +420,18 @@ public class Navigator {
         rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
         leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
         rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
+        leftMotor.forward();
+        rightMotor.forward();
+    }
+
+    /**
+     * A method to drive the vehicle forward slowly
+     */
+    public void driveForwardSlow() {
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
         leftMotor.forward();
         rightMotor.forward();
     }
@@ -476,12 +512,12 @@ public class Navigator {
 
 
     /**
-     * Calculates the minimum angle to turn to.
+     * Calculates the minimum angle to turnRobot to.
      *
      * @param deltaX the x coordinate of our destination
      * @param deltaY the y coordinate of our destination
      *
-     * @return the minimum angle we need to turn
+     * @return the minimum angle we need to turnRobot
      */
     public double calculateMinAngle( double deltaX , double deltaY ) {
         // calculate the minimum angle
@@ -507,9 +543,9 @@ public class Navigator {
 
 
     /**
-     * Determine the angle our motors need to rotate in order for vehicle to turn a certain angle.
+     * Determine the angle our motors need to rotate in order for vehicle to turnRobot a certain angle.
      *
-     * @param angle the angle we want to turn
+     * @param angle the angle we want to turnRobot
      * @return the tacho count that we need to rotate
      */
     public int convertAngle( double angle ) {
@@ -536,15 +572,6 @@ public class Navigator {
     }
 
     /**
-     * A method that returns whether correction is needed for the current movement
-     *
-     * @return
-     */
-    public boolean isCorrectionNeeded() {
-        return correctionNeeded;
-    }
-
-    /**
      * A method to declare that correction is not needed for the current movement
      *
      * @param correctionNeeded
@@ -557,23 +584,59 @@ public class Navigator {
         this.odometerCorrection = odometerCorrection;
     }
 
-    public Odometer getOdometer(){
-        return this.odometer;
-    }
-
+    /**
+     * A method to stop both motors
+     */
     public void stop(){
         leftMotor.stop(true);
         rightMotor.stop(false);
     }
 
-    public int[] getComponentDistances(Square destination){
+    /**
+     * A method to stop both motors
+     */
+    public void stopFast(){
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_FAST );
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_FAST );
+        leftMotor.stop(true);
+        rightMotor.stop(false);
+    }
 
+    /**
+     * A method to return the components distances to a destination in square units
+     *
+     * @param destination
+     * @return componentDistances in square units
+     */
+    public int[] getComponentDistances( Square destination ){
         int components[] = new int[2];
-
         components[0] = destination.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[0];
         components[1] = destination.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
-
         return components;
+    }
+
+    /**
+     * A method to turnRobot towards the center of a specified square
+     *
+     * @param square
+     */
+    public void turnToSquare( Square square ) {
+        double deltaX = square.getCenterCoordinate()[0] - odometer.getX();
+        double deltaY = square.getCenterCoordinate()[1] - odometer.getY();
+        turnRobot( calculateMinAngle( deltaX, deltaY ) );
+    }
+
+    /**
+     * A method to travel directly a certain distance
+     *
+     * @param distance
+     */
+    public void moveDistance( double distance ) {
+        // drive forward two tiles
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW );
+        leftMotor.rotate( convertDistance( distance ), true);
+        rightMotor.rotate( convertDistance( distance ), false);
     }
 
 

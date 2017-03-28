@@ -3,11 +3,7 @@ package main.controller;
 import main.object.Square;
 import main.object.UltrasonicSensor;
 import main.resource.FieldConstants;
-import main.resource.RobotConstants;
 import main.resource.TimeConstants;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A controller class that maps obstacles along the field
@@ -49,7 +45,7 @@ public class ObstacleAvoider {
         frontSensor.startRunning();
         double x = square.getCenterCoordinate()[0];
         double y = square.getCenterCoordinate()[1];
-        navigator.turnTo( navigator.calculateMinAngle( x - odometer.getX(), y - odometer.getY() ) );
+        navigator.turnRobot( navigator.calculateMinAngle( x - odometer.getX(), y - odometer.getY() ) );
         if ( scanSlightLeft() ) {
             updateMapping( square );
             return false;

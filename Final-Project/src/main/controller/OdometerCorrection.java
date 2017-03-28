@@ -214,19 +214,20 @@ public class OdometerCorrection extends Thread {
      * A method to temporarily stop our thread
      */
     public void stopRunning() {
-        leftSensor.stopRunning();
-        rightSensor.stopRunning();
-        running = false;
+        synchronized ( this ) {
+            leftSensor.stopRunning();
+            rightSensor.stopRunning();
+            running = false;
+        }
     }
 
     /**
      * A method to restart our thread
      */
     public void startRunning() {
-        leftSensor.startRunning();
-        rightSensor.startRunning();
-        running = true;
-        synchronized (this) {
+        synchronized ( this ) {
+            leftSensor.startRunning();
+            rightSensor.startRunning();
             notify();
         }
     }
