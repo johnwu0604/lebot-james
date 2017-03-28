@@ -214,8 +214,6 @@ public class OdometerCorrection extends Thread {
      */
     public void stopRunning() {
         synchronized ( this ) {
-            leftSensor.stopRunning();
-            rightSensor.stopRunning();
             running = false;
         }
     }
@@ -225,8 +223,7 @@ public class OdometerCorrection extends Thread {
      */
     public void startRunning() {
         synchronized ( this ) {
-            leftSensor.startRunning();
-            rightSensor.startRunning();
+            resetSensors();
             running = true;
             notifyAll();
         }
@@ -235,20 +232,10 @@ public class OdometerCorrection extends Thread {
     /**
      * A method to only start the sensors
      */
-    public void startRunningSensors() {
+    public void resetSensors() {
         synchronized ( this ) {
-            leftSensor.startRunning();
-            rightSensor.startRunning();
-        }
-    }
-
-    /**
-     * A method to only stop the sensors
-     */
-    public void stopRunningSensors() {
-        synchronized ( this ) {
-            leftSensor.stopRunning();
-            rightSensor.stopRunning();
+            leftSensor.setLineDetected( false );
+            rightSensor.setLineDetected( false );
         }
     }
 

@@ -18,6 +18,11 @@ public class TimeConstants {
     public static final long ULTRASONICSENSOR_SENSOR_READING_PERIOD = 10;
 
     /**
+     * Light sensor reading interval (ms)
+     */
+    public static final long LIGHT_SENSOR_READING_PERIOD = 10;
+
+    /**
      * Color sensor reading hold time to allow time for line to pass
      */
     public static final long COLOR_SENSOR_HOLD_TIME = 2000;

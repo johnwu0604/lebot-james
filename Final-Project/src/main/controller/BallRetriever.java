@@ -156,7 +156,7 @@ public class BallRetriever {
      * A method to align our vehicle to the first line in front
      */
     private void moveToLine() {
-        odometerCorrection.startRunningSensors();
+        odometerCorrection.resetSensors();
         navigator.driveForwardSlow();
         while ( !odometerCorrection.isLineDetectedRight() && !odometerCorrection.isLineDetectedLeft() ) {
             navigator.driveForwardSlow();
@@ -164,8 +164,6 @@ public class BallRetriever {
         navigator.stop();
         alignToLine();
         navigator.moveDistance( RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE - 0.5 );
-        odometerCorrection.stopRunningSensors();
-
     }
 
     /**
