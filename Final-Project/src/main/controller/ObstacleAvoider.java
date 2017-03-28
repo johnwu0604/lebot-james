@@ -51,7 +51,7 @@ public class ObstacleAvoider extends Thread {
      */
     public void run() {
         while ( true ) {
-            ArrayList<SensorReading> sensorReadings = new ArrayList<>();
+            ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
             while ( running ) {
                 if ( leftSensor.getFilteredLeftSensorData() < ThresholdConstants.OBSTACLE_TRACKING ) {
                     int numberTimesAboveThreshold = 0;
