@@ -124,7 +124,7 @@ public class ObstacleAvoider {
      * @param square
      */
     public void updateMapping( Square square ) {
-        Sound.beepSequence();
+        Sound.beep();
         int x = square.getSquarePosition()[0];
         int y = square.getSquarePosition()[1];
         odometer.getFieldMapper().getMapping()[x][y].setAllowed( false );
