@@ -4,7 +4,6 @@ import main.object.Square;
 import main.object.UltrasonicSensor;
 import main.resource.FieldConstants;
 import main.resource.TimeConstants;
-import main.resource.ThresholdConstants;
 
 /**
  * A controller class that maps obstacles along the field
@@ -34,51 +33,6 @@ public class ObstacleAvoider {
      */
     public void setNavigator( Navigator navigator ) {
         this.navigator = navigator;
-    }
-
-    /**
-     * Our main thread that scans for obstacles on the left while moving
-     */
-    public void run() {
-        while ( true ) {
-            ArrayList<SensorReading> sensorReadings = new ArrayList<>();
-            while ( running ) {
-                if ( leftSensor.getFilteredLeftSensorData() < ThresholdConstants.OBSTACLE_TRACKING ) {
-                    int numberTimesAboveThreshold = 0;
-                    double startTime = System.currentTimeMillis();
-                    while ( !detectionTimedOut( startTime ) ) {
-                        float distance = leftSensor.getFilteredLeftSensorData();
-                        if ( distance > ThresholdConstants.OBSTACLE_TRACKING ) {
-                            numberTimesAboveThreshold ++;
-                        }
-                        double[] sensorCoordinate = calculateLeftSensorCoordinate( odometer.getX(), odometer.getY() );
-                        SensorReading currentReading = new SensorReading( sensorCoordinate[0],
-                                sensorCoordinate[1], odometer.getTheta(), distance );
-                        sensorReadings.add( currentReading );
-                    }
-                    if ( numberTimesAboveThreshold < sensorReadings.size()*0.2 ) {
-                        if ( calculateAverageDistance( sensorReadings ) < ThresholdConstants.OBSTACLE_TRACKING ) {
-                            updateMapping( sensorReadings );
-                        }
-                    }
-                    sensorReadings.clear();
-                }
-            }
-        }
-    }
-
-    /**
-     * A method to temporarily start our thread
-     */
-    public void startRunning() {
-        this.running = true;
-    }
-
-    /**
-     * A method to temporarily stop our thread
-     */
-    public void stopRunning() {
-        this.running = false;
     }
 
     /**
