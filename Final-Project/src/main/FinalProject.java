@@ -144,8 +144,8 @@ public class FinalProject {
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        playOffenseWithMapping( navigator, odometer, obstacleMapper, ballRetriever, launcher );
-//        playOffense( navigator, odometer, ballRetriever, launcher );
+//        playOffenseWithMapping( navigator, odometer, obstacleMapper, ballRetriever, launcher );
+        playOffense( navigator, odometer, ballRetriever, launcher );
 //        playDefense( navigator, odometer );
 
         int buttonChoice = Button.waitForAnyPress();
@@ -178,6 +178,7 @@ public class FinalProject {
      * @param launcher
      */
     private static void playOffense( Navigator navigator, Odometer odometer, BallRetriever ballRetriever, Launcher launcher ) {
+        navigator.setObstacleMappingNeeded( false );
         ballRetriever.getBall();
     }
 

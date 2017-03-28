@@ -171,7 +171,7 @@ public class BallRetriever {
         }
         navigator.stop();
         alignToLine();
-        navigator.moveDistance( RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE );
+        navigator.moveDistance( RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE - 0.5 );
 
     }
 
@@ -187,6 +187,17 @@ public class BallRetriever {
         while ( !isLineDetectedRight() && !hasTimedOut( startTime ) ) {
             navigator.rotateRightMotorForwardSlow();
             aligningRight = true;
+        }
+        startTime = System.currentTimeMillis();
+        if ( aligningLeft ) {
+            while ( !holdTimedOut( startTime ) ) {
+                navigator.rotateLeftMotorForwardSlow();
+            }
+        }
+        if ( aligningRight ) {
+            while ( !holdTimedOut( startTime ) ) {
+                navigator.rotateRightMotorForwardSlow();
+            }
         }
         navigator.stopFast();
         if ( alignmentTimedOut ) {
@@ -223,6 +234,18 @@ public class BallRetriever {
     public boolean hasTimedOut( double startTime ) {
         double currentTime = System.currentTimeMillis();
         alignmentTimedOut = currentTime - startTime < TimeConstants.ALIGNMENT_MAX_TIME ? false : true;
+        return alignmentTimedOut;
+    }
+
+    /**
+     * A method to determine if our alignment has timed out or not
+     *
+     * @param startTime
+     * @return hasTimedOut
+     */
+    public boolean holdTimedOut( double startTime ) {
+        double currentTime = System.currentTimeMillis();
+        alignmentTimedOut = currentTime - startTime < TimeConstants.ALIGNMENT_HOLD_TIME ? false : true;
         return alignmentTimedOut;
     }
 
