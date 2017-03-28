@@ -10,7 +10,7 @@ public class ShootingConstants {
     /**
      * angle to raise arm to retireve ball
      */
-    public static final int BALL_RETRIEVAL_ANGLE = 40;
+    public static final int BALL_RETRIEVAL_ANGLE = 47;
 
     /**
      * slow acceleration to lower ball without dropping it

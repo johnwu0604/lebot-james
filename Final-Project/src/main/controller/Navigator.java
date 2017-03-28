@@ -21,6 +21,11 @@ public class Navigator {
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
     private OdometerCorrection odometerCorrection;
     private ObstacleAvoider obstacleAvoider;
+    private ObstacleMapper obstacleMapper;
+
+    // variables
+    private boolean correctionNeeded = true;
+    private boolean obstacleMappingNeeded = false;
 
     /**
      * Default constructor for Navigator object.
@@ -30,11 +35,12 @@ public class Navigator {
      * @param odometer the odometer controller used in the robot
      */
     public Navigator( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Odometer odometer,
-                      ObstacleAvoider obstacleAvoider ) {
+                      ObstacleAvoider obstacleAvoider, ObstacleMapper obstacleMapper ) {
         this.odometer = odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.obstacleAvoider = obstacleAvoider;
+        this.obstacleMapper = obstacleMapper;
         obstacleAvoider.setNavigator( this );
     }
 
@@ -66,6 +72,7 @@ public class Navigator {
 
     /**
      * A method to recursively execute the best allowed move until destination is reached
+     *
      * @param destination
      */
     public void makeBestMoves(Square destination, ArrayList<Square> recentMoves){
@@ -98,7 +105,6 @@ public class Navigator {
                 }
             }
         }
-
     }
 
     /**
@@ -188,64 +194,32 @@ public class Navigator {
 
         if(thirdPriorities.size() == 1) {
             thirdPriority = thirdPriorities.get(0);
-        }else{
+        }else {
 
-            double distOne = Math.hypot((double) (thirdPriorities.get(0).getSquarePosition()[0]-destination.getSquarePosition()[0]),
-                    (double) (thirdPriorities.get(0).getSquarePosition()[1]-destination.getSquarePosition()[1]));
-            double distTwo = Math.hypot((double) (thirdPriorities.get(1).getSquarePosition()[0]-destination.getSquarePosition()[0]),
-                    (double) (thirdPriorities.get(1).getSquarePosition()[1]-destination.getSquarePosition()[1]));
+            double distOne = Math.hypot((double) (thirdPriorities.get(0).getSquarePosition()[0] - destination.getSquarePosition()[0]),
+                    (double) (thirdPriorities.get(0).getSquarePosition()[1] - destination.getSquarePosition()[1]));
+            double distTwo = Math.hypot((double) (thirdPriorities.get(1).getSquarePosition()[0] - destination.getSquarePosition()[0]),
+                    (double) (thirdPriorities.get(1).getSquarePosition()[1] - destination.getSquarePosition()[1]));
 
-                if (distOne < distTwo){ //Opt for square TOWARDS destination
-                    secondPriority = thirdPriorities.get(0);
-                    thirdPriority = thirdPriorities.get(1);
-                } else if (distTwo < distOne){
-                    secondPriority = thirdPriorities.get(1);
-                    thirdPriority = thirdPriorities.get(0);
-                } else if(deltaX == 0){ //If both possible moves equidistant
-                    //obstacle directly in path, move AROUND, not AWAY, i.e. parallel to obstacle
-                        if (thirdPriorities.get(0).getSquarePosition()[0] == odometer.getCurrentSquare().getSquarePosition()[0]){
-                           secondPriority = thirdPriorities.get(1); //Y-direction move
-                           thirdPriority = thirdPriorities.get(0); //X-direction move
-                        } else if (thirdPriorities.get(1).getSquarePosition()[0] == odometer.getCurrentSquare().getSquarePosition()[0]){
-                            secondPriority = thirdPriorities.get(0); //X-direction move
-                            thirdPriority = thirdPriorities.get(1); //Y-direction move
-                        } else {
-                            if(getNextSquare() == thirdPriorities.get(0)){ //maintain current heading before choosing to turn
-                                secondPriority = thirdPriorities.get(0);
-                                thirdPriority = thirdPriorities.get(1);
-                            } else if (getNextSquare() == thirdPriorities.get(1)){
-                                secondPriority = thirdPriorities.get(1);
-                                thirdPriority = thirdPriorities.get(0);
-                            } else { //Arbitrary choice, prefers to move in +/- Y-direction
-                                secondPriority = thirdPriorities.get(0);
-                                thirdPriority = thirdPriorities.get(1);
-                            }
-                        }
-                } else if (deltaY == 0) {
-                     //obstacle directly in path, move AROUND, not AWAY, i.e. parallel to obstacle
-                        if (thirdPriorities.get(0).getSquarePosition()[1] == odometer.getCurrentSquare().getSquarePosition()[1]){
-                            secondPriority = thirdPriorities.get(1);
-                            thirdPriority = thirdPriorities.get(0);
-                        } else if (thirdPriorities.get(1).getSquarePosition()[1] == odometer.getCurrentSquare().getSquarePosition()[1]){
-                            secondPriority = thirdPriorities.get(0);
-                            thirdPriority = thirdPriorities.get(1);
-                        } else {
-                            if(getNextSquare() == thirdPriorities.get(0)){ //maintain current heading before choosing to turn
-                                secondPriority = thirdPriorities.get(0);
-                                thirdPriority = thirdPriorities.get(1);
-                            } else if (getNextSquare() == thirdPriorities.get(1)){
-                                secondPriority = thirdPriorities.get(1);
-                                thirdPriority = thirdPriorities.get(0);
-                            } else { //Arbitrary choice, prefers to move in +/- Y-direction
-                                secondPriority = thirdPriorities.get(0);
-                                thirdPriority = thirdPriorities.get(1);
-                            }
-                        }
-                } else { //maintain current heading before choosing to turn
-                    if(getNextSquare() == thirdPriorities.get(0)){
+            if (distOne < distTwo) { //Opt for square TOWARDS destination
+                secondPriority = thirdPriorities.get(0);
+                thirdPriority = thirdPriorities.get(1);
+            } else if (distTwo < distOne) {
+                secondPriority = thirdPriorities.get(1);
+                thirdPriority = thirdPriorities.get(0);
+            } else if (deltaX == 0) { //If both possible moves equidistant
+                //obstacle directly in path, move AROUND, not AWAY, i.e. parallel to obstacle
+                if (thirdPriorities.get(0).getSquarePosition()[0] == odometer.getCurrentSquare().getSquarePosition()[0]) {
+                    secondPriority = thirdPriorities.get(1); //Y-direction move
+                    thirdPriority = thirdPriorities.get(0); //X-direction move
+                } else if (thirdPriorities.get(1).getSquarePosition()[0] == odometer.getCurrentSquare().getSquarePosition()[0]) {
+                    secondPriority = thirdPriorities.get(0); //X-direction move
+                    thirdPriority = thirdPriorities.get(1); //Y-direction move
+                } else {
+                    if (getNextSquare() == thirdPriorities.get(0)) { //maintain current heading before choosing to turn
                         secondPriority = thirdPriorities.get(0);
                         thirdPriority = thirdPriorities.get(1);
-                    } else if (getNextSquare() == thirdPriorities.get(1)){
+                    } else if (getNextSquare() == thirdPriorities.get(1)) {
                         secondPriority = thirdPriorities.get(1);
                         thirdPriority = thirdPriorities.get(0);
                     } else { //Arbitrary choice, prefers to move in +/- Y-direction
@@ -253,6 +227,39 @@ public class Navigator {
                         thirdPriority = thirdPriorities.get(1);
                     }
                 }
+            } else if (deltaY == 0) {
+                //obstacle directly in path, move AROUND, not AWAY, i.e. parallel to obstacle
+                if (thirdPriorities.get(0).getSquarePosition()[1] == odometer.getCurrentSquare().getSquarePosition()[1]) {
+                    secondPriority = thirdPriorities.get(1);
+                    thirdPriority = thirdPriorities.get(0);
+                } else if (thirdPriorities.get(1).getSquarePosition()[1] == odometer.getCurrentSquare().getSquarePosition()[1]) {
+                    secondPriority = thirdPriorities.get(0);
+                    thirdPriority = thirdPriorities.get(1);
+                } else {
+                    if (getNextSquare() == thirdPriorities.get(0)) { //maintain current heading before choosing to turn
+                        secondPriority = thirdPriorities.get(0);
+                        thirdPriority = thirdPriorities.get(1);
+                    } else if (getNextSquare() == thirdPriorities.get(1)) {
+                        secondPriority = thirdPriorities.get(1);
+                        thirdPriority = thirdPriorities.get(0);
+                    } else { //Arbitrary choice, prefers to move in +/- Y-direction
+                        secondPriority = thirdPriorities.get(0);
+                        thirdPriority = thirdPriorities.get(1);
+                    }
+                }
+            } else { //maintain current heading before choosing to turn
+                if (getNextSquare() == thirdPriorities.get(0)) {
+                    secondPriority = thirdPriorities.get(0);
+                    thirdPriority = thirdPriorities.get(1);
+                } else if (getNextSquare() == thirdPriorities.get(1)) {
+                    secondPriority = thirdPriorities.get(1);
+                    thirdPriority = thirdPriorities.get(0);
+                } else { //Arbitrary choice, prefers to move in +/- Y-direction
+                    secondPriority = thirdPriorities.get(0);
+                    thirdPriority = thirdPriorities.get(1);
+                }
+            }
+
         }
 
         if ( fourthPriority != null) {
@@ -289,9 +296,8 @@ public class Navigator {
      * @param xCoordinate the x coordinate we want to travel to
      */
     public void travelToX( double xCoordinate ) {
-        // turn to the minimum angle
-        turnTo( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
-        // move to the specified point
+        turnRobot( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
+        turnOnNecessaryThreads();
         driveForward();
         while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
@@ -299,6 +305,7 @@ public class Navigator {
             }
         }
         stopMotors();
+        turnOffNecessaryThreads();
     }
 
     /**
@@ -307,9 +314,8 @@ public class Navigator {
      * @param yCoordinate the y coordinate we want to travel to
      */
     public void travelToY( double yCoordinate ) {
-        // turn to the minimum angle
-        turnTo( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
-        // move to the specified point
+        turnRobot( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
+        turnOnNecessaryThreads();
         driveForward();
         while ( Math.abs( odometer.getY() - yCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
@@ -317,6 +323,7 @@ public class Navigator {
             }
         }
         stopMotors();
+        turnOffNecessaryThreads();
     }
 
     /**
@@ -327,8 +334,8 @@ public class Navigator {
     public void travelToXBackward( double xCoordinate ) {
         double minAngle = calculateMinAngle( xCoordinate - odometer.getX(), 0 );
         minAngle += minAngle < 0 ? Math.PI : - Math.PI;
-        // turn to the minimum angle
-        turnTo( minAngle );
+        // turnRobot to the minimum angle
+        turnRobot( minAngle );
         // move to the specified point
         while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             driveBackward();
@@ -344,8 +351,8 @@ public class Navigator {
     public void travelToYBackward( double yCoordinate ) {
         double minAngle = calculateMinAngle( 0, yCoordinate - odometer.getY() );
         minAngle += minAngle < 0 ? Math.PI : - Math.PI;
-        // turn to the minimum angle
-        turnTo( minAngle );
+        // turnRobot to the minimum angle
+        turnRobot( minAngle );
         // move to the specified point
         while ( Math.abs( odometer.getY() - yCoordinate ) > ThresholdConstants.POINT_REACHED) {
             driveBackward();
@@ -370,15 +377,11 @@ public class Navigator {
         Square destinationSquare = odometer.getFieldMapper().getMapping()[xDestination][currentY];
 
         if( isSquareAllowed( xDestination, currentY ) ){
-            if(odometer.getPastSquares().contains(destinationSquare)){
-                travelToX( destinationSquare.getCenterCoordinate()[0] );
-                return true;
-            } else if ( obstacleAvoider.scanSquare( destinationSquare )) {
+            if ( isMovePossible( destinationSquare ) ) {
                 travelToX( destinationSquare.getCenterCoordinate()[0] );
                 return true;
             }
         }
-
         return false;
 
     }
@@ -400,15 +403,33 @@ public class Navigator {
         Square destinationSquare = odometer.getFieldMapper().getMapping()[currentX][yDestination];
 
         if( isSquareAllowed( currentX, yDestination ) ){
-            if(odometer.getPastSquares().contains(destinationSquare)){
-                travelToY( destinationSquare.getCenterCoordinate()[1] );
-                return true;
-            }else if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+            if ( isMovePossible( destinationSquare ) ) {
                 travelToY( destinationSquare.getCenterCoordinate()[1] );
                 return true;
             }
         }
+
         return false;
+    }
+
+    /**
+     * A method to determine whether a move is possible by scanning the square if needed
+     *
+     * @param destination
+     * @return isMovePossible
+     */
+    public boolean isMovePossible( Square destination ) {
+        // if move has been made, then we can make the move again
+        if ( odometer.getPastSquares().contains( destination ) ) {
+            return true;
+        }
+        // if mapping is needed or we are at the edge squares then a scan is needed
+        if ( obstacleMappingNeeded || odometer.getFieldMapper().isEdgeSquare( destination ) ) {
+            if ( !obstacleAvoider.scanSquare( destination ) ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -416,7 +437,7 @@ public class Navigator {
      *
      * @param x
      * @param y
-     * @return is the square allowed
+     * @return isSquareAllowed
      */
     public boolean isSquareAllowed( int x, int y ) {
         return odometer.getFieldMapper().getMapping()[x][y].isAllowed();
@@ -443,40 +464,38 @@ public class Navigator {
 
 
     /**
-     * A method to turn our vehicle to a certain angle in either direction
+     * A method to turnRobot our vehicle to a certain angle in either direction
      *
-     * @param theta the theta angle that we want to turn our vehicle
+     * @param theta the theta angle that we want to turnRobot our vehicle
      */
-    public void turnTo( double theta ) {
-        odometerCorrection.stopRunning();
+    public void turnRobot(double theta ) {
         leftMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
         rightMotor.setSpeed( NavigationConstants.VEHICLE_ROTATE_SPEED );
-        if( theta < 0 ) { // if angle is negative, turn to the left
+        if( theta < 0 ) { // if angle is negative, turnRobot to the left
             leftMotor.rotate( -convertAngle( -(theta*180)/Math.PI ) , true );
             rightMotor.rotate( convertAngle( -(theta*180)/Math.PI ) , false );
         }
-        else { // angle is positive, turn to the right
+        else { // angle is positive, turnRobot to the right
             leftMotor.rotate( convertAngle( (theta*180)/Math.PI ) , true);
             rightMotor.rotate( -convertAngle( (theta*180)/Math.PI ) , false);
         }
-        odometerCorrection.startRunning();
     }
 
     /**
-     * A method to rotate the left motor forward
+     * A method to rotate the left motor forward slowly
      */
-    public void rotateLeftMotorForward() {
-        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
-        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
+    public void rotateLeftMotorForwardSlow() {
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
         leftMotor.forward();
     }
 
     /**
-     * A method to rotate the right motor forward
+     * A method to rotate the right motor forward slowly
      */
-    public void rotateRightMotorForward() {
-        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
-        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
+    public void rotateRightMotorForwardSlow() {
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
         rightMotor.forward();
     }
 
@@ -499,6 +518,24 @@ public class Navigator {
     }
 
     /**
+     * A method to rotate the left motor backward slowly
+     */
+    public void rotateLeftMotorBackwardSlow() {
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
+        leftMotor.backward();
+    }
+
+    /**
+     * A method to rotate the right motor backward slowly
+     */
+    public void rotateRightMotorBackwardSlow() {
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
+        rightMotor.backward();
+    }
+
+    /**
      * A method to drive the vehicle forward
      */
     public void driveForward() {
@@ -506,6 +543,18 @@ public class Navigator {
         rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION );
         leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
         rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED);
+        leftMotor.forward();
+        rightMotor.forward();
+    }
+
+    /**
+     * A method to drive the vehicle forward slowly
+     */
+    public void driveForwardSlow() {
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_SLOW );
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW);
         leftMotor.forward();
         rightMotor.forward();
     }
@@ -586,12 +635,12 @@ public class Navigator {
 
 
     /**
-     * Calculates the minimum angle to turn to.
+     * Calculates the minimum angle to turnRobot to.
      *
      * @param deltaX the x coordinate of our destination
      * @param deltaY the y coordinate of our destination
      *
-     * @return the minimum angle we need to turn
+     * @return the minimum angle we need to turnRobot
      */
     public double calculateMinAngle( double deltaX , double deltaY ) {
         // calculate the minimum angle
@@ -617,9 +666,9 @@ public class Navigator {
 
 
     /**
-     * Determine the angle our motors need to rotate in order for vehicle to turn a certain angle.
+     * Determine the angle our motors need to rotate in order for vehicle to turnRobot a certain angle.
      *
-     * @param angle the angle we want to turn
+     * @param angle the angle we want to turnRobot
      * @return the tacho count that we need to rotate
      */
     public int convertAngle( double angle ) {
@@ -645,27 +694,105 @@ public class Navigator {
         }
     }
 
-    public void setOdometerCorrection( OdometerCorrection odometerCorrection ) {
+    /**
+     * A method to declare that correction is not needed for the current movement
+     *
+     * @param correctionNeeded
+     */
+    public void setCorrectionNeeded( boolean correctionNeeded ) {
+        this.correctionNeeded = correctionNeeded;
+    }
+
+    public void setOdometerCorrection(OdometerCorrection odometerCorrection ) {
         this.odometerCorrection = odometerCorrection;
     }
 
-    public Odometer getOdometer(){
-        return this.odometer;
-    }
-
+    /**
+     * A method to stop both motors
+     */
     public void stop(){
         leftMotor.stop(true);
         rightMotor.stop(false);
     }
 
-    public int[] getComponentDistances(Square destination){
+    /**
+     * A method to stop both motors
+     */
+    public void stopFast(){
+        leftMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_FAST );
+        rightMotor.setAcceleration( NavigationConstants.VEHICLE_ACCELERATION_FAST );
+        leftMotor.stop(true);
+        rightMotor.stop(false);
+    }
 
+    /**
+     * A method to return the components distances to a destination in square units
+     *
+     * @param destination
+     * @return componentDistances in square units
+     */
+    public int[] getComponentDistances( Square destination ){
         int components[] = new int[2];
-
         components[0] = destination.getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[0];
         components[1] = destination.getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
-
         return components;
+    }
+
+    /**
+     * A method to turnRobot towards the center of a specified square
+     *
+     * @param square
+     */
+    public void turnToSquare( Square square ) {
+        double deltaX = square.getCenterCoordinate()[0] - odometer.getX();
+        double deltaY = square.getCenterCoordinate()[1] - odometer.getY();
+        turnRobot( calculateMinAngle( deltaX, deltaY ) );
+    }
+
+    /**
+     * A method to travel directly a certain distance
+     *
+     * @param distance
+     */
+    public void moveDistance( double distance ) {
+        // drive forward two tiles
+        leftMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW );
+        rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW );
+        leftMotor.rotate( convertDistance( distance ), true);
+        rightMotor.rotate( convertDistance( distance ), false);
+    }
+
+    /**
+     * A method to set whether obstacle mapping is needed or not
+     *
+     * @param obstacleMappingNeeded
+     */
+    public void setObstacleMappingNeeded( boolean obstacleMappingNeeded ) {
+        this.obstacleMappingNeeded = obstacleMappingNeeded;
+    }
+
+    /**
+     * A method to turn on necessary threads when making navigation moves
+     */
+    public void turnOnNecessaryThreads() {
+        if ( correctionNeeded ) {
+            odometerCorrection.startRunning();
+        }
+        if ( obstacleMappingNeeded ) {
+            obstacleMapper.startRunning();
+        }
+    }
+
+    /**
+     * A method to turn off necessary threads after making navigation moves
+     */
+    public void turnOffNecessaryThreads() {
+        if ( correctionNeeded ) {
+            odometerCorrection.stopRunning();
+        }
+        if ( obstacleMappingNeeded ) {
+            obstacleMapper.stopRunning();
+        }
     }
 
 

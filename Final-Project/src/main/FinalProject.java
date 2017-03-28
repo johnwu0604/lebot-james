@@ -12,10 +12,12 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.LightSensor;
 import main.object.OdometerDisplay;
 import main.object.UltrasonicSensor;
+import main.resource.FieldConstants;
 import main.util.EmergencyStopper;
 import main.util.FieldMapper;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
+import main.resource.ShootingConstants;
 
 import java.util.Map;
 
@@ -92,69 +94,102 @@ public class FinalProject {
         emergencyStopper.start();
 
         int[] defenderZone = {4,4};
-        int[] ballDispenserPosition  = {-1,4};
+        int[] ballDispenserPosition  = {-1,6};
         Parameters parameters = new Parameters();
         parameters.setForwardCorner(1);
         parameters.setForwardLine(7);
         parameters.setForwardTeam(11);
         parameters.setDefenderZone(defenderZone);
         parameters.setBallDispenserPosition(ballDispenserPosition);
-        parameters.setBallDispenserOrientation("N");
+        parameters.setBallDispenserOrientation("E");
 
-        // instantiate objects
+
+        // map field
+        FieldMapper fieldMapper = new FieldMapper( parameters );
+
+        // instantiate timed threads (will start/stop throughout program)
         LightSensor leftLightSensor = new LightSensor( leftColorSensor );
         LightSensor rightLightSensor = new LightSensor( rightColorSensor );
         UltrasonicSensor forwardUSSensor = new UltrasonicSensor( forwardUltrasonicSensor );
         UltrasonicSensor leftUSSensor = new UltrasonicSensor( leftUltrasonicSensor );
-        FieldMapper fieldMapper = new FieldMapper(parameters);
-        Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
-        ObstacleAvoider obstacleAvoider = new ObstacleAvoider( leftUSSensor, forwardUSSensor, odometer );
-        Navigator navigator = new Navigator(leftMotor,rightMotor,odometer,obstacleAvoider);
-        OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
-        OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
-        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometerCorrection );
-        Localizer localizer = new Localizer( odometer, forwardUSSensor, navigator, 1 );
-        // start odometry threads
+        leftLightSensor.start();
+        rightLightSensor.start();
+        forwardUSSensor.start();
+        leftUSSensor.start();
+
+        // instantiate continuous threads (don't stop during the program)
+        Odometer odometer = new Odometer( leftMotor, rightMotor, fieldMapper);
+        OdometerDisplay odometerDisplay = new OdometerDisplay( odometer, t );
         odometer.start();
         odometerDisplay.start();
-        // start sensor threads
-        forwardUSSensor.start();
-        // run localization
+
+        // instantiate movement controllers
+        ObstacleAvoider obstacleAvoider = new ObstacleAvoider( forwardUSSensor, odometer );
+        ObstacleMapper obstacleMapper = new ObstacleMapper( leftUSSensor, odometer );
+        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider, obstacleMapper);
+        OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
+
+        // instantiate offense controllers
+        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer );
+        BallRetriever ballRetriever = new BallRetriever( launcher, odometer, navigator, leftLightSensor, rightLightSensor );
+
+        // localize
+        Localizer localizer = new Localizer( odometer, forwardUSSensor, navigator, getStartingCorner( parameters ) );
         localizer.start();
 
-        // start odometry correction
-        odometerCorrection.start();
+        // signal end of localization
+        Sound.beepSequence();
+
+        odometerCorrection.start(); // timed thread - waits until further instruction to actually start
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        leftUSSensor.start();
-        obstacleAvoider.start();
-
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][1]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[3][0]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][1]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
+//        playOffenseWithMapping( navigator, odometer, obstacleMapper, ballRetriever, launcher );
+        playOffense( navigator, odometer, ballRetriever, launcher );
+//        playDefense( navigator, odometer );
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
     }
 
     /**
-     * A method to pass the beta demo
+     * A method to play offense with field mapping and strict avoidance (used in third round)
      *
      * @param navigator
+     * @param odometer
+     * @param obstacleMapper
+     * @param ballRetriever
      * @param launcher
      */
-    public static void doBetaDemo( Navigator navigator, Launcher launcher ){
-        navigator.travelToSquare(navigator.getOdometer().getFieldMapper().getMapping()[1][1]);
+    private static void playOffenseWithMapping( Navigator navigator, Odometer odometer, ObstacleMapper obstacleMapper,
+                                                BallRetriever ballRetriever,
+                                                Launcher launcher ) {
+        navigator.setObstacleMappingNeeded( true );
+        obstacleMapper.startRunning();
+        ballRetriever.getBall();
+    }
 
-        launcher.retractArm();
-        Sound.beep(); //Notify ball is ready to be placed
-        try { Thread.sleep( 5000 ); } catch( Exception e ){}
+    /**
+     * A method to play offense without field mapping and minimal avoidance (used in first/second round)
+     *
+     * @param navigator
+     * @param odometer
+     * @param ballRetriever
+     * @param launcher
+     */
+    private static void playOffense( Navigator navigator, Odometer odometer, BallRetriever ballRetriever, Launcher launcher ) {
+        navigator.setObstacleMappingNeeded( false );
+        ballRetriever.getBall();
+    }
 
-        navigator.travelToSquare(navigator.getOdometer().getFieldMapper().getMapping()[5][1]);
-
-        launcher.launchBall();
+    /**
+     * A method to play defense
+     *
+     * @param navigator
+     * @param odometer
+     */
+    private static void playDefense( Navigator navigator, Odometer odometer ) {
+        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[3][3] );
     }
 
     /**
@@ -179,5 +214,17 @@ public class FinalProject {
         } catch ( Exception e ) {
             // Error occurred
         }
+    }
+
+    /**
+     * A method to get our starting corner
+     *
+     * @param parameters
+     */
+    private static int getStartingCorner( Parameters parameters ) {
+        if ( parameters.getForwardTeam() == WifiProperties.TEAM_NUMBER ) {
+            return parameters.getForwardCorner();
+        }
+        return parameters.getDefenseCorner();
     }
 }

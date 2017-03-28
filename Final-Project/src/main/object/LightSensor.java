@@ -16,7 +16,7 @@ public class LightSensor extends Thread {
     // variables
     private float[] data;
     private boolean lineDetected = false;
-    private boolean running = true;
+    private volatile boolean running = false;
 
     /**
      * Our main constructor method
@@ -29,15 +29,18 @@ public class LightSensor extends Thread {
     }
 
     /**
-     * Main thread
+     * Main thread. Must use method startRunning() to begin execution
      */
     public void run() {
         while ( true ) {
-            if ( running ) {
-                sensor.fetchSample(data, 0);
-                if( data[0] < ThresholdConstants.LINE_DETECTION) {
-                    lineDetected = true;
-                }
+            // pause thread if it is not running
+            if ( !running ) {
+                try { pauseThread(); } catch ( Exception e ) {}
+            }
+            // fetch samples
+            sensor.fetchSample(data, 0);
+            if( data[0] < ThresholdConstants.LINE_DETECTION) {
+                lineDetected = true;
             }
         }
     }
@@ -61,17 +64,34 @@ public class LightSensor extends Thread {
     }
 
     /**
+     * A method to temporarily pause our thread
+     */
+    public void pauseThread() throws InterruptedException {
+        synchronized (this) {
+            while ( !running ) {
+                wait();
+            }
+            running = true;
+        }
+    }
+
+    /**
      * A method to temporarily stop our thread
      */
     public void stopRunning() {
-        running = false;
+        synchronized ( this ) {
+            running = false;
+        }
     }
 
     /**
      * A method to restart our thread
      */
     public void startRunning() {
-        running = true;
+        synchronized (this) {
+            lineDetected = false;
+            notify();
+        }
     }
 
 

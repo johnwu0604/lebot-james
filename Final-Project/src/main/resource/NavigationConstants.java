@@ -13,6 +13,16 @@ public class NavigationConstants {
     public static final int VEHICLE_FORWARD_SPEED = 200;
 
     /**
+     * Vehicle speed for driving forward slow
+     */
+    public static final int VEHICLE_FORWARD_SPEED_SLOW = 100;
+
+    /**
+     * Vehicle acceleration slow
+     */
+    public static final int VEHICLE_ACCELERATION_SLOW = 100;
+
+    /**
      * Vehicle rotation speed
      */
     public static final int VEHICLE_ROTATE_SPEED = 200;
@@ -21,6 +31,11 @@ public class NavigationConstants {
      * Vehicle acceleration
      */
     public static final int VEHICLE_ACCELERATION = 500;
+
+    /**
+     * Vehicle acceleration
+     */
+    public static final int VEHICLE_ACCELERATION_FAST = 5000;
 
     /**
      * Localization rotate speed

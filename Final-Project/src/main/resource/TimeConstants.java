@@ -33,6 +33,13 @@ public class TimeConstants {
     public static final double CORRECTION_MAX_TIME = 1000;
 
     /**
+     * The max time alignment can happen for
+     */
+    public static final double ALIGNMENT_MAX_TIME = 1000;
+
+    public static final double ALIGNMENT_HOLD_TIME = 500;
+
+    /**
      * The max time to detect an obstacle
      */
     public static final double OBSTACLE_DETECTION_TIME = 500;

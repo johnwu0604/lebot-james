@@ -76,7 +76,7 @@ public class LocalizerTest {
         // given
         Localizer.SensorReading min = new Localizer.SensorReading();
         min.setDistance( 10 );
-        double squareLength = FieldConstants.SQUARE_LENGTH - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4;
+        double squareLength = FieldConstants.SQUARE_LENGTH;
         double c14 = 0 - ( squareLength - 10 ); // corner 1 and 4 expected
         double c23 = 10*FieldConstants.SQUARE_LENGTH + ( squareLength - 10 ); // corner 2 and 3 expected
 
@@ -99,7 +99,7 @@ public class LocalizerTest {
         // given
         Localizer.SensorReading min = new Localizer.SensorReading();
         min.setDistance( 10 );
-        double squareLength = FieldConstants.SQUARE_LENGTH - RobotConstants.FRONT_US_SENSOR_TO_TRACK_DISTANCE/4;
+        double squareLength = FieldConstants.SQUARE_LENGTH;
         double c12 = 0 - ( squareLength - 10 ); // corner 1 and 4 expected
         double c34 = 10*FieldConstants.SQUARE_LENGTH + ( squareLength - 10 ); // corner 2 and 3 expected
 
