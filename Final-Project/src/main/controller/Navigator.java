@@ -146,12 +146,14 @@ public class Navigator {
             double distOne = Math.hypot((double) thirdPriorities.get(0).getSquarePosition()[0], (double) thirdPriorities.get(0).getSquarePosition()[1]);
             double distTwo = Math.hypot((double) thirdPriorities.get(1).getSquarePosition()[0], (double) thirdPriorities.get(1).getSquarePosition()[1]);
 
-            if(distOne <= distTwo){
+            if(distOne < distTwo){
                 secondPriority = thirdPriorities.get(0);
                 thirdPriority = thirdPriorities.get(1);
-            } else {
+            } else if (distOne > distTwo) {
                 secondPriority = thirdPriorities.get(1);
                 thirdPriority = thirdPriorities.get(0);
+            } else {
+                //
             }
         }
 
