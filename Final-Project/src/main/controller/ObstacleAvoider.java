@@ -42,7 +42,6 @@ public class ObstacleAvoider {
      * @return whether the move is available
      */
     public boolean scanSquare( Square square ) {
-        frontSensor.startRunning();
         double x = square.getCenterCoordinate()[0];
         double y = square.getCenterCoordinate()[1];
         navigator.turnRobot( navigator.calculateMinAngle( x - odometer.getX(), y - odometer.getY() ) );
@@ -54,7 +53,6 @@ public class ObstacleAvoider {
             updateMapping( square );
             return false;
         }
-        frontSensor.stopRunning();
         return true;
     }
 
