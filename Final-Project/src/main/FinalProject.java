@@ -133,8 +133,6 @@ public class FinalProject {
         Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer );
         BallRetriever ballRetriever = new BallRetriever( launcher, odometer, navigator, odometerCorrection );
 
-        Sound.beep();
-
         // localize
         Localizer localizer = new Localizer( odometer, forwardUSSensor, navigator, getStartingCorner( parameters ) );
         localizer.start();

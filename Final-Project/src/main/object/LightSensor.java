@@ -71,7 +71,6 @@ public class LightSensor extends Thread {
             while ( !running ) {
                 wait();
             }
-            running = true;
         }
     }
 
@@ -90,7 +89,8 @@ public class LightSensor extends Thread {
     public void startRunning() {
         synchronized (this) {
             lineDetected = false;
-            notify();
+            running = true;
+            notifyAll();
         }
     }
 

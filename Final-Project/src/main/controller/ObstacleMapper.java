@@ -78,7 +78,6 @@ public class ObstacleMapper extends Thread {
             while ( !running ) {
                 wait();
             }
-            running = true;
         }
     }
 
@@ -98,7 +97,8 @@ public class ObstacleMapper extends Thread {
     public void startRunning() {
         synchronized (this) {
             leftSensor.startRunning();
-            notify();
+            running = true;
+            notifyAll();
         }
     }
 

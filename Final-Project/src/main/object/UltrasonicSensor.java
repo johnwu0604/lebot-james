@@ -73,7 +73,6 @@ public class UltrasonicSensor extends Thread {
             while ( !running ) {
                 wait();
             }
-            running = true;
         }
     }
 
@@ -91,7 +90,8 @@ public class UltrasonicSensor extends Thread {
      */
     public void startRunning() {
         synchronized (this) {
-            notify();
+            running = true;
+            notifyAll();
         }
     }
 

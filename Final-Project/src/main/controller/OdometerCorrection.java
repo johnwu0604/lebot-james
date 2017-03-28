@@ -206,7 +206,6 @@ public class OdometerCorrection extends Thread {
             while ( !running ) {
                 wait();
             }
-            running = true;
         }
     }
 
@@ -228,7 +227,8 @@ public class OdometerCorrection extends Thread {
         synchronized ( this ) {
             leftSensor.startRunning();
             rightSensor.startRunning();
-            notify();
+            running = true;
+            notifyAll();
         }
     }
 
