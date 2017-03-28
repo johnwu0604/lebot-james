@@ -28,6 +28,9 @@ public class NavigatorTest {
     private ObstacleAvoider obstacleAvoider;
 
     @Mock
+    private ObstacleMapper obstacleMapper;
+
+    @Mock
     private Odometer odometer;
 
     Navigator navigator;
@@ -35,7 +38,7 @@ public class NavigatorTest {
     @Before
     public void setup() {
         MockitoAnnotations.initMocks(this);
-        navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider );
+        navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider, obstacleMapper);
     }
 
     @Test

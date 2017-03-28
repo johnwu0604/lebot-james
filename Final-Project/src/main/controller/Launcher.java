@@ -1,13 +1,8 @@
 package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import main.object.LightSensor;
 import main.resource.FieldConstants;
 import main.resource.ShootingConstants;
-import main.resource.TimeConstants;
-
-import java.sql.Time;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A controller object to launch the ball
@@ -127,7 +122,7 @@ public class Launcher {
     }
 
     /**
-     * A method to turn to face target
+     * A method to turnRobot to face target
      * @return distance ball must travel to target
      */
     private double alignToTarget(){
@@ -138,7 +133,7 @@ public class Launcher {
         double distance =  navigator.calculateDistanceToPoint( deltaX, deltaY );
         double targetAngle = navigator.calculateMinAngle( deltaX, deltaY );
 
-        navigator.turnTo( targetAngle );
+        navigator.turnRobot( targetAngle );
 
         return distance;
     }

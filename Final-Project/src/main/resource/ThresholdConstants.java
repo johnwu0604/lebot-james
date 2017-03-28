@@ -43,6 +43,11 @@ public class ThresholdConstants {
      */
     public static final double COORDINATE_IN_SQUARE = 2.0;
 
+    /**
+     * This is the distance the robot needs to move in order to get to a good point to retrieve the ball
+     */
+    public static final double BALL_RETRIEVAL_DISTANCE = 12.48;
+
 
 
 
