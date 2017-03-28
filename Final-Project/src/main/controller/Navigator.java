@@ -25,6 +25,7 @@ public class Navigator {
 
     // variables
     private boolean correctionNeeded = true;
+    private boolean obstacleMappingNeeded = false;
 
     /**
      * Default constructor for Navigator object.
@@ -193,13 +194,8 @@ public class Navigator {
      * @param xCoordinate the x coordinate we want to travel to
      */
     public void travelToX( double xCoordinate ) {
-        // turnRobot to the minimum angle
         turnRobot( calculateMinAngle( xCoordinate - odometer.getX(), 0 ) );
-        // move to the specified point
-        if ( correctionNeeded ) {
-            odometerCorrection.startRunning();
-        }
-        obstacleMapper.startRunning();
+        turnOnNecessaryThreads();
         driveForward();
         while ( Math.abs( odometer.getX() - xCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
@@ -207,10 +203,7 @@ public class Navigator {
             }
         }
         stopMotors();
-        if ( correctionNeeded ) {
-            odometerCorrection.stopRunning();
-        }
-        obstacleMapper.stopRunning();
+        turnOffNecessaryThreads();
     }
 
     /**
@@ -219,12 +212,8 @@ public class Navigator {
      * @param yCoordinate the y coordinate we want to travel to
      */
     public void travelToY( double yCoordinate ) {
-        // turnRobot to the minimum angle
         turnRobot( calculateMinAngle( 0, yCoordinate - odometer.getY() ) );
-        if ( correctionNeeded ) {
-            odometerCorrection.startRunning();
-        }
-        // move to the specified point
+        turnOnNecessaryThreads();
         driveForward();
         while ( Math.abs( odometer.getY() - yCoordinate ) > ThresholdConstants.POINT_REACHED) {
             if ( odometer.isCorrecting() ) {
@@ -232,9 +221,7 @@ public class Navigator {
             }
         }
         stopMotors();
-        if ( correctionNeeded ) {
-            odometerCorrection.stopRunning();
-        }
+        turnOffNecessaryThreads();
     }
 
     /**
@@ -288,10 +275,7 @@ public class Navigator {
         Square destinationSquare = odometer.getFieldMapper().getMapping()[xDestination][currentY];
 
         if( isSquareAllowed( xDestination, currentY ) ){
-            if(odometer.getPastSquares().contains(destinationSquare)){
-                travelToX( destinationSquare.getCenterCoordinate()[0] );
-                return true;
-            } else if ( obstacleAvoider.scanSquare( destinationSquare )) {
+            if ( isMovePossible( destinationSquare ) ) {
                 travelToX( destinationSquare.getCenterCoordinate()[0] );
                 return true;
             }
@@ -317,15 +301,33 @@ public class Navigator {
         Square destinationSquare = odometer.getFieldMapper().getMapping()[currentX][yDestination];
 
         if( isSquareAllowed( currentX, yDestination ) ){
-            if(odometer.getPastSquares().contains(destinationSquare)){
-                travelToY( destinationSquare.getCenterCoordinate()[1] );
-                return true;
-            }else if ( obstacleAvoider.scanSquare( destinationSquare ) ) {
+            if ( isMovePossible( destinationSquare ) ) {
                 travelToY( destinationSquare.getCenterCoordinate()[1] );
                 return true;
             }
         }
+
         return false;
+    }
+
+    /**
+     * A method to determine whether a move is possible by scanning the square if needed
+     *
+     * @param destination
+     * @return isMovePossible
+     */
+    public boolean isMovePossible( Square destination ) {
+        // if move has been made, then we can make the move again
+        if ( odometer.getPastSquares().contains( destination ) ) {
+            return true;
+        }
+        // if mapping is needed or we are at the edge squares then a scan is needed
+        if ( obstacleMappingNeeded || odometer.getFieldMapper().isEdgeSquare( destination ) ) {
+            if ( !obstacleAvoider.scanSquare( destination ) ) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -333,7 +335,7 @@ public class Navigator {
      *
      * @param x
      * @param y
-     * @return is the square allowed
+     * @return isSquareAllowed
      */
     public boolean isSquareAllowed( int x, int y ) {
         return odometer.getFieldMapper().getMapping()[x][y].isAllowed();
@@ -637,6 +639,39 @@ public class Navigator {
         rightMotor.setSpeed( NavigationConstants.VEHICLE_FORWARD_SPEED_SLOW );
         leftMotor.rotate( convertDistance( distance ), true);
         rightMotor.rotate( convertDistance( distance ), false);
+    }
+
+    /**
+     * A method to set whether obstacle mapping is needed or not
+     *
+     * @param obstacleMappingNeeded
+     */
+    public void setObstacleMappingNeeded( boolean obstacleMappingNeeded ) {
+        this.obstacleMappingNeeded = obstacleMappingNeeded;
+    }
+
+    /**
+     * A method to turn on necessary threads when making navigation moves
+     */
+    public void turnOnNecessaryThreads() {
+        if ( correctionNeeded ) {
+            odometerCorrection.startRunning();
+        }
+        if ( obstacleMappingNeeded ) {
+            obstacleMapper.startRunning();
+        }
+    }
+
+    /**
+     * A method to turn off necessary threads after making navigation moves
+     */
+    public void turnOffNecessaryThreads() {
+        if ( correctionNeeded ) {
+            odometerCorrection.stopRunning();
+        }
+        if ( obstacleMappingNeeded ) {
+            obstacleMapper.stopRunning();
+        }
     }
 
 
