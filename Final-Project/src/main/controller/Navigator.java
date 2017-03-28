@@ -215,17 +215,6 @@ public class Navigator {
                 } else if (thirdPriorities.get(1).getSquarePosition()[0] == odometer.getCurrentSquare().getSquarePosition()[0]) {
                     secondPriority = thirdPriorities.get(0); //X-direction move
                     thirdPriority = thirdPriorities.get(1); //Y-direction move
-                } else {
-                    if (getNextSquare() == thirdPriorities.get(0)) { //maintain current heading before choosing to turn
-                        secondPriority = thirdPriorities.get(0);
-                        thirdPriority = thirdPriorities.get(1);
-                    } else if (getNextSquare() == thirdPriorities.get(1)) {
-                        secondPriority = thirdPriorities.get(1);
-                        thirdPriority = thirdPriorities.get(0);
-                    } else { //Arbitrary choice, prefers to move in +/- Y-direction
-                        secondPriority = thirdPriorities.get(0);
-                        thirdPriority = thirdPriorities.get(1);
-                    }
                 }
             } else if (deltaY == 0) {
                 //obstacle directly in path, move AROUND, not AWAY, i.e. parallel to obstacle
@@ -235,17 +224,6 @@ public class Navigator {
                 } else if (thirdPriorities.get(1).getSquarePosition()[1] == odometer.getCurrentSquare().getSquarePosition()[1]) {
                     secondPriority = thirdPriorities.get(0);
                     thirdPriority = thirdPriorities.get(1);
-                } else {
-                    if (getNextSquare() == thirdPriorities.get(0)) { //maintain current heading before choosing to turn
-                        secondPriority = thirdPriorities.get(0);
-                        thirdPriority = thirdPriorities.get(1);
-                    } else if (getNextSquare() == thirdPriorities.get(1)) {
-                        secondPriority = thirdPriorities.get(1);
-                        thirdPriority = thirdPriorities.get(0);
-                    } else { //Arbitrary choice, prefers to move in +/- Y-direction
-                        secondPriority = thirdPriorities.get(0);
-                        thirdPriority = thirdPriorities.get(1);
-                    }
                 }
             } else { //maintain current heading before choosing to turn
                 if (getNextSquare() == thirdPriorities.get(0)) {
