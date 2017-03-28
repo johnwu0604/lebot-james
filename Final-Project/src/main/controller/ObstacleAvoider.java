@@ -1,5 +1,6 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import main.object.Square;
 import main.object.UltrasonicSensor;
 import main.resource.FieldConstants;
@@ -123,6 +124,7 @@ public class ObstacleAvoider {
      * @param square
      */
     public void updateMapping( Square square ) {
+        Sound.beepSequence();
         int x = square.getSquarePosition()[0];
         int y = square.getSquarePosition()[1];
         odometer.getFieldMapper().getMapping()[x][y].setAllowed( false );
