@@ -232,4 +232,24 @@ public class OdometerCorrection extends Thread {
         }
     }
 
+    /**
+     * A method to only start the sensors
+     */
+    public void startRunningSensors() {
+        synchronized ( this ) {
+            leftSensor.startRunning();
+            rightSensor.startRunning();
+        }
+    }
+
+    /**
+     * A method to only stop the sensors
+     */
+    public void stopRunningSensors() {
+        synchronized ( this ) {
+            leftSensor.stopRunning();
+            rightSensor.stopRunning();
+        }
+    }
+
 }

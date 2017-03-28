@@ -33,10 +33,13 @@ public class TimeConstants {
     public static final double CORRECTION_MAX_TIME = 1000;
 
     /**
-     * The max time alignment can happen for
+     * The max time alignment can happen for ball retrieval
      */
     public static final double ALIGNMENT_MAX_TIME = 1000;
 
+    /**
+     * Hold time for alignment to retreive ball
+     */
     public static final double ALIGNMENT_HOLD_TIME = 500;
 
     /**

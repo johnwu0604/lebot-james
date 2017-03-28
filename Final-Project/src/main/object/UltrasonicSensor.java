@@ -1,5 +1,6 @@
 package main.object;
 
+import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 import main.resource.ThresholdConstants;
 import main.resource.RobotConstants;
