@@ -17,8 +17,7 @@ public class BallRetriever {
     private Launcher launcher;
     private Navigator navigator;
     private Odometer odometer;
-    private LightSensor leftSensor;
-    private LightSensor rightSensor;
+    private OdometerCorrection odometerCorrection;
 
     // variables
     private boolean alignmentTimedOut = false;
@@ -32,12 +31,11 @@ public class BallRetriever {
      * @param odo
      * @param nav
      */
-    public BallRetriever(Launcher launcher, Odometer odo, Navigator nav, LightSensor leftSensor, LightSensor rightSensor ){
+    public BallRetriever(Launcher launcher, Odometer odo, Navigator nav, OdometerCorrection odometerCorrection ){
         this.launcher = launcher;
         this.navigator = nav;
         this.odometer = odo;
-        this.leftSensor = leftSensor;
-        this.rightSensor = rightSensor;
+        this.odometerCorrection = odometerCorrection;
     }
 
     /**
@@ -58,7 +56,7 @@ public class BallRetriever {
 //        launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
 //
 //        navigator.travelToSquare( odometer.getLastSquare() );
-//        navigator.setCorrectionNeeded(true);
+        navigator.setCorrectionNeeded(true);
 
     }
 
@@ -146,15 +144,11 @@ public class BallRetriever {
             }
         }
 
-        leftSensor.startRunning();
-        rightSensor.startRunning();
         navigator.turnToSquare( firstTurn );
         moveToLine();
         navigator.turnRobot( secondTurn );
         moveToLine();
         navigator.moveDistance( -ThresholdConstants.BALL_RETRIEVAL_DISTANCE );
-        leftSensor.stopRunning();
-        rightSensor.stopRunning();
 
     }
 
@@ -162,17 +156,14 @@ public class BallRetriever {
      * A method to align our vehicle to the first line in front
      */
     private void moveToLine() {
-        leftSensor.setLineDetected( false );
-        rightSensor.setLineDetected( false );
-
+        odometerCorrection.resetSensors();
         navigator.driveForwardSlow();
-        while ( !isLineDetectedRight() && !isLineDetectedLeft() ) {
+        while ( !odometerCorrection.isLineDetectedRight() && !odometerCorrection.isLineDetectedLeft() ) {
             navigator.driveForwardSlow();
         }
         navigator.stop();
         alignToLine();
         navigator.moveDistance( RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE - 0.5 );
-
     }
 
     /**
@@ -180,11 +171,11 @@ public class BallRetriever {
      */
     private void alignToLine() {
         double startTime = System.currentTimeMillis();
-        while ( !isLineDetectedLeft() && !hasTimedOut( startTime ) ) {
+        while ( !odometerCorrection.isLineDetectedLeft() && !hasTimedOut( startTime ) ) {
             navigator.rotateLeftMotorForwardSlow();
             aligningLeft = true;
         }
-        while ( !isLineDetectedRight() && !hasTimedOut( startTime ) ) {
+        while ( !odometerCorrection.isLineDetectedRight() && !hasTimedOut( startTime ) ) {
             navigator.rotateRightMotorForwardSlow();
             aligningRight = true;
         }
@@ -205,24 +196,6 @@ public class BallRetriever {
         }
         aligningRight = false;
         aligningLeft = false;
-    }
-
-    /**
-     * A method to determine if a line was recently detected or not for the left sensor
-     *
-     * @return whether line has been detected
-     */
-    public boolean isLineDetectedLeft() {
-        return leftSensor.isLineDetected();
-    }
-
-    /**
-     * A method to determine if a line was recently detected or not for the right sensor
-     *
-     * @return whether line has been detected
-     */
-    public boolean isLineDetectedRight() {
-        return rightSensor.isLineDetected();
     }
 
     /**

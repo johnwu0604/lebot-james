@@ -1,5 +1,6 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import main.object.UltrasonicSensor;
 import main.resource.ThresholdConstants;
 import main.resource.FieldConstants;

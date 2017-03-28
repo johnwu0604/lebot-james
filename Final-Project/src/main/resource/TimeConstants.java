@@ -18,6 +18,11 @@ public class TimeConstants {
     public static final long ULTRASONICSENSOR_SENSOR_READING_PERIOD = 10;
 
     /**
+     * Light sensor reading interval (ms)
+     */
+    public static final long LIGHT_SENSOR_READING_PERIOD = 10;
+
+    /**
      * Color sensor reading hold time to allow time for line to pass
      */
     public static final long COLOR_SENSOR_HOLD_TIME = 2000;
@@ -33,10 +38,13 @@ public class TimeConstants {
     public static final double CORRECTION_MAX_TIME = 1000;
 
     /**
-     * The max time alignment can happen for
+     * The max time alignment can happen for ball retrieval
      */
     public static final double ALIGNMENT_MAX_TIME = 1000;
 
+    /**
+     * Hold time for alignment to retreive ball
+     */
     public static final double ALIGNMENT_HOLD_TIME = 500;
 
     /**

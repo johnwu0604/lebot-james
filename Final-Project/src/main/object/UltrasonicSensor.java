@@ -1,5 +1,6 @@
 package main.object;
 
+import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 import main.resource.ThresholdConstants;
 import main.resource.RobotConstants;
@@ -72,7 +73,6 @@ public class UltrasonicSensor extends Thread {
             while ( !running ) {
                 wait();
             }
-            running = true;
         }
     }
 
@@ -90,7 +90,8 @@ public class UltrasonicSensor extends Thread {
      */
     public void startRunning() {
         synchronized (this) {
-            notify();
+            running = true;
+            notifyAll();
         }
     }
 
