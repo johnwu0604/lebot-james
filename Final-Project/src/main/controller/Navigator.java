@@ -484,7 +484,8 @@ public class Navigator {
      * A method to move the robot to the ball dispenser in a path it knows is clear of obstacles
      */
     public void returnToBallDispenser(){
-        ArrayList<Square> currentPastSquares = odometer.getPastSquares();
+        ArrayList<Square> currentPastSquares = new ArrayList<Square>();
+        currentPastSquares.addAll(odometer.getPastSquares());
 
         while (odometer.getCurrentSquare() != odometer.getFieldMapper().getBallDispenserApproaches()[0]
                 || odometer.getCurrentSquare() != odometer.getFieldMapper().getBallDispenserApproaches()[1]){
@@ -497,7 +498,8 @@ public class Navigator {
      * A method to move the robot to a shooting position in a path it knows is clear of obstacles
      */
     public void returnToShootingPosition(){
-        ArrayList<Square> currentPastSquares = odometer.getPastSquares();
+        ArrayList<Square> currentPastSquares = new ArrayList<Square>();
+        currentPastSquares.addAll(odometer.getPastSquares());
 
         while (odometer.getCurrentSquare() != shootingPositionExecuted){
             travelToSquare(currentPastSquares.get(currentPastSquares.size()-1));
