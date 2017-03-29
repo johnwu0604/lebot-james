@@ -57,7 +57,9 @@ public class LightSensor extends Thread {
      * @param lineDetected the boolean value for line detection
      */
     public void setLineDetected( boolean lineDetected ) {
-        this.lineDetected = lineDetected;
+        synchronized ( this ) {
+            this.lineDetected = lineDetected;
+        }
     }
 
 
