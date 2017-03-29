@@ -11,7 +11,7 @@ public class Square {
     private double[] centerCoordinate;
     private boolean allowed;
     private boolean obstacle;
-    private boolean shootingPosition;
+    private int shootingPriority;
     private double northLine;
     private double southLine;
     private double eastLine;
@@ -34,7 +34,7 @@ public class Square {
         Square square = (Square) o;
         if (allowed != square.allowed) return false;
         if (obstacle != square.obstacle) return false;
-        if (shootingPosition != square.shootingPosition) return false;
+        if (shootingPriority != square.shootingPriority) return false;
         if (Double.compare(square.northLine, northLine) != 0) return false;
         if (Double.compare(square.southLine, southLine) != 0) return false;
         if (Double.compare(square.eastLine, eastLine) != 0) return false;
@@ -56,7 +56,6 @@ public class Square {
         result = 31 * result + Arrays.hashCode(centerCoordinate);
         result = 31 * result + (allowed ? 1 : 0);
         result = 31 * result + (obstacle ? 1 : 0);
-        result = 31 * result + (shootingPosition ? 1 : 0);
         temp = Double.doubleToLongBits(northLine);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(southLine);
@@ -151,16 +150,20 @@ public class Square {
      * @return isShootingPosition
      */
     public boolean isShootingPosition() {
-        return shootingPosition;
+        if(shootingPriority == 0){
+            return false;
+        } else {
+            return true;
+        }
     }
 
     /**
-     * A method to set the square to a shooting position
+     * A method to set the square's shooting priority (0,3)
      *
-     * @param shootingPosition
+     * @param priority
      */
-    public void setShootingPosition(boolean shootingPosition) {
-        this.shootingPosition = shootingPosition;
+    public void setShootingPriority(int priority) {
+        this.shootingPriority = priority;
     }
 
     /**
