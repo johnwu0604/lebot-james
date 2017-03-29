@@ -398,6 +398,28 @@ public class Odometer extends Thread {
     }
 
     /**
+     * A method which calculates the theta of the current direction
+     *
+     * @return currentDirectionTheta
+     */
+    public double getCurrentDirectionTheta() {
+        String currentDirection = getCurrentDirection();
+        if ( currentDirection.equals( "north" )) {
+            return 0.0;
+        }
+        if ( currentDirection.equals( "east" ) ) {
+            return Math.PI/2;
+        }
+        if ( currentDirection.equals( "south" ) ) {
+            return Math.PI;
+        }
+        if ( currentDirection.equals( "west" ) ) {
+            return 3*Math.PI/2;
+        }
+        return 0.0; // should never happen
+    }
+
+    /**
      * A method to determine whether the current square is adjacent to an input square or not
      *
      * @param square

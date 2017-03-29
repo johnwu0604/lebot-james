@@ -65,7 +65,7 @@ public class OdometerCorrection extends Thread {
      * A method to correct our odometer values
      */
     public void correctOdometerValues() throws Exception {
-        double correctedTheta = calculateCorrectionTheta();
+        double correctedTheta = odometer.getCurrentDirectionTheta();
         int currentSquareX = odometer.getCurrentSquare().getSquarePosition()[0];
         int currentSquareY = odometer.getCurrentSquare().getSquarePosition()[1];
 
@@ -109,28 +109,6 @@ public class OdometerCorrection extends Thread {
      */
     public boolean isLineDetectedRight() {
         return rightSensor.isLineDetected();
-    }
-
-    /**
-     * A method which calculates the proper theta to correct to upon reaching a line
-     *
-     * @return the correct theta value
-     */
-    public double calculateCorrectionTheta() {
-        String currentDirection = odometer.getCurrentDirection();
-        if ( currentDirection.equals( "north" )) {
-            return 0.0;
-        }
-        if ( currentDirection.equals( "east" ) ) {
-            return Math.PI/2;
-        }
-        if ( currentDirection.equals( "south" ) ) {
-            return Math.PI;
-        }
-        if ( currentDirection.equals( "west" ) ) {
-            return 3*Math.PI/2;
-        }
-        return 0.0; // should never happen
     }
 
     /**

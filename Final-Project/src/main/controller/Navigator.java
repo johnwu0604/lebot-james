@@ -27,6 +27,7 @@ public class Navigator {
     private boolean correctionNeeded = true;
     private boolean obstacleMappingNeeded = false;
     ArrayList<Square> recentMoves = new ArrayList<Square>();
+    private int movesInCurrentDirection = 0;
 
     /**
      * Default constructor for Navigator object.
