@@ -86,7 +86,6 @@ public class ObstacleMapper extends Thread {
      */
     public void stopRunning() {
         synchronized ( this ) {
-            leftSensor.stopRunning();
             running = false;
         }
     }
@@ -96,7 +95,6 @@ public class ObstacleMapper extends Thread {
      */
     public void startRunning() {
         synchronized (this) {
-            leftSensor.startRunning();
             running = true;
             notifyAll();
         }
@@ -124,20 +122,6 @@ public class ObstacleMapper extends Thread {
         double sum = 0.0;
         for ( int i = 0; i < sensorReadings.size(); i++ ) {
             sum += sensorReadings.get(i).getDistance();
-        }
-        return sum / sensorReadings.size();
-    }
-
-    /**
-     * A method to calculate our average odometer theta reading based on sensor readings
-     *
-     * @param sensorReadings
-     * @return average theta
-     */
-    public double calculateAverageTheta( List<SensorReading> sensorReadings ) {
-        double sum = 0.0;
-        for ( int i = 0; i < sensorReadings.size(); i++ ) {
-            sum += sensorReadings.get(i).getTheta();
         }
         return sum / sensorReadings.size();
     }
@@ -180,29 +164,28 @@ public class ObstacleMapper extends Thread {
         // get average sensor reading for left bound
         double averageX1 = calculateAverageX( sensorReadings.subList(0,size/2) );
         double averageY1 = calculateAverageY( sensorReadings.subList(0,size/2) );
-        double averageTheta1 = calculateAverageTheta( sensorReadings.subList(0,size/2) );
         double averageDistance1 = calculateAverageDistance( sensorReadings.subList(0,size/2) );
         // get average sensor reading for right bound
         double averageX2 = calculateAverageX( sensorReadings.subList(size/2,size) );
         double averageY2 = calculateAverageY( sensorReadings.subList(size/2,size) );
-        double averageTheta2 = calculateAverageTheta( sensorReadings.subList(size/2,size) );
         double averageDistance2 = calculateAverageDistance( sensorReadings.subList(size/2,size) );
         // coodinates of obstacles
-        double[] coordinates1 = calculateObstaclePosition( averageX1, averageY1, averageTheta1, averageDistance1 );
-        double[] coordinates2 = calculateObstaclePosition( averageX2, averageY2, averageTheta2, averageDistance2 );
+        double sensorTheta = odometer.getCurrentDirectionTheta() - Math.PI/2;
+        double[] coordinates1 = calculateObstaclePosition( averageX1, averageY1, sensorTheta, averageDistance1 );
+        double[] coordinates2 = calculateObstaclePosition( averageX2, averageY2, sensorTheta, averageDistance2 );
         // squares of obstacles
         Square obstacle1 = odometer.getFieldMapper().getSquareOfCoordinate( coordinates1[0], coordinates1[1] );
         Square obstacle2 = odometer.getFieldMapper().getSquareOfCoordinate( coordinates2[0], coordinates2[1] );
         // update mapping
         if ( obstacle1 != null && odometer.isAdjacentSquare( obstacle1 ) && !odometer.getFieldMapper().isEdgeSquare( obstacle1 ) ) {
-            Sound.beepSequence();
             declareObstacleInMapping( obstacle1 );
         }
         if ( obstacle2 != null && odometer.isAdjacentSquare( obstacle2 ) && !odometer.getFieldMapper().isEdgeSquare( obstacle2 ) ) {
-            Sound.beepSequence();
             declareObstacleInMapping( obstacle2 );
         }
     }
+
+
 
     /**
      * A method to mark this obstacle on the mapping
@@ -227,9 +210,6 @@ public class ObstacleMapper extends Thread {
      */
     public double[] calculateObstaclePosition( double x, double y, double theta, double distance ) {
         double thetaOfSensor = theta - Math.PI/2;
-        if ( thetaOfSensor < 0 ) {
-            thetaOfSensor += 2*Math.PI;
-        }
         double[] coordinates = new double[2];
         coordinates[0] = x + distance * ( Math.sin( thetaOfSensor ) );
         coordinates[1] = y + distance * ( Math.cos( thetaOfSensor ) );
