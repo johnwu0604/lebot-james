@@ -65,10 +65,12 @@ public class Navigator {
             }
 
         } else {
+
+            if(destination.isObstacle() == true || destination.isAllowed() == false){
+                return false;
+            }
+
             while (destination != odometer.getCurrentSquare()) {   //check break condition
-                if(destination.isObstacle() == true || destination.isAllowed() == false){
-                    return false;
-                }
                 makeBestMoves(destination);
             }
             return true;
@@ -310,6 +312,12 @@ public class Navigator {
         turnOffNecessaryThreads();
     }
 
+
+    /**
+     * A method to travel to the ideal shooting position, called after retrieveing a ball
+     *
+     * @return if a shooting position has been reached
+     */
     public boolean travelToShootingPosition(){
 
         ArrayList<Square> shootingPositions4 = odometer.getFieldMapper().getShootingPositions4();
@@ -324,25 +332,40 @@ public class Navigator {
             if (!positionReached){
                 shootingPositions4.remove(0);
             } else {
-                return true;
+                 obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
+                if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
+                    positionReached = false;
+                } else {
+                    return true;
+                }
             }
         }
 
         while (shootingPositions3.size() != 0){
             positionReached = travelToSquare(shootingPositions3.get(0));
-            if (!positionReached){
+            if (!positionReached) {
                 shootingPositions3.remove(0);
-            } else {
-                return true;
-            }
+            }else {
+                    obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
+                    if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
+                        positionReached = false;
+                    } else {
+                        return true;
+                    }
+                }
         }
 
         while (shootingPositions2.size() != 0){
             positionReached = travelToSquare(shootingPositions2.get(0));
             if (!positionReached){
                 shootingPositions2.remove(0);
-            } else {
-                return true;
+            }  else {
+                obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
+                if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
+                    positionReached = false;
+                } else {
+                    return true;
+                }
             }
         }
 
@@ -350,14 +373,21 @@ public class Navigator {
             positionReached = travelToSquare(shootingPositions1.get(0));
             if (!positionReached){
                 shootingPositions1.remove(0);
-            } else {
-                return true;
+            }  else {
+                obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
+                if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
+                    positionReached = false;
+                } else {
+                    return true;
+                }
             }
         }
 
         return false;
 
     }
+
+
 
     /**
      * A method to travel to a specific x coordinate backwards (doesn't use odometry correction)

@@ -179,9 +179,11 @@ public class ObstacleMapper extends Thread {
         // update mapping
         if ( obstacle1 != null && odometer.isAdjacentSquare( obstacle1 ) && !odometer.getFieldMapper().isEdgeSquare( obstacle1 ) ) {
             declareObstacleInMapping( obstacle1 );
+            odometer.getNorthSquare(obstacle1).setShootingPriority(0);
         }
         if ( obstacle2 != null && odometer.isAdjacentSquare( obstacle2 ) && !odometer.getFieldMapper().isEdgeSquare( obstacle2 ) ) {
             declareObstacleInMapping( obstacle2 );
+            odometer.getNorthSquare(obstacle1).setShootingPriority(0);
         }
     }
 

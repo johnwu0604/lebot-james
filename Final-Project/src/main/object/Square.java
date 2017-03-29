@@ -17,8 +17,8 @@ public class Square {
     private double eastLine;
     private double westLine;
 
-    public Square( int x, int y) {
-        squarePosition = getSquarePositionArray( x, y );
+    public Square(int x, int y) {
+        squarePosition = getSquarePositionArray(x, y);
     }
 
     /**
@@ -74,7 +74,7 @@ public class Square {
      * @param y
      * @return positionArray
      */
-    public static int[] getSquarePositionArray( int x, int y ) {
+    public static int[] getSquarePositionArray(int x, int y) {
         int[] position = new int[2];
         position[0] = x;
         position[1] = y;
@@ -150,7 +150,7 @@ public class Square {
      * @return isShootingPosition
      */
     public boolean isShootingPosition() {
-        if(shootingPriority == 0){
+        if (shootingPriority == 0) {
             return false;
         } else {
             return true;
@@ -237,4 +237,5 @@ public class Square {
     public void setWestLine(double westLine) {
         this.westLine = westLine;
     }
+
 }
