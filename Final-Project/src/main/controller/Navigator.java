@@ -22,6 +22,7 @@ public class Navigator {
     private OdometerCorrection odometerCorrection;
     private ObstacleAvoider obstacleAvoider;
     private ObstacleMapper obstacleMapper;
+    private Square shootingPositionExecuted;
 
     // variables
     private boolean correctionNeeded = true;
@@ -335,6 +336,7 @@ public class Navigator {
                  obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
                 if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
                     positionReached = false;
+                    shootingPositions4.remove(0);
                 } else {
                     return true;
                 }
@@ -349,6 +351,7 @@ public class Navigator {
                     obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
                     if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
                         positionReached = false;
+                        shootingPositions3.remove(0);
                     } else {
                         return true;
                     }
@@ -363,6 +366,7 @@ public class Navigator {
                 obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
                 if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
                     positionReached = false;
+                    shootingPositions2.remove(0);
                 } else {
                     return true;
                 }
@@ -377,6 +381,7 @@ public class Navigator {
                 obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
                 if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
                     positionReached = false;
+                    shootingPositions1.remove(0);
                 } else {
                     return true;
                 }
@@ -476,6 +481,31 @@ public class Navigator {
     }
 
     /**
+     * A method to move the robot to the ball dispenser in a path it knows is clear of obstacles
+     */
+    public void returnToBallDispenser(){
+        ArrayList<Square> currentPastSquares = odometer.getPastSquares();
+
+        while (odometer.getCurrentSquare() != odometer.getFieldMapper().getBallDispenserApproaches()[0]
+                || odometer.getCurrentSquare() != odometer.getFieldMapper().getBallDispenserApproaches()[1]){
+            travelToSquare(currentPastSquares.get(currentPastSquares.size()-1));
+            currentPastSquares.remove(currentPastSquares.size()-1);
+        }
+    }
+
+    /**
+     * A method to move the robot to a shooting position in a path it knows is clear of obstacles
+     */
+    public void returnToShootingPosition(){
+        ArrayList<Square> currentPastSquares = odometer.getPastSquares();
+
+        while (odometer.getCurrentSquare() != shootingPositionExecuted){
+            travelToSquare(currentPastSquares.get(currentPastSquares.size()-1));
+            currentPastSquares.remove(currentPastSquares.size()-1);
+        }
+    }
+
+    /**
      * A method to determine whether a move is possible by scanning the square if needed
      *
      * @param destination
@@ -523,6 +553,10 @@ public class Navigator {
         }else{
             return null; //should never occur
         }
+    }
+
+    public void setShootingPositionExecuted(Square square){
+        this.shootingPositionExecuted = square;
     }
 
 

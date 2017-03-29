@@ -63,6 +63,8 @@ public class Launcher {
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_MAX);
             restArm(ShootingConstants.LAUNCH_ROM_MAX);
         }
+
+        navigator.setShootingPositionExecuted(odometer.getCurrentSquare());
     }
 
     /**
