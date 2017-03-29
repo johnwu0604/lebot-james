@@ -12,12 +12,12 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.LightSensor;
 import main.object.OdometerDisplay;
 import main.object.UltrasonicSensor;
-import main.resource.FieldConstants;
+import main.resource.ShootingConstants;
 import main.util.EmergencyStopper;
 import main.util.FieldMapper;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
-import main.resource.ShootingConstants;
+import java.util.Timer;
 
 import java.util.Map;
 
@@ -54,7 +54,7 @@ public class FinalProject {
 //        EmergencyStopper emergencyStopper = new EmergencyStopper();
 //        emergencyStopper.start();
 //
-//        retrieveStartingParameters();
+//      retrieveStartingParameters();
 //
 //        // notify profs we have received parameters
 //        Sound.beepSequenceUp();
@@ -144,9 +144,11 @@ public class FinalProject {
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        playOffenseWithMapping( navigator, odometer, obstacleMapper, ballRetriever, launcher );
-//        playOffense( navigator, odometer, ballRetriever, launcher );
-//        playDefense( navigator, odometer );
+        if(parameters.getForwardTeam() == 11){
+            playOffenseWithMapping(navigator, odometer, obstacleMapper, ballRetriever, launcher);
+        } else if (parameters.getDefenseTeam() == 11){
+            playDefense(navigator, odometer, launcher, obstacleMapper);
+        }
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
@@ -168,19 +170,20 @@ public class FinalProject {
         obstacleMapper.start();
         obstacleMapper.startRunning();
         ballRetriever.getBall();
+        navigator.travelToShootingPosition();
+        launcher.launchBall();      //1 ball launched
+
+        navigator.returnToBallDispenser();
+        ballRetriever.getBall();
+        navigator.returnToShootingPosition();
+        launcher.launchBall(); //2 balls launched
+
+        navigator.returnToBallDispenser();
+        ballRetriever.getBall();
+        navigator.returnToShootingPosition();
+        launcher.launchBall(); //3 balls launched
     }
 
-    /**
-     * A method to play offense without field mapping and minimal avoidance (used in first/second round)
-     *
-     * @param navigator
-     * @param odometer
-     * @param ballRetriever
-     * @param launcher
-     */
-    private static void playOffense( Navigator navigator, Odometer odometer, BallRetriever ballRetriever, Launcher launcher ) {
-        ballRetriever.getBall();
-    }
 
     /**
      * A method to play defense
@@ -188,8 +191,22 @@ public class FinalProject {
      * @param navigator
      * @param odometer
      */
-    private static void playDefense( Navigator navigator, Odometer odometer ) {
-        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[3][3] );
+    private static void playDefense( Navigator navigator, Odometer odometer, Launcher launcher, ObstacleMapper obstacleMapper) {
+        double startTime = System.currentTimeMillis();
+        int y = 10-parameters.getDefenderZone()[1];
+
+        navigator.setObstacleMappingNeeded( true );
+        obstacleMapper.start();
+        obstacleMapper.startRunning();
+
+        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[5][y] );
+        launcher.rotateLaunchMotors(ShootingConstants.VERTICAL_ANGLE);
+        while(System.currentTimeMillis() - startTime < 7*60*1000){
+            navigator.moveSquareX(1);
+            navigator.moveSquareX(-1);
+        }
+
+
     }
 
     /**
