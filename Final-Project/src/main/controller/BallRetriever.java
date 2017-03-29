@@ -52,10 +52,10 @@ public class BallRetriever {
 
         try { Thread.sleep( 5000 ); } catch( Exception e ){}
 
-//        launcher.setLaunchMotorAcceleration(ShootingConstants.BALL_LOWERING_ACCELERATION);
-//        launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
-//
-//        navigator.travelToSquare( odometer.getLastSquare() );
+        launcher.setLaunchMotorAcceleration(ShootingConstants.BALL_LOWERING_ACCELERATION);
+        launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
+
+        navigator.travelToSquare( odometer.getLastSquare() );
         navigator.setCorrectionNeeded(true);
 
     }

@@ -12,12 +12,10 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.LightSensor;
 import main.object.OdometerDisplay;
 import main.object.UltrasonicSensor;
-import main.resource.FieldConstants;
 import main.util.EmergencyStopper;
 import main.util.FieldMapper;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
-import main.resource.ShootingConstants;
 
 import java.util.Map;
 
@@ -26,7 +24,7 @@ import java.util.Map;
  *
  * @author JohnWu
  */
-public class FinalProject {
+public class LeBotJames {
 
     private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "A" ));
     private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "D" ));
@@ -144,7 +142,7 @@ public class FinalProject {
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        playOffenseWithMapping( navigator, odometer, obstacleMapper, ballRetriever, launcher );
+        playOffense( navigator, odometer, obstacleMapper, ballRetriever, launcher );
 //        playOffense( navigator, odometer, ballRetriever, launcher );
 //        playDefense( navigator, odometer );
 
@@ -161,25 +159,14 @@ public class FinalProject {
      * @param ballRetriever
      * @param launcher
      */
-    private static void playOffenseWithMapping( Navigator navigator, Odometer odometer, ObstacleMapper obstacleMapper,
-                                                BallRetriever ballRetriever,
-                                                Launcher launcher ) {
+    private static void playOffense(Navigator navigator, Odometer odometer, ObstacleMapper obstacleMapper,
+                                    BallRetriever ballRetriever, Launcher launcher ) {
         navigator.setObstacleMappingNeeded( true );
         obstacleMapper.start();
         obstacleMapper.startRunning();
         ballRetriever.getBall();
-    }
-
-    /**
-     * A method to play offense without field mapping and minimal avoidance (used in first/second round)
-     *
-     * @param navigator
-     * @param odometer
-     * @param ballRetriever
-     * @param launcher
-     */
-    private static void playOffense( Navigator navigator, Odometer odometer, BallRetriever ballRetriever, Launcher launcher ) {
-        ballRetriever.getBall();
+        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[3][3] );
+        launcher.launchBall();
     }
 
     /**
@@ -188,7 +175,10 @@ public class FinalProject {
      * @param navigator
      * @param odometer
      */
-    private static void playDefense( Navigator navigator, Odometer odometer ) {
+    private static void playDefense( Navigator navigator, Odometer odometer, ObstacleMapper obstacleMapper ) {
+        navigator.setObstacleMappingNeeded( true );
+        obstacleMapper.start();
+        obstacleMapper.startRunning();
         navigator.travelToSquare( odometer.getFieldMapper().getMapping()[3][3] );
     }
 

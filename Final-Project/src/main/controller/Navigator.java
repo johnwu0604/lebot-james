@@ -259,17 +259,6 @@ public class Navigator {
     }
 
     /**
-     * A method to drive our vehicle to a certain cartesian coordinate.
-     *
-     * @param x X-Coordinate
-     * @param y Y-Coordinate
-     */
-    public void travelTo( double x , double y ) {
-        travelToY(y);
-        travelToX(x);
-    }
-
-    /**
      * A method to travel to a specific x coordinate
      *
      * @param xCoordinate the x coordinate we want to travel to
