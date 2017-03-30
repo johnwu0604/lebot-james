@@ -145,25 +145,21 @@ public class Square {
     }
 
     /**
-     * A method to get whether the square is a shooting position or not
-     *
-     * @return isShootingPosition
-     */
-    public boolean isShootingPosition() {
-        if (shootingPriority == 0) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    /**
      * A method to set the square's shooting priority (0,3)
      *
      * @param priority
      */
     public void setShootingPriority(int priority) {
         this.shootingPriority = priority;
+    }
+
+    /**
+     * A method to get the shooting priority of the square
+     *
+     * @return shootingPriority
+     */
+    public int getShootingPriority() {
+        return shootingPriority;
     }
 
     /**

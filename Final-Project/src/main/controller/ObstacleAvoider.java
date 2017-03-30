@@ -130,6 +130,9 @@ public class ObstacleAvoider {
         odometer.getFieldMapper().getMapping()[x][y].setAllowed( false );
         odometer.getFieldMapper().getMapping()[x][y].setObstacle( true );
         odometer.getFieldMapper().getMapping()[x][y].setShootingPriority( 0 );
+        if ( y + 1 < 12 ) {
+            odometer.getFieldMapper().getMapping()[x][y+1].setShootingPriority( 0 );
+        }
     }
 
 }
