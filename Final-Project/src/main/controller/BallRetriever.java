@@ -55,8 +55,8 @@ public class BallRetriever {
         launcher.setLaunchMotorAcceleration(ShootingConstants.BALL_LOWERING_ACCELERATION);
         launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
 
-        navigator.travelToSquare( odometer.getLastSquare() );
         navigator.setCorrectionNeeded(true);
+        navigator.travelToSquare( odometer.getLastSquare() );
 
     }
 
@@ -179,21 +179,23 @@ public class BallRetriever {
             navigator.rotateRightMotorForwardSlow();
             aligningRight = true;
         }
-        startTime = System.currentTimeMillis();
-        if ( aligningLeft ) {
-            while ( !holdTimedOut( startTime ) ) {
-                navigator.rotateLeftMotorForwardSlow();
+        if ( alignmentTimedOut ) {
+            navigator.stopFast();
+            revertChangesFromTimeOut();
+        } else {
+            startTime = System.currentTimeMillis();
+            if ( aligningLeft ) {
+                while ( !holdTimedOut( startTime ) ) {
+                    navigator.rotateLeftMotorForwardSlow();
+                }
             }
-        }
-        if ( aligningRight ) {
-            while ( !holdTimedOut( startTime ) ) {
-                navigator.rotateRightMotorForwardSlow();
+            if ( aligningRight ) {
+                while ( !holdTimedOut( startTime ) ) {
+                    navigator.rotateRightMotorForwardSlow();
+                }
             }
         }
         navigator.stopFast();
-        if ( alignmentTimedOut ) {
-            revertChangesFromTimeOut();
-        }
         aligningRight = false;
         aligningLeft = false;
     }

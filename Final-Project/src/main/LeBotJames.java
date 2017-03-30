@@ -32,7 +32,6 @@ public class LeBotJames {
     private static final EV3LargeRegulatedMotor leftLaunchMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "C" ));
     private static final EV3LargeRegulatedMotor rightLaunchMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "B" ));
     private static final SampleProvider forwardUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S1" ) ) ).getMode("Distance");
-    private static final SampleProvider leftUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S4" ) ) ).getMode("Distance");
     private static final SampleProvider leftColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S2") ) ).getMode("Red");
     private static final SampleProvider rightColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S3") ) ).getMode("Red");
 
@@ -93,7 +92,7 @@ public class LeBotJames {
         emergencyStopper.start();
 
         int[] defenderZone = {4,4};
-        int[] ballDispenserPosition  = {-1,6};
+        int[] ballDispenserPosition  = {-1,3};
         Parameters parameters = new Parameters();
         parameters.setForwardCorner(1);
         parameters.setForwardLine(7);
@@ -110,11 +109,9 @@ public class LeBotJames {
         LightSensor leftLightSensor = new LightSensor( leftColorSensor );
         LightSensor rightLightSensor = new LightSensor( rightColorSensor );
         UltrasonicSensor forwardUSSensor = new UltrasonicSensor( forwardUltrasonicSensor );
-        UltrasonicSensor leftUSSensor = new UltrasonicSensor( leftUltrasonicSensor );
         leftLightSensor.start();
         rightLightSensor.start();
         forwardUSSensor.start();
-        leftUSSensor.start();
 
         // instantiate continuous threads (don't stop during the program)
         Odometer odometer = new Odometer( leftMotor, rightMotor, fieldMapper);
@@ -173,9 +170,9 @@ public class LeBotJames {
         navigator.returnToShootingPosition();
 //        launcher.launchBall(); //2 balls launched
 //
-//        navigator.returnToBallDispenser();
-//        ballRetriever.getBall();
-//        navigator.returnToShootingPosition();
+        navigator.returnToBallDispenser();
+        ballRetriever.getBall();
+        navigator.returnToShootingPosition();
 //        launcher.launchBall(); //3 balls launched
     }
 

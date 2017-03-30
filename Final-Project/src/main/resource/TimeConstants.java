@@ -40,7 +40,7 @@ public class TimeConstants {
     /**
      * The max time alignment can happen for ball retrieval
      */
-    public static final double ALIGNMENT_MAX_TIME = 1000;
+    public static final double ALIGNMENT_MAX_TIME = 500;
 
     /**
      * Hold time for alignment to retreive ball
@@ -48,14 +48,9 @@ public class TimeConstants {
     public static final double ALIGNMENT_HOLD_TIME = 500;
 
     /**
-     * The max time to detect an obstacle
-     */
-    public static final double OBSTACLE_DETECTION_TIME = 500;
-
-    /**
      * The time to scan for obstacles
      */
-    public static final double OBSTACLE_SCAN_TIME = 450;
+    public static final double OBSTACLE_SCAN_TIME = 400;
 
 
 }

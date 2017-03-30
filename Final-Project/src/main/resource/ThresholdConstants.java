@@ -33,11 +33,6 @@ public class ThresholdConstants {
     public static final double POINT_REACHED = 2.5;
 
     /**
-     * The maximum distance we want to track obstacles
-     */
-    public static final double OBSTACLE_TRACKING = 75;
-
-    /**
      * The threshold for determining which square a coordinate is in.
      * Any coordinate closer than this distance to a line is too hard too tell the exact square.
      */
