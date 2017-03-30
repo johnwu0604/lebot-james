@@ -215,22 +215,25 @@ public class Navigator {
     public boolean travelToShootingPosition(){
 
         ArrayList<Square> shootingPositions4 = odometer.getFieldMapper().getShootingPositions4();
-        ArrayList<Square> shootingPositions3 = odometer.getFieldMapper().getShootingPositions3();
-        ArrayList<Square> shootingPositions2 = odometer.getFieldMapper().getShootingPositions2();
-        ArrayList<Square> shootingPositions1 = odometer.getFieldMapper().getShootingPositions1();
-
-        if ( tryPositions( shootingPositions1 ) ) {
-            return true;
-        }
-        if ( tryPositions( shootingPositions2 ) ) {
-            return true;
-        }
-        if ( tryPositions( shootingPositions3 ) ) {
-            return true;
-        }
         if ( tryPositions( shootingPositions4 ) ) {
             return true;
         }
+
+        ArrayList<Square> shootingPositions3 = odometer.getFieldMapper().getShootingPositions3();
+        if ( tryPositions( shootingPositions3 ) ) {
+            return true;
+        }
+
+        ArrayList<Square> shootingPositions2 = odometer.getFieldMapper().getShootingPositions2();
+        if ( tryPositions( shootingPositions2 ) ) {
+            return true;
+        }
+
+        ArrayList<Square> shootingPositions1 = odometer.getFieldMapper().getShootingPositions1();
+        if ( tryPositions( shootingPositions1 ) ) {
+            return true;
+        }
+
         return false;
     }
 

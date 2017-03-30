@@ -19,10 +19,6 @@ public class FieldMapper {
     private Square[][] squares;
     private Square[] ballDispenserApproach;
     private Parameters parameters;
-    private ArrayList<Square> shootingPositions1;
-    private ArrayList<Square> shootingPositions2;
-    private ArrayList<Square> shootingPositions3;
-    private ArrayList<Square> shootingPositions4;
 
 
     /**
@@ -40,10 +36,6 @@ public class FieldMapper {
      * A method to map our field
      */
     public void mapField(){
-        shootingPositions1 = new ArrayList<>();
-        shootingPositions2 = new ArrayList<>();
-        shootingPositions3 = new ArrayList<>();
-        shootingPositions4 = new ArrayList<>();
         for ( int x = 0; x < 12; x++ ) {
             for (int y = 0; y < 12; y++) {
                 Square square = new Square( x, y );
@@ -238,22 +230,18 @@ public class FieldMapper {
 
         // highest priority for the closet square
         if ( y == closestSquare ) {
-            shootingPositions4.add( square );
             return 4;
         }
         // lower priority for the second closet square
         if ( y == closestSquare-1 ) {
-            shootingPositions3.add( square );
             return 3;
         }
         // lower priority for the third closet square
         if ( y == closestSquare-2 ) {
-            shootingPositions2.add( square );
             return 2;
         }
         // lower priority for the fourth closet square
         if ( y == closestSquare-3 ) {
-            shootingPositions1.add( square );
             return 1;
         }
         return 0;
@@ -265,6 +253,14 @@ public class FieldMapper {
      * @return
      */
     public ArrayList<Square> getShootingPositions1(){
+        ArrayList<Square> shootingPositions1 = new ArrayList<>();
+        for ( int i = 0; i < 12; i++  ) {
+            for ( int j =0; j < 12; j++) {
+                if ( squares[i][j].getShootingPriority() == 1 ) {
+                    shootingPositions1.add( squares[i][j] );
+                }
+            }
+        }
         return shootingPositions1;
     }
 
@@ -274,6 +270,14 @@ public class FieldMapper {
      * @return
      */
     public ArrayList<Square> getShootingPositions2(){
+        ArrayList<Square> shootingPositions2 = new ArrayList<>();
+        for ( int i = 0; i < 12; i++  ) {
+            for ( int j =0; j < 12; j++) {
+                if ( squares[i][j].getShootingPriority() == 2 ) {
+                    shootingPositions2.add( squares[i][j] );
+                }
+            }
+        }
         return shootingPositions2;
     }
 
@@ -283,6 +287,14 @@ public class FieldMapper {
      * @return
      */
     public ArrayList<Square> getShootingPositions3(){
+        ArrayList<Square> shootingPositions3 = new ArrayList<>();
+        for ( int i = 0; i < 12; i++  ) {
+            for ( int j =0; j < 12; j++) {
+                if ( squares[i][j].getShootingPriority() == 3 ) {
+                    shootingPositions3.add( squares[i][j] );
+                }
+            }
+        }
         return shootingPositions3;
     }
 
@@ -292,6 +304,14 @@ public class FieldMapper {
      * @return
      */
     public ArrayList<Square> getShootingPositions4(){
+        ArrayList<Square> shootingPositions4 = new ArrayList<>();
+        for ( int i = 0; i < 12; i++  ) {
+            for ( int j =0; j < 12; j++) {
+                if ( squares[i][j].getShootingPriority() == 4 ) {
+                    shootingPositions4.add( squares[i][j] );
+                }
+            }
+        }
         return shootingPositions4;
     }
 
