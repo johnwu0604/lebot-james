@@ -165,8 +165,8 @@ public class LeBotJames {
         obstacleMapper.start();
         obstacleMapper.startRunning();
         ballRetriever.getBall();
-        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[3][3] );
-        launcher.launchBall();
+//        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[3][3] );
+//        launcher.launchBall();
     }
 
     /**
