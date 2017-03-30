@@ -21,7 +21,6 @@ public class Navigator {
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
     private OdometerCorrection odometerCorrection;
     private ObstacleAvoider obstacleAvoider;
-    private ObstacleMapper obstacleMapper;
     private Square shootingPositionExecuted;
 
     // variables
@@ -36,12 +35,11 @@ public class Navigator {
      * @param odometer the odometer controller used in the robot
      */
     public Navigator( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Odometer odometer,
-                      ObstacleAvoider obstacleAvoider, ObstacleMapper obstacleMapper ) {
+                      ObstacleAvoider obstacleAvoider ) {
         this.odometer = odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.obstacleAvoider = obstacleAvoider;
-        this.obstacleMapper = obstacleMapper;
         obstacleAvoider.setNavigator( this );
     }
 
@@ -64,7 +62,7 @@ public class Navigator {
             }
         } else {
             while ( destination != odometer.getCurrentSquare() ) {   //check break condition
-                if( destination.isObstacle() == true || destination.isAllowed() == false ){
+                if( destination.isObstacle() || !destination.isAllowed() ){
                     return false;
                 }
                 makeBestMoves(destination);
@@ -853,7 +851,6 @@ public class Navigator {
         if ( correctionNeeded ) {
             odometerCorrection.startRunning();
         }
-        obstacleMapper.startRunning();
     }
 
     /**
@@ -863,7 +860,6 @@ public class Navigator {
         if ( correctionNeeded ) {
             odometerCorrection.stopRunning();
         }
-        obstacleMapper.stopRunning();
     }
 
 

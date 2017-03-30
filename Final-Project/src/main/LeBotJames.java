@@ -124,8 +124,7 @@ public class LeBotJames {
 
         // instantiate movement controllers
         ObstacleAvoider obstacleAvoider = new ObstacleAvoider( forwardUSSensor, odometer );
-        ObstacleMapper obstacleMapper = new ObstacleMapper( leftUSSensor, odometer );
-        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider, obstacleMapper);
+        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider );
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
 
         // instantiate offense controllers
@@ -144,9 +143,9 @@ public class LeBotJames {
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
         if( parameters.getForwardTeam() == 11 ){
-            playOffense( navigator, odometer, obstacleMapper, ballRetriever, launcher );
+            playOffense( navigator, odometer, ballRetriever, launcher );
         } else if ( parameters.getDefenseTeam() == 11 ){
-            playDefense( navigator, odometer, launcher, obstacleMapper );
+            playDefense( navigator, odometer, launcher );
         }
 
         int buttonChoice = Button.waitForAnyPress();
@@ -158,15 +157,12 @@ public class LeBotJames {
      *
      * @param navigator
      * @param odometer
-     * @param obstacleMapper
      * @param ballRetriever
      * @param launcher
      */
-    private static void playOffense(Navigator navigator, Odometer odometer, ObstacleMapper obstacleMapper,
+    private static void playOffense(Navigator navigator, Odometer odometer,
                                     BallRetriever ballRetriever,
                                     Launcher launcher ) {
-//        obstacleMapper.start();
-//        obstacleMapper.startRunning();
 
         ballRetriever.getBall();
         navigator.travelToShootingPosition();
@@ -189,13 +185,11 @@ public class LeBotJames {
      *
      * @param navigator
      * @param odometer
+     * @param launcher
      */
-    private static void playDefense( Navigator navigator, Odometer odometer, Launcher launcher, ObstacleMapper obstacleMapper) {
+    private static void playDefense( Navigator navigator, Odometer odometer, Launcher launcher)  {
         double startTime = System.currentTimeMillis();
         int y = 10-parameters.getDefenderZone()[1];
-
-        obstacleMapper.start();
-        obstacleMapper.startRunning();
 
         navigator.travelToSquare( odometer.getFieldMapper().getMapping()[5][y] );
         launcher.rotateLaunchMotors(ShootingConstants.VERTICAL_ANGLE);
