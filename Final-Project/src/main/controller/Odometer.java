@@ -1,5 +1,6 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.Square;
 import main.resource.ThresholdConstants;
@@ -432,19 +433,4 @@ public class Odometer extends Thread {
         return false;
     }
 
-    public Square getNorthSquare(Square location){
-        return getFieldMapper().getMapping()[location.getSquarePosition()[0]][location.getSquarePosition()[1]+1];
-    }
-
-    public Square getSouthSquare(Square location){
-        return getFieldMapper().getMapping()[location.getSquarePosition()[0]][location.getSquarePosition()[1]-1];
-    }
-
-    public Square getEastSquare(Square location){
-        return getFieldMapper().getMapping()[location.getSquarePosition()[0]+1][location.getSquarePosition()[1]];
-    }
-
-    public Square getWestSquare(Square location){
-        return getFieldMapper().getMapping()[location.getSquarePosition()[0]-1][location.getSquarePosition()[1]];
-    }
 }

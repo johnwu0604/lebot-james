@@ -21,12 +21,10 @@ public class Navigator {
     private EV3LargeRegulatedMotor leftMotor, rightMotor;
     private OdometerCorrection odometerCorrection;
     private ObstacleAvoider obstacleAvoider;
-    private ObstacleMapper obstacleMapper;
     private Square shootingPositionExecuted;
 
     // variables
     private boolean correctionNeeded = true;
-    private boolean obstacleMappingNeeded = false;
     ArrayList<Square> recentMoves = new ArrayList<Square>();
 
     /**
@@ -37,12 +35,11 @@ public class Navigator {
      * @param odometer the odometer controller used in the robot
      */
     public Navigator( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Odometer odometer,
-                      ObstacleAvoider obstacleAvoider, ObstacleMapper obstacleMapper ) {
+                      ObstacleAvoider obstacleAvoider ) {
         this.odometer = odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.obstacleAvoider = obstacleAvoider;
-        this.obstacleMapper = obstacleMapper;
         obstacleAvoider.setNavigator( this );
     }
 
@@ -53,10 +50,9 @@ public class Navigator {
      */
     public boolean travelToSquare( Square destination ) {
         recentMoves.clear();
-        if(destination == odometer.getLastSquare()){
+        if( destination == odometer.getLastSquare() ){
             Square lastSquare = odometer.getLastSquare();
             int[] components = getComponentDistances(lastSquare);
-
             if(components[0] != 0){
                 moveSquareX(components[0]);
                 return true;
@@ -64,14 +60,11 @@ public class Navigator {
                 moveSquareY(components[1]);
                 return true;
             }
-
         } else {
-
-            if(destination.isObstacle() == true || destination.isAllowed() == false){
-                return false;
-            }
-
-            while (destination != odometer.getCurrentSquare()) {   //check break condition
+            while ( destination != odometer.getCurrentSquare() ) {   //check break condition
+                if( destination.isObstacle() || !destination.isAllowed() ){
+                    return false;
+                }
                 makeBestMoves(destination);
             }
             return true;
@@ -92,25 +85,26 @@ public class Navigator {
         while( !possibleMoves.empty() && !moveCompleted ){
             Square moveLocation = possibleMoves.pop();
 
-            if (moveLocation == odometer.getNorthSquare()){
-                moveCompleted = moveSquareY(1);
-                if(moveCompleted){
-                    recentMoves.add(odometer.getNorthSquare());
+            // determine if it is in a cycle
+            Square squareToAvoid = null;
+            boolean inCycle = recentMoves.contains( odometer.getCurrentSquare() );
+            if ( inCycle ) {
+                for ( int i = 0; i < recentMoves.size(); i++ ) {
+                    if ( recentMoves.get( i ) == odometer.getCurrentSquare() ) {
+                        squareToAvoid = recentMoves.get( i + 1 );
+                    }
                 }
-            } else if (moveLocation == odometer.getSouthSquare()){
-                moveCompleted = moveSquareY(-1);
-                if(moveCompleted){
-                    recentMoves.add(odometer.getSouthSquare());
-                }
-            } else if (moveLocation == odometer.getEastSquare()){
-                moveCompleted = moveSquareX(1);
-                if(moveCompleted){
-                    recentMoves.add(odometer.getEastSquare());
-                }
-            } else if (moveLocation == odometer.getWestSquare()){
-                moveCompleted = moveSquareX(-1);
-                if(moveCompleted){
-                    recentMoves.add(odometer.getWestSquare());
+            }
+
+            if ( moveLocation != squareToAvoid ) {
+                if (moveLocation == odometer.getNorthSquare()){
+                    moveCompleted = moveSquareY(1);
+                } else if (moveLocation == odometer.getSouthSquare()){
+                    moveCompleted = moveSquareY(-1);
+                } else if (moveLocation == odometer.getEastSquare()){
+                    moveCompleted = moveSquareX(1);
+                } else if (moveLocation == odometer.getWestSquare()){
+                    moveCompleted = moveSquareX(-1);
                 }
             }
         }
@@ -141,140 +135,39 @@ public class Navigator {
         // greater distance to travel in x
         if ( Math.abs( deltaX ) >= Math.abs( deltaY ) ) {
             topPriority = deltaX > 0 ? eastSquare : westSquare;
-            if( deltaY != 0 ){
-                secondPriority = deltaY > 0 ? northSquare : southSquare;
+            secondPriority = deltaY > 0 ? northSquare : southSquare;
+            if ( secondPriority == null ) {
+                secondPriority = deltaY > 0 ? southSquare : northSquare;
+            } else {
+                secondPriority = deltaY > 0 ? southSquare : northSquare;
             }
-        } else { // greater distance to travel in y
+            fourthPriority = topPriority = deltaX > 0 ? westSquare : eastSquare;
+        }
+
+        // greater distance to travel in y
+        if ( Math.abs( deltaX ) < Math.abs( deltaY ) ) {
             topPriority = deltaY > 0 ? northSquare : southSquare;
-            if( deltaX != 0 ) {
-                secondPriority = deltaX > 0 ? eastSquare : westSquare;
+            secondPriority = deltaX > 0 ? eastSquare : westSquare;
+            if ( secondPriority == null ) {
+                secondPriority = deltaX > 0 ? westSquare : eastSquare;
+            } else {
+                thirdPriority = deltaX > 0 ? westSquare : eastSquare;
             }
+            fourthPriority = deltaY > 0 ? southSquare : northSquare;
         }
 
-        if( recentMoves.contains( odometer.getCurrentSquare() ) ){ //check to prevent moving in a loop
-
-            fourthPriority = recentMoves.get( recentMoves.indexOf( odometer.getCurrentSquare() ) + 1 ); //Don't make same move as last time
-            thirdPriority = odometer.getLastSquare();
-
-            if (secondPriority == null) {
-
-                if ( northSquare != topPriority && northSquare != thirdPriority && northSquare != fourthPriority ) {
-                    secondPriority = northSquare;
-                } else if ( southSquare != topPriority && southSquare != thirdPriority && southSquare != fourthPriority ) {
-                    secondPriority = southSquare;
-                } else if ( eastSquare != topPriority && eastSquare != thirdPriority && eastSquare != fourthPriority ) {
-                    secondPriority = eastSquare;
-                } else if ( westSquare != topPriority && westSquare != thirdPriority && westSquare != fourthPriority ) {
-                    secondPriority = westSquare;
-                }
-            }
-
-            if ( fourthPriority != null) {
-                possibleMoves.push( fourthPriority );
-            }
-            if ( thirdPriority != null && thirdPriority != fourthPriority ) {
-                possibleMoves.push( thirdPriority );
-            }
-            if ( secondPriority != null && secondPriority != fourthPriority) {
-                possibleMoves.push( secondPriority );
-            }
-            if ( topPriority != null && topPriority != fourthPriority) {
-                possibleMoves.push( topPriority );
-            }
-
-            return possibleMoves;
-
-        } else {
-            fourthPriority = odometer.getLastSquare();
+        if ( fourthPriority != null ) {
+            possibleMoves.push( fourthPriority );
         }
-
-        ArrayList<Square> thirdPriorities = new ArrayList<Square>();
-
-        // set last square remaining as third priority
-        if ( northSquare != topPriority && northSquare != secondPriority && northSquare != fourthPriority ){
-            thirdPriorities.add( northSquare );
-        } else if ( southSquare != topPriority && southSquare != secondPriority && southSquare != fourthPriority ){
-            thirdPriorities.add( southSquare );
-        } else if ( eastSquare != topPriority && eastSquare != secondPriority && eastSquare != fourthPriority ){
-            thirdPriorities.add( eastSquare );
-        } else if ( westSquare != topPriority && westSquare != secondPriority && westSquare != fourthPriority ){
-            thirdPriorities.add( westSquare );
+        if ( thirdPriority != null ) {
+            possibleMoves.push( thirdPriority );
         }
-
-        if(thirdPriorities.size() == 1) {
-            thirdPriority = thirdPriorities.get(0);
-        }else {
-
-            double distOne = Math.hypot((double) (thirdPriorities.get(0).getSquarePosition()[0] - destination.getSquarePosition()[0]),
-                    (double) (thirdPriorities.get(0).getSquarePosition()[1] - destination.getSquarePosition()[1]));
-            double distTwo = Math.hypot((double) (thirdPriorities.get(1).getSquarePosition()[0] - destination.getSquarePosition()[0]),
-                    (double) (thirdPriorities.get(1).getSquarePosition()[1] - destination.getSquarePosition()[1]));
-
-            if (distOne < distTwo) { //Opt for square TOWARDS destination
-                secondPriority = thirdPriorities.get(0);
-                thirdPriority = thirdPriorities.get(1);
-            } else if (distTwo < distOne) {
-                secondPriority = thirdPriorities.get(1);
-                thirdPriority = thirdPriorities.get(0);
-            } else if (deltaX == 0) { //If both possible moves equidistant
-                //obstacle directly in path, move AROUND, not AWAY, i.e. parallel to obstacle
-                if (thirdPriorities.get(0).getSquarePosition()[0] == odometer.getCurrentSquare().getSquarePosition()[0]) {
-                    secondPriority = thirdPriorities.get(1); //Y-direction move
-                    thirdPriority = thirdPriorities.get(0); //X-direction move
-                } else if (thirdPriorities.get(1).getSquarePosition()[0] == odometer.getCurrentSquare().getSquarePosition()[0]) {
-                    secondPriority = thirdPriorities.get(0); //X-direction move
-                    thirdPriority = thirdPriorities.get(1); //Y-direction move
-                }
-            } else if (deltaY == 0) {
-                //obstacle directly in path, move AROUND, not AWAY, i.e. parallel to obstacle
-                if (thirdPriorities.get(0).getSquarePosition()[1] == odometer.getCurrentSquare().getSquarePosition()[1]) {
-                    secondPriority = thirdPriorities.get(1);
-                    thirdPriority = thirdPriorities.get(0);
-                } else if (thirdPriorities.get(1).getSquarePosition()[1] == odometer.getCurrentSquare().getSquarePosition()[1]) {
-                    secondPriority = thirdPriorities.get(0);
-                    thirdPriority = thirdPriorities.get(1);
-                }
-            } else { //maintain current heading before choosing to turn
-                if (getNextSquare() == thirdPriorities.get(0)) {
-                    secondPriority = thirdPriorities.get(0);
-                    thirdPriority = thirdPriorities.get(1);
-                } else if (getNextSquare() == thirdPriorities.get(1)) {
-                    secondPriority = thirdPriorities.get(1);
-                    thirdPriority = thirdPriorities.get(0);
-                } else { //Arbitrary choice, prefers to move in +/- Y-direction
-                    secondPriority = thirdPriorities.get(0);
-                    thirdPriority = thirdPriorities.get(1);
-                }
-            }
-
+        if ( secondPriority != null ) {
+            possibleMoves.push( secondPriority );
         }
-
-        if ( fourthPriority != null) {
-            possibleMoves.push(fourthPriority);
-        }
-        if ( thirdPriority != null && thirdPriority != fourthPriority) {
-            possibleMoves.push(thirdPriority);
-        }
-        if ( secondPriority != null && secondPriority != fourthPriority) {
-            possibleMoves.push(secondPriority);
-        }
-        if ( topPriority != null && topPriority != fourthPriority) {
-            possibleMoves.push(topPriority);
-        }
+        possibleMoves.push( topPriority );
 
         return possibleMoves;
-
-    }
-
-    /**
-     * A method to drive our vehicle to a certain cartesian coordinate.
-     *
-     * @param x X-Coordinate
-     * @param y Y-Coordinate
-     */
-    public void travelTo( double x , double y ) {
-        travelToY(y);
-        travelToX(x);
     }
 
     /**
@@ -315,7 +208,7 @@ public class Navigator {
 
 
     /**
-     * A method to travel to the ideal shooting position, called after retrieveing a ball
+     * A method to travel to the ideal shooting position, called after retrieving a ball
      *
      * @return if a shooting position has been reached
      */
@@ -326,72 +219,75 @@ public class Navigator {
         ArrayList<Square> shootingPositions2 = odometer.getFieldMapper().getShootingPositions2();
         ArrayList<Square> shootingPositions1 = odometer.getFieldMapper().getShootingPositions1();
 
-        boolean positionReached = false;
-
-        while (shootingPositions4.size() != 0){
-            positionReached = travelToSquare(shootingPositions4.get(0));
-            if (!positionReached){
-                shootingPositions4.remove(0);
-            } else {
-                 obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
-                if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
-                    positionReached = false;
-                    shootingPositions4.remove(0);
-                } else {
-                    return true;
-                }
-            }
+        if ( tryPositions( shootingPositions1 ) ) {
+            return true;
         }
-
-        while (shootingPositions3.size() != 0){
-            positionReached = travelToSquare(shootingPositions3.get(0));
-            if (!positionReached) {
-                shootingPositions3.remove(0);
-            }else {
-                    obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
-                    if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
-                        positionReached = false;
-                        shootingPositions3.remove(0);
-                    } else {
-                        return true;
-                    }
-                }
+        if ( tryPositions( shootingPositions2 ) ) {
+            return true;
         }
-
-        while (shootingPositions2.size() != 0){
-            positionReached = travelToSquare(shootingPositions2.get(0));
-            if (!positionReached){
-                shootingPositions2.remove(0);
-            }  else {
-                obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
-                if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
-                    positionReached = false;
-                    shootingPositions2.remove(0);
-                } else {
-                    return true;
-                }
-            }
+        if ( tryPositions( shootingPositions3 ) ) {
+            return true;
         }
-
-        while (shootingPositions1.size() != 0){
-            positionReached = travelToSquare(shootingPositions1.get(0));
-            if (!positionReached){
-                shootingPositions1.remove(0);
-            }  else {
-                obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
-                if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
-                    positionReached = false;
-                    shootingPositions1.remove(0);
-                } else {
-                    return true;
-                }
-            }
+        if ( tryPositions( shootingPositions4 ) ) {
+            return true;
         }
-
         return false;
-
     }
 
+    /**
+     * A method to try moving to a set of shooting positions
+     *
+     * @param shootingPositions
+     * @return
+     */
+    public boolean tryPositions( ArrayList<Square> shootingPositions ) {
+        shootingPositions = sortPositionsInOrder( shootingPositions );
+        boolean positionReached = false;
+        while ( shootingPositions.size() != 0 ) {
+            positionReached = travelToSquare( shootingPositions.get(0) );
+            if ( !positionReached ){
+                shootingPositions.remove(0);
+            }  else {
+                if( !obstacleAvoider.scanSquare( odometer.getSouthSquare() ) ){
+                    positionReached = false;
+                    shootingPositions.remove(0);
+                } else {
+                    return true;
+                }
+            }
+        }
+        return positionReached;
+    }
+
+    /**
+     * A method to sort the positions in order form cloest to farthest
+     *
+     * @param shootingPositions
+     * @return shootingPositionsInOrder
+     */
+    public ArrayList<Square> sortPositionsInOrder( ArrayList<Square> shootingPositions ) {
+        ArrayList<Square> inOrder = new ArrayList<Square>();
+        double[] distances = new double[shootingPositions.size()];
+        for ( int i = 0; i < shootingPositions.size(); i++ ) {
+            int deltaX = shootingPositions.get(i).getSquarePosition()[0] - odometer.getCurrentSquare().getSquarePosition()[0];
+            int deltaY = shootingPositions.get(i).getSquarePosition()[1] - odometer.getCurrentSquare().getSquarePosition()[1];
+            double distance = Math.sqrt( deltaX*deltaX + deltaY*deltaY );
+            distances[i] = distance;
+        }
+        while ( inOrder.size() != shootingPositions.size() ) {
+            double smallest = 100;
+            int smallestIndex = 100;
+            for ( int i = 0; i < distances.length; i++ ) {
+                if ( distances[i] < smallest ) {
+                    smallest = distances[i];
+                    smallestIndex = i;
+                }
+            }
+            inOrder.add( shootingPositions.get( smallestIndex ) );
+            distances[smallestIndex] = Integer.MAX_VALUE;
+        }
+        return inOrder;
+    }
 
 
     /**
@@ -447,6 +343,7 @@ public class Navigator {
         if( isSquareAllowed( xDestination, currentY ) ){
             if ( isMovePossible( destinationSquare ) ) {
                 travelToX( destinationSquare.getCenterCoordinate()[0] );
+                recentMoves.add( odometer.getLastSquare() );
                 return true;
             }
         }
@@ -473,6 +370,7 @@ public class Navigator {
         if( isSquareAllowed( currentX, yDestination ) ){
             if ( isMovePossible( destinationSquare ) ) {
                 travelToY( destinationSquare.getCenterCoordinate()[1] );
+                recentMoves.add( odometer.getLastSquare() );
                 return true;
             }
         }
@@ -518,11 +416,9 @@ public class Navigator {
         if ( odometer.getPastSquares().contains( destination ) ) {
             return true;
         }
-        // if mapping is needed or we are at the edge squares then a scan is needed
-        if ( obstacleMappingNeeded || odometer.getFieldMapper().isEdgeSquare( destination ) ) {
-            if ( !obstacleAvoider.scanSquare( destination ) ) {
-                return false;
-            }
+        // scan the square if we don't know anything about
+        if ( !obstacleAvoider.scanSquare( destination ) ) {
+            return false;
         }
         return true;
     }
@@ -538,24 +434,6 @@ public class Navigator {
         return odometer.getFieldMapper().getMapping()[x][y].isAllowed();
     }
 
-    /**
-     * A method to return the next square the robot will enter, if it moves in the current heading
-     *
-     * @return the square "in front" of the robot
-     */
-    public Square getNextSquare(){
-        if (odometer.getCurrentDirection().equals("north")){
-            return odometer.getNorthSquare();
-        }else if (odometer.getCurrentDirection().equals("south")){
-            return odometer.getSouthSquare();
-        }else if (odometer.getCurrentDirection().equals("east")){
-            return odometer.getEastSquare();
-        }else if (odometer.getCurrentDirection().equals("west")){
-            return odometer.getWestSquare();
-        }else{
-            return null; //should never occur
-        }
-    }
 
     public void setShootingPositionExecuted(Square square){
         this.shootingPositionExecuted = square;
@@ -862,23 +740,11 @@ public class Navigator {
     }
 
     /**
-     * A method to set whether obstacle mapping is needed or not
-     *
-     * @param obstacleMappingNeeded
-     */
-    public void setObstacleMappingNeeded( boolean obstacleMappingNeeded ) {
-        this.obstacleMappingNeeded = obstacleMappingNeeded;
-    }
-
-    /**
      * A method to turn on necessary threads when making navigation moves
      */
     public void turnOnNecessaryThreads() {
         if ( correctionNeeded ) {
             odometerCorrection.startRunning();
-        }
-        if ( obstacleMappingNeeded ) {
-            obstacleMapper.startRunning();
         }
     }
 
@@ -888,9 +754,6 @@ public class Navigator {
     public void turnOffNecessaryThreads() {
         if ( correctionNeeded ) {
             odometerCorrection.stopRunning();
-        }
-        if ( obstacleMappingNeeded ) {
-            obstacleMapper.stopRunning();
         }
     }
 

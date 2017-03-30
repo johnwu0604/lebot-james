@@ -17,7 +17,6 @@ import main.util.EmergencyStopper;
 import main.util.FieldMapper;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
-import java.util.Timer;
 
 import java.util.Map;
 
@@ -26,14 +25,13 @@ import java.util.Map;
  *
  * @author JohnWu
  */
-public class FinalProject {
+public class LeBotJames {
 
     private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "A" ));
     private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "D" ));
     private static final EV3LargeRegulatedMotor leftLaunchMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "C" ));
     private static final EV3LargeRegulatedMotor rightLaunchMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "B" ));
     private static final SampleProvider forwardUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S1" ) ) ).getMode("Distance");
-    private static final SampleProvider leftUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S4" ) ) ).getMode("Distance");
     private static final SampleProvider leftColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S2") ) ).getMode("Red");
     private static final SampleProvider rightColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S3") ) ).getMode("Red");
 
@@ -94,7 +92,7 @@ public class FinalProject {
         emergencyStopper.start();
 
         int[] defenderZone = {4,4};
-        int[] ballDispenserPosition  = {-1,6};
+        int[] ballDispenserPosition  = {-1,3};
         Parameters parameters = new Parameters();
         parameters.setForwardCorner(1);
         parameters.setForwardLine(7);
@@ -111,11 +109,9 @@ public class FinalProject {
         LightSensor leftLightSensor = new LightSensor( leftColorSensor );
         LightSensor rightLightSensor = new LightSensor( rightColorSensor );
         UltrasonicSensor forwardUSSensor = new UltrasonicSensor( forwardUltrasonicSensor );
-        UltrasonicSensor leftUSSensor = new UltrasonicSensor( leftUltrasonicSensor );
         leftLightSensor.start();
         rightLightSensor.start();
         forwardUSSensor.start();
-        leftUSSensor.start();
 
         // instantiate continuous threads (don't stop during the program)
         Odometer odometer = new Odometer( leftMotor, rightMotor, fieldMapper);
@@ -125,8 +121,7 @@ public class FinalProject {
 
         // instantiate movement controllers
         ObstacleAvoider obstacleAvoider = new ObstacleAvoider( forwardUSSensor, odometer );
-        ObstacleMapper obstacleMapper = new ObstacleMapper( leftUSSensor, odometer );
-        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider, obstacleMapper);
+        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider );
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
 
         // instantiate offense controllers
@@ -144,10 +139,10 @@ public class FinalProject {
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        if(parameters.getForwardTeam() == 11){
-            playOffenseWithMapping(navigator, odometer, obstacleMapper, ballRetriever, launcher);
-        } else if (parameters.getDefenseTeam() == 11){
-            playDefense(navigator, odometer, launcher, obstacleMapper);
+        if( parameters.getForwardTeam() == 11 ){
+            playOffense( navigator, odometer, ballRetriever, launcher );
+        } else if ( parameters.getDefenseTeam() == 11 ){
+            playDefense( navigator, odometer, launcher );
         }
 
         int buttonChoice = Button.waitForAnyPress();
@@ -159,29 +154,26 @@ public class FinalProject {
      *
      * @param navigator
      * @param odometer
-     * @param obstacleMapper
      * @param ballRetriever
      * @param launcher
      */
-    private static void playOffenseWithMapping( Navigator navigator, Odometer odometer, ObstacleMapper obstacleMapper,
-                                                BallRetriever ballRetriever,
-                                                Launcher launcher ) {
-        navigator.setObstacleMappingNeeded( true );
-        obstacleMapper.start();
-        obstacleMapper.startRunning();
+    private static void playOffense(Navigator navigator, Odometer odometer,
+                                    BallRetriever ballRetriever,
+                                    Launcher launcher ) {
+
         ballRetriever.getBall();
         navigator.travelToShootingPosition();
-        launcher.launchBall();      //1 ball launched
+        //launcher.launchBall();      //1 ball launched
 
         navigator.returnToBallDispenser();
         ballRetriever.getBall();
         navigator.returnToShootingPosition();
-        launcher.launchBall(); //2 balls launched
-
+//        launcher.launchBall(); //2 balls launched
+//
         navigator.returnToBallDispenser();
         ballRetriever.getBall();
         navigator.returnToShootingPosition();
-        launcher.launchBall(); //3 balls launched
+//        launcher.launchBall(); //3 balls launched
     }
 
 
@@ -190,14 +182,11 @@ public class FinalProject {
      *
      * @param navigator
      * @param odometer
+     * @param launcher
      */
-    private static void playDefense( Navigator navigator, Odometer odometer, Launcher launcher, ObstacleMapper obstacleMapper) {
+    private static void playDefense( Navigator navigator, Odometer odometer, Launcher launcher)  {
         double startTime = System.currentTimeMillis();
         int y = 10-parameters.getDefenderZone()[1];
-
-        navigator.setObstacleMappingNeeded( true );
-        obstacleMapper.start();
-        obstacleMapper.startRunning();
 
         navigator.travelToSquare( odometer.getFieldMapper().getMapping()[5][y] );
         launcher.rotateLaunchMotors(ShootingConstants.VERTICAL_ANGLE);

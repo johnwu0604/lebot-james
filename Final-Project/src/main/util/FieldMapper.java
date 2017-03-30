@@ -40,13 +40,17 @@ public class FieldMapper {
      * A method to map our field
      */
     public void mapField(){
+        shootingPositions1 = new ArrayList<>();
+        shootingPositions2 = new ArrayList<>();
+        shootingPositions3 = new ArrayList<>();
+        shootingPositions4 = new ArrayList<>();
         for ( int x = 0; x < 12; x++ ) {
             for (int y = 0; y < 12; y++) {
                 Square square = new Square( x, y );
                 square.setCenterCoordinate( calculateCenterCoordinate( square ) );
                 square.setAllowed( isSquareAllowed( square ) );
                 square.setObstacle( isInitialObstacle( square ) );
-                setShootingPriority( square );
+                square.setShootingPriority( getShootingPriority( square ) );
                 square.setNorthLine( getNorthLine( square ) );
                 square.setSouthLine( getSouthLine( square ) );
                 square.setEastLine( getEastLine( square ) );
@@ -211,57 +215,82 @@ public class FieldMapper {
      * 0 -> Never shoot, 1,2,3,4 -> increasing priority
      * @param square
      */
-    public void setShootingPriority( Square square ) {
-
-        if (square.isAllowed() == false || square.isObstacle() == true){
-            square.setShootingPriority(0);
-        } else if (square.getSquarePosition()[0] != 4 || square.getSquarePosition()[0] != 5 || square.getSquarePosition()[0] != 6
-                || square.getSquarePosition()[0] != 7 || square.getSquarePosition()[1] == 0){
-            square.setShootingPriority(0);
-        } else if (squares[square.getSquarePosition()[0]][square.getSquarePosition()[1]-1].isObstacle()){
-            square.setShootingPriority(0);
-        } else if (square.getSquarePosition()[1] <= 10-parameters.getForwardLine()){
-            if(square.getSquarePosition()[1] == 10-parameters.getForwardLine() || square.getSquarePosition()[1] == 9-parameters.getForwardLine()){
-                if (square.getSquarePosition()[0] == 5 || square.getSquarePosition()[0] == 6){
-                    square.setShootingPriority(4);
-                    shootingPositions4.add(square);
-                } else {
-                    square.setShootingPriority(3);
-                    shootingPositions3.add(square);
-                }
-            } else if (square.getSquarePosition()[1] == 8-parameters.getForwardLine()){
-                if (square.getSquarePosition()[0] == 5 || square.getSquarePosition()[0] == 6){
-                    square.setShootingPriority(3);
-                    shootingPositions3.add(square);
-                } else {
-                    square.setShootingPriority(2);
-                    shootingPositions2.add(square);
-                }
-            } else {
-                if (square.getSquarePosition()[0] == 5 || square.getSquarePosition()[0] == 6){
-                    square.setShootingPriority(2);
-                    shootingPositions2.add(square);
-                } else {
-                    square.setShootingPriority(1);
-                    shootingPositions1.add(square);
-                }
-            }
+    public int getShootingPriority( Square square ) {
+        // if square is not allowed then return 0
+        if ( square.isAllowed() == false || square.isObstacle() == true ){
+            return 0;
         }
 
+        // closest square we can shoot from
+        int closestSquare =  10 - parameters.getForwardLine();
+        int x = square.getSquarePosition()[0];
+        int y = square.getSquarePosition()[1];
+
+        // if x coord is not between 3 and 8, then we can't shoot from here
+        if ( !(x >= 4 && x <= 7) ) {
+            return 0;
+        }
+
+        // if y coord is not between 1 and the closest shooting line, then we can't shoot from here
+        if ( !(y >=1 && y <= closestSquare) ) {
+            return 0;
+        }
+
+        // highest priority for the closet square
+        if ( y == closestSquare ) {
+            shootingPositions4.add( square );
+            return 4;
+        }
+        // lower priority for the second closet square
+        if ( y == closestSquare-1 ) {
+            shootingPositions3.add( square );
+            return 3;
+        }
+        // lower priority for the third closet square
+        if ( y == closestSquare-2 ) {
+            shootingPositions2.add( square );
+            return 2;
+        }
+        // lower priority for the fourth closet square
+        if ( y == closestSquare-3 ) {
+            shootingPositions1.add( square );
+            return 1;
+        }
+        return 0;
     }
 
+    /**
+     * A method to return the shooting positions for the lowest priority
+     *
+     * @return
+     */
     public ArrayList<Square> getShootingPositions1(){
         return shootingPositions1;
     }
 
+    /**
+     * A method to return the shooting positions for the second lowest priority
+     *
+     * @return
+     */
     public ArrayList<Square> getShootingPositions2(){
         return shootingPositions2;
     }
 
+    /**
+     * A method to return the shooting positions for second highest priority
+     *
+     * @return
+     */
     public ArrayList<Square> getShootingPositions3(){
         return shootingPositions3;
     }
 
+    /**
+     * A method to return the shooting positions for the highest priority
+     *
+     * @return
+     */
     public ArrayList<Square> getShootingPositions4(){
         return shootingPositions4;
     }
