@@ -22,12 +22,12 @@ public class Navigator {
     private OdometerCorrection odometerCorrection;
     private ObstacleAvoider obstacleAvoider;
     private ObstacleMapper obstacleMapper;
+    private Square shootingPositionExecuted;
 
     // variables
     private boolean correctionNeeded = true;
     private boolean obstacleMappingNeeded = false;
     ArrayList<Square> recentMoves = new ArrayList<Square>();
-    private int movesInCurrentDirection = 0;
 
     /**
      * Default constructor for Navigator object.
@@ -51,7 +51,7 @@ public class Navigator {
      *
      * @param destination
      */
-    public void travelToSquare( Square destination ) {
+    public boolean travelToSquare( Square destination ) {
         recentMoves.clear();
         if(destination == odometer.getLastSquare()){
             Square lastSquare = odometer.getLastSquare();
@@ -59,14 +59,22 @@ public class Navigator {
 
             if(components[0] != 0){
                 moveSquareX(components[0]);
+                return true;
             } else {
                 moveSquareY(components[1]);
+                return true;
             }
 
         } else {
+
+            if(destination.isObstacle() == true || destination.isAllowed() == false){
+                return false;
+            }
+
             while (destination != odometer.getCurrentSquare()) {   //check break condition
                 makeBestMoves(destination);
             }
+            return true;
         }
     }
 
@@ -305,6 +313,87 @@ public class Navigator {
         turnOffNecessaryThreads();
     }
 
+
+    /**
+     * A method to travel to the ideal shooting position, called after retrieveing a ball
+     *
+     * @return if a shooting position has been reached
+     */
+    public boolean travelToShootingPosition(){
+
+        ArrayList<Square> shootingPositions4 = odometer.getFieldMapper().getShootingPositions4();
+        ArrayList<Square> shootingPositions3 = odometer.getFieldMapper().getShootingPositions3();
+        ArrayList<Square> shootingPositions2 = odometer.getFieldMapper().getShootingPositions2();
+        ArrayList<Square> shootingPositions1 = odometer.getFieldMapper().getShootingPositions1();
+
+        boolean positionReached = false;
+
+        while (shootingPositions4.size() != 0){
+            positionReached = travelToSquare(shootingPositions4.get(0));
+            if (!positionReached){
+                shootingPositions4.remove(0);
+            } else {
+                 obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
+                if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
+                    positionReached = false;
+                    shootingPositions4.remove(0);
+                } else {
+                    return true;
+                }
+            }
+        }
+
+        while (shootingPositions3.size() != 0){
+            positionReached = travelToSquare(shootingPositions3.get(0));
+            if (!positionReached) {
+                shootingPositions3.remove(0);
+            }else {
+                    obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
+                    if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
+                        positionReached = false;
+                        shootingPositions3.remove(0);
+                    } else {
+                        return true;
+                    }
+                }
+        }
+
+        while (shootingPositions2.size() != 0){
+            positionReached = travelToSquare(shootingPositions2.get(0));
+            if (!positionReached){
+                shootingPositions2.remove(0);
+            }  else {
+                obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
+                if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
+                    positionReached = false;
+                    shootingPositions2.remove(0);
+                } else {
+                    return true;
+                }
+            }
+        }
+
+        while (shootingPositions1.size() != 0){
+            positionReached = travelToSquare(shootingPositions1.get(0));
+            if (!positionReached){
+                shootingPositions1.remove(0);
+            }  else {
+                obstacleAvoider.scanSquare(odometer.getNorthSquare(odometer.getCurrentSquare()));
+                if(odometer.getNorthSquare(odometer.getCurrentSquare()).isObstacle()){
+                    positionReached = false;
+                    shootingPositions1.remove(0);
+                } else {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+
+    }
+
+
+
     /**
      * A method to travel to a specific x coordinate backwards (doesn't use odometry correction)
      *
@@ -392,6 +481,33 @@ public class Navigator {
     }
 
     /**
+     * A method to move the robot to the ball dispenser in a path it knows is clear of obstacles
+     */
+    public void returnToBallDispenser(){
+        ArrayList<Square> currentPastSquares = new ArrayList<Square>();
+        currentPastSquares.addAll(odometer.getPastSquares());
+
+        while (odometer.getCurrentSquare() != odometer.getFieldMapper().getBallDispenserApproaches()[0]
+                || odometer.getCurrentSquare() != odometer.getFieldMapper().getBallDispenserApproaches()[1]){
+            travelToSquare(currentPastSquares.get(currentPastSquares.size()-1));
+            currentPastSquares.remove(currentPastSquares.size()-1);
+        }
+    }
+
+    /**
+     * A method to move the robot to a shooting position in a path it knows is clear of obstacles
+     */
+    public void returnToShootingPosition(){
+        ArrayList<Square> currentPastSquares = new ArrayList<Square>();
+        currentPastSquares.addAll(odometer.getPastSquares());
+
+        while (odometer.getCurrentSquare() != shootingPositionExecuted){
+            travelToSquare(currentPastSquares.get(currentPastSquares.size()-1));
+            currentPastSquares.remove(currentPastSquares.size()-1);
+        }
+    }
+
+    /**
      * A method to determine whether a move is possible by scanning the square if needed
      *
      * @param destination
@@ -423,7 +539,7 @@ public class Navigator {
     }
 
     /**
-     * A method to return the next square the robot will enter, if it moves in out current heading
+     * A method to return the next square the robot will enter, if it moves in the current heading
      *
      * @return the square "in front" of the robot
      */
@@ -439,6 +555,10 @@ public class Navigator {
         }else{
             return null; //should never occur
         }
+    }
+
+    public void setShootingPositionExecuted(Square square){
+        this.shootingPositionExecuted = square;
     }
 
 

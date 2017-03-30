@@ -19,7 +19,7 @@ public class Launcher {
     /**
      * Constructor for launcher object
      */
-    public Launcher(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Navigator navigator, Odometer odometer ){
+    public Launcher(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Navigator navigator, Odometer odometer){
         this.navigator = navigator;
         this.odometer = odometer;
         this.leftLaunchMotor = leftMotor;
@@ -63,6 +63,8 @@ public class Launcher {
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_MAX);
             restArm(ShootingConstants.LAUNCH_ROM_MAX);
         }
+
+        navigator.setShootingPositionExecuted(odometer.getCurrentSquare());
     }
 
     /**

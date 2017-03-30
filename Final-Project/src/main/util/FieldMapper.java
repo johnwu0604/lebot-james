@@ -5,6 +5,7 @@ import main.object.Square;
 import main.resource.*;
 import main.wifi.WifiProperties;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -18,6 +19,11 @@ public class FieldMapper {
     private Square[][] squares;
     private Square[] ballDispenserApproach;
     private Parameters parameters;
+    private ArrayList<Square> shootingPositions1;
+    private ArrayList<Square> shootingPositions2;
+    private ArrayList<Square> shootingPositions3;
+    private ArrayList<Square> shootingPositions4;
+
 
     /**
      * Main intialization method
@@ -40,7 +46,7 @@ public class FieldMapper {
                 square.setCenterCoordinate( calculateCenterCoordinate( square ) );
                 square.setAllowed( isSquareAllowed( square ) );
                 square.setObstacle( isInitialObstacle( square ) );
-                square.setShootingPosition( isShootingPosition( square ) );
+                setShootingPriority( square );
                 square.setNorthLine( getNorthLine( square ) );
                 square.setSouthLine( getSouthLine( square ) );
                 square.setEastLine( getEastLine( square ) );
@@ -50,7 +56,6 @@ public class FieldMapper {
         }
         ballDispenserApproach = calculateBallDispenserApproach();
     }
-
 
     /**
      * A method that returns a boolean indicating whether the robot is playing offense or not
@@ -202,14 +207,63 @@ public class FieldMapper {
     }
 
     /**
-     * A method to determine where or not the current square is one of our defined shooting positions
-     *
+     * A method to determine/set the priority we'd like to shoot from a position
+     * 0 -> Never shoot, 1,2,3,4 -> increasing priority
      * @param square
-     * @return whether the square is a shooting position
      */
-    public boolean isShootingPosition( Square square ) {
-        // TODO: After we figure out where out shooting positions are
-        return false;
+    public void setShootingPriority( Square square ) {
+
+        if (square.isAllowed() == false || square.isObstacle() == true){
+            square.setShootingPriority(0);
+        } else if (square.getSquarePosition()[0] != 4 || square.getSquarePosition()[0] != 5 || square.getSquarePosition()[0] != 6
+                || square.getSquarePosition()[0] != 7 || square.getSquarePosition()[1] == 0){
+            square.setShootingPriority(0);
+        } else if (squares[square.getSquarePosition()[0]][square.getSquarePosition()[1]-1].isObstacle()){
+            square.setShootingPriority(0);
+        } else if (square.getSquarePosition()[1] <= 10-parameters.getForwardLine()){
+            if(square.getSquarePosition()[1] == 10-parameters.getForwardLine() || square.getSquarePosition()[1] == 9-parameters.getForwardLine()){
+                if (square.getSquarePosition()[0] == 5 || square.getSquarePosition()[0] == 6){
+                    square.setShootingPriority(4);
+                    shootingPositions4.add(square);
+                } else {
+                    square.setShootingPriority(3);
+                    shootingPositions3.add(square);
+                }
+            } else if (square.getSquarePosition()[1] == 8-parameters.getForwardLine()){
+                if (square.getSquarePosition()[0] == 5 || square.getSquarePosition()[0] == 6){
+                    square.setShootingPriority(3);
+                    shootingPositions3.add(square);
+                } else {
+                    square.setShootingPriority(2);
+                    shootingPositions2.add(square);
+                }
+            } else {
+                if (square.getSquarePosition()[0] == 5 || square.getSquarePosition()[0] == 6){
+                    square.setShootingPriority(2);
+                    shootingPositions2.add(square);
+                } else {
+                    square.setShootingPriority(1);
+                    shootingPositions1.add(square);
+                }
+            }
+        }
+
+    }
+
+    public ArrayList<Square> getShootingPositions1(){
+        return shootingPositions1;
+    }
+
+    public ArrayList<Square> getShootingPositions2(){
+        return shootingPositions2;
+    }
+
+    public ArrayList<Square> getShootingPositions3(){
+        return shootingPositions3;
+    }
+
+    public ArrayList<Square> getShootingPositions4(){
+        return shootingPositions4;
     }
 
     /**
@@ -301,7 +355,7 @@ public class FieldMapper {
     /**
      * A method to return out ball dispenser approach
      *
-     * @return
+     * @return the square we will approach
      */
     public Square getBallDispenserApproach(int approachDirection) {
         if (approachDirection <= 0) {
@@ -309,6 +363,15 @@ public class FieldMapper {
         } else {
             return squares[ballDispenserApproach[1].getSquarePosition()[0]][ballDispenserApproach[1].getSquarePosition()[1]];
         }
+    }
+
+    /**
+     * A method to return the 2 ball dispenser approach squares
+     *
+     * @return ball dispenser approach squares
+     */
+    public Square[] getBallDispenserApproaches(){
+        return ballDispenserApproach;
     }
 
     /**
@@ -377,6 +440,5 @@ public class FieldMapper {
             return false;
         }
     }
-
 
 }
