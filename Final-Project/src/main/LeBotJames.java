@@ -12,6 +12,7 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.LightSensor;
 import main.object.OdometerDisplay;
 import main.object.UltrasonicSensor;
+import main.resource.ShootingConstants;
 import main.util.EmergencyStopper;
 import main.util.FieldMapper;
 import main.wifi.WifiConnection;
@@ -52,7 +53,7 @@ public class LeBotJames {
 //        EmergencyStopper emergencyStopper = new EmergencyStopper();
 //        emergencyStopper.start();
 //
-//        retrieveStartingParameters();
+//      retrieveStartingParameters();
 //
 //        // notify profs we have received parameters
 //        Sound.beepSequenceUp();
@@ -142,9 +143,11 @@ public class LeBotJames {
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        playOffense( navigator, odometer, obstacleMapper, ballRetriever, launcher );
-//        playOffense( navigator, odometer, ballRetriever, launcher );
-//        playDefense( navigator, odometer );
+        if( parameters.getForwardTeam() == 11 ){
+            playOffense( navigator, odometer, obstacleMapper, ballRetriever, launcher );
+        } else if ( parameters.getDefenseTeam() == 11 ){
+            playDefense( navigator, odometer, launcher, obstacleMapper );
+        }
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
@@ -160,14 +163,26 @@ public class LeBotJames {
      * @param launcher
      */
     private static void playOffense(Navigator navigator, Odometer odometer, ObstacleMapper obstacleMapper,
-                                    BallRetriever ballRetriever, Launcher launcher ) {
-        navigator.setObstacleMappingNeeded( true );
-        obstacleMapper.start();
-        obstacleMapper.startRunning();
+                                    BallRetriever ballRetriever,
+                                    Launcher launcher ) {
+//        obstacleMapper.start();
+//        obstacleMapper.startRunning();
+
         ballRetriever.getBall();
-//        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[3][3] );
-//        launcher.launchBall();
+        navigator.travelToShootingPosition();
+        //launcher.launchBall();      //1 ball launched
+
+        navigator.returnToBallDispenser();
+        ballRetriever.getBall();
+        navigator.returnToShootingPosition();
+//        launcher.launchBall(); //2 balls launched
+//
+//        navigator.returnToBallDispenser();
+//        ballRetriever.getBall();
+//        navigator.returnToShootingPosition();
+//        launcher.launchBall(); //3 balls launched
     }
+
 
     /**
      * A method to play defense
@@ -175,11 +190,21 @@ public class LeBotJames {
      * @param navigator
      * @param odometer
      */
-    private static void playDefense( Navigator navigator, Odometer odometer, ObstacleMapper obstacleMapper ) {
-        navigator.setObstacleMappingNeeded( true );
+    private static void playDefense( Navigator navigator, Odometer odometer, Launcher launcher, ObstacleMapper obstacleMapper) {
+        double startTime = System.currentTimeMillis();
+        int y = 10-parameters.getDefenderZone()[1];
+
         obstacleMapper.start();
         obstacleMapper.startRunning();
-        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[3][3] );
+
+        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[5][y] );
+        launcher.rotateLaunchMotors(ShootingConstants.VERTICAL_ANGLE);
+        while(System.currentTimeMillis() - startTime < 7*60*1000){
+            navigator.moveSquareX(1);
+            navigator.moveSquareX(-1);
+        }
+
+
     }
 
     /**

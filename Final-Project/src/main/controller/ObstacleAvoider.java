@@ -129,6 +129,7 @@ public class ObstacleAvoider {
         int y = square.getSquarePosition()[1];
         odometer.getFieldMapper().getMapping()[x][y].setAllowed( false );
         odometer.getFieldMapper().getMapping()[x][y].setObstacle( true );
+        odometer.getFieldMapper().getMapping()[x][y].setShootingPriority( 0 );
     }
 
 }

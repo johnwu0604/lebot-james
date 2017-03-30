@@ -170,17 +170,19 @@ public class ObstacleMapper extends Thread {
         double averageY2 = calculateAverageY( sensorReadings.subList(size/2,size) );
         double averageDistance2 = calculateAverageDistance( sensorReadings.subList(size/2,size) );
         // coodinates of obstacles
-        double sensorTheta = odometer.getCurrentDirectionTheta() - Math.PI/2;
-        double[] coordinates1 = calculateObstaclePosition( averageX1, averageY1, sensorTheta, averageDistance1 );
-        double[] coordinates2 = calculateObstaclePosition( averageX2, averageY2, sensorTheta, averageDistance2 );
+        double theta = odometer.getCurrentDirectionTheta() - Math.PI/2;
+        double[] coordinates1 = calculateObstaclePosition( averageX1, averageY1, theta, averageDistance1 );
+        double[] coordinates2 = calculateObstaclePosition( averageX2, averageY2, theta, averageDistance2 );
         // squares of obstacles
         Square obstacle1 = odometer.getFieldMapper().getSquareOfCoordinate( coordinates1[0], coordinates1[1] );
         Square obstacle2 = odometer.getFieldMapper().getSquareOfCoordinate( coordinates2[0], coordinates2[1] );
         // update mapping
         if ( obstacle1 != null && odometer.isAdjacentSquare( obstacle1 ) && !odometer.getFieldMapper().isEdgeSquare( obstacle1 ) ) {
+            Sound.beepSequence();
             declareObstacleInMapping( obstacle1 );
         }
         if ( obstacle2 != null && odometer.isAdjacentSquare( obstacle2 ) && !odometer.getFieldMapper().isEdgeSquare( obstacle2 ) ) {
+            Sound.beepSequence();
             declareObstacleInMapping( obstacle2 );
         }
     }

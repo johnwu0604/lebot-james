@@ -1,5 +1,6 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.Square;
 import main.resource.ThresholdConstants;
@@ -431,4 +432,5 @@ public class Odometer extends Thread {
         }
         return false;
     }
+
 }
