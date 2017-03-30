@@ -5,6 +5,7 @@ import main.object.Square;
 import main.resource.*;
 import main.wifi.WifiProperties;
 
+import java.lang.reflect.Array;
 import java.util.*;
 
 /**
@@ -18,6 +19,7 @@ public class FieldMapper {
     private Square[][] squares;
     private Square[] ballDispenserApproach;
     private Parameters parameters;
+
 
     /**
      * Main intialization method
@@ -40,7 +42,7 @@ public class FieldMapper {
                 square.setCenterCoordinate( calculateCenterCoordinate( square ) );
                 square.setAllowed( isSquareAllowed( square ) );
                 square.setObstacle( isInitialObstacle( square ) );
-                square.setShootingPosition( isShootingPosition( square ) );
+                square.setShootingPriority( getShootingPriority( square ) );
                 square.setNorthLine( getNorthLine( square ) );
                 square.setSouthLine( getSouthLine( square ) );
                 square.setEastLine( getEastLine( square ) );
@@ -50,7 +52,6 @@ public class FieldMapper {
         }
         ballDispenserApproach = calculateBallDispenserApproach();
     }
-
 
     /**
      * A method that returns a boolean indicating whether the robot is playing offense or not
@@ -202,14 +203,116 @@ public class FieldMapper {
     }
 
     /**
-     * A method to determine where or not the current square is one of our defined shooting positions
-     *
+     * A method to determine/set the priority we'd like to shoot from a position
+     * 0 -> Never shoot, 1,2,3,4 -> increasing priority
      * @param square
-     * @return whether the square is a shooting position
      */
-    public boolean isShootingPosition( Square square ) {
-        // TODO: After we figure out where out shooting positions are
-        return false;
+    public int getShootingPriority( Square square ) {
+        // if square is not allowed then return 0
+        if ( square.isAllowed() == false || square.isObstacle() == true ){
+            return 0;
+        }
+
+        // closest square we can shoot from
+        int closestSquare =  10 - parameters.getForwardLine();
+        int x = square.getSquarePosition()[0];
+        int y = square.getSquarePosition()[1];
+
+        // if x coord is not between 3 and 8, then we can't shoot from here
+        if ( !(x >= 4 && x <= 7) ) {
+            return 0;
+        }
+
+        // if y coord is not between 1 and the closest shooting line, then we can't shoot from here
+        if ( !(y >=1 && y <= closestSquare) ) {
+            return 0;
+        }
+
+        // highest priority for the closet square
+        if ( y == closestSquare ) {
+            return 4;
+        }
+        // lower priority for the second closet square
+        if ( y == closestSquare-1 ) {
+            return 3;
+        }
+        // lower priority for the third closet square
+        if ( y == closestSquare-2 ) {
+            return 2;
+        }
+        // lower priority for the fourth closet square
+        if ( y == closestSquare-3 ) {
+            return 1;
+        }
+        return 0;
+    }
+
+    /**
+     * A method to return the shooting positions for the lowest priority
+     *
+     * @return
+     */
+    public ArrayList<Square> getShootingPositions1(){
+        ArrayList<Square> shootingPositions1 = new ArrayList<>();
+        for ( int i = 0; i < 12; i++  ) {
+            for ( int j =0; j < 12; j++) {
+                if ( squares[i][j].getShootingPriority() == 1 ) {
+                    shootingPositions1.add( squares[i][j] );
+                }
+            }
+        }
+        return shootingPositions1;
+    }
+
+    /**
+     * A method to return the shooting positions for the second lowest priority
+     *
+     * @return
+     */
+    public ArrayList<Square> getShootingPositions2(){
+        ArrayList<Square> shootingPositions2 = new ArrayList<>();
+        for ( int i = 0; i < 12; i++  ) {
+            for ( int j =0; j < 12; j++) {
+                if ( squares[i][j].getShootingPriority() == 2 ) {
+                    shootingPositions2.add( squares[i][j] );
+                }
+            }
+        }
+        return shootingPositions2;
+    }
+
+    /**
+     * A method to return the shooting positions for second highest priority
+     *
+     * @return
+     */
+    public ArrayList<Square> getShootingPositions3(){
+        ArrayList<Square> shootingPositions3 = new ArrayList<>();
+        for ( int i = 0; i < 12; i++  ) {
+            for ( int j =0; j < 12; j++) {
+                if ( squares[i][j].getShootingPriority() == 3 ) {
+                    shootingPositions3.add( squares[i][j] );
+                }
+            }
+        }
+        return shootingPositions3;
+    }
+
+    /**
+     * A method to return the shooting positions for the highest priority
+     *
+     * @return
+     */
+    public ArrayList<Square> getShootingPositions4(){
+        ArrayList<Square> shootingPositions4 = new ArrayList<>();
+        for ( int i = 0; i < 12; i++  ) {
+            for ( int j =0; j < 12; j++) {
+                if ( squares[i][j].getShootingPriority() == 4 ) {
+                    shootingPositions4.add( squares[i][j] );
+                }
+            }
+        }
+        return shootingPositions4;
     }
 
     /**
@@ -301,7 +404,7 @@ public class FieldMapper {
     /**
      * A method to return out ball dispenser approach
      *
-     * @return
+     * @return the square we will approach
      */
     public Square getBallDispenserApproach(int approachDirection) {
         if (approachDirection <= 0) {
@@ -309,6 +412,15 @@ public class FieldMapper {
         } else {
             return squares[ballDispenserApproach[1].getSquarePosition()[0]][ballDispenserApproach[1].getSquarePosition()[1]];
         }
+    }
+
+    /**
+     * A method to return the 2 ball dispenser approach squares
+     *
+     * @return ball dispenser approach squares
+     */
+    public Square[] getBallDispenserApproaches(){
+        return ballDispenserApproach;
     }
 
     /**
@@ -377,6 +489,5 @@ public class FieldMapper {
             return false;
         }
     }
-
 
 }

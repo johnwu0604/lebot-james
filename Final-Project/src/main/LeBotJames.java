@@ -12,12 +12,11 @@ import lejos.hardware.motor.EV3LargeRegulatedMotor;
 import main.object.LightSensor;
 import main.object.OdometerDisplay;
 import main.object.UltrasonicSensor;
-import main.resource.FieldConstants;
+import main.resource.ShootingConstants;
 import main.util.EmergencyStopper;
 import main.util.FieldMapper;
 import main.wifi.WifiConnection;
 import main.wifi.WifiProperties;
-import main.resource.ShootingConstants;
 
 import java.util.Map;
 
@@ -26,14 +25,13 @@ import java.util.Map;
  *
  * @author JohnWu
  */
-public class FinalProject {
+public class LeBotJames {
 
     private static final EV3LargeRegulatedMotor leftMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "A" ));
     private static final EV3LargeRegulatedMotor rightMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "D" ));
     private static final EV3LargeRegulatedMotor leftLaunchMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "C" ));
     private static final EV3LargeRegulatedMotor rightLaunchMotor = new EV3LargeRegulatedMotor(LocalEV3.get().getPort( "B" ));
     private static final SampleProvider forwardUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S1" ) ) ).getMode("Distance");
-    private static final SampleProvider leftUltrasonicSensor = ( new EV3UltrasonicSensor( LocalEV3.get().getPort( "S4" ) ) ).getMode("Distance");
     private static final SampleProvider leftColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S2") ) ).getMode("Red");
     private static final SampleProvider rightColorSensor = ( new EV3ColorSensor( LocalEV3.get().getPort("S3") ) ).getMode("Red");
 
@@ -54,7 +52,7 @@ public class FinalProject {
 //        EmergencyStopper emergencyStopper = new EmergencyStopper();
 //        emergencyStopper.start();
 //
-//        retrieveStartingParameters();
+//      retrieveStartingParameters();
 //
 //        // notify profs we have received parameters
 //        Sound.beepSequenceUp();
@@ -94,7 +92,7 @@ public class FinalProject {
         emergencyStopper.start();
 
         int[] defenderZone = {4,4};
-        int[] ballDispenserPosition  = {-1,6};
+        int[] ballDispenserPosition  = {-1,3};
         Parameters parameters = new Parameters();
         parameters.setForwardCorner(1);
         parameters.setForwardLine(7);
@@ -105,80 +103,99 @@ public class FinalProject {
 
 
         // map field
-        FieldMapper fieldMapper = new FieldMapper(parameters);
+        FieldMapper fieldMapper = new FieldMapper( parameters );
 
-        // instantiate sensor objects
+        // instantiate timed threads (will start/stop throughout program)
         LightSensor leftLightSensor = new LightSensor( leftColorSensor );
         LightSensor rightLightSensor = new LightSensor( rightColorSensor );
         UltrasonicSensor forwardUSSensor = new UltrasonicSensor( forwardUltrasonicSensor );
-        UltrasonicSensor leftUSSensor = new UltrasonicSensor( leftUltrasonicSensor );
+        leftLightSensor.start();
+        rightLightSensor.start();
+        forwardUSSensor.start();
 
-        // instantiate continuous threads
-        Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
-        OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
+        // instantiate continuous threads (don't stop during the program)
+        Odometer odometer = new Odometer( leftMotor, rightMotor, fieldMapper);
+        OdometerDisplay odometerDisplay = new OdometerDisplay( odometer, t );
+        odometer.start();
+        odometerDisplay.start();
 
         // instantiate movement controllers
         ObstacleAvoider obstacleAvoider = new ObstacleAvoider( forwardUSSensor, odometer );
-        ObstacleMapper obstacleMapper = new ObstacleMapper( leftUSSensor, odometer );
-        Navigator navigator = new Navigator(leftMotor,rightMotor,odometer,obstacleAvoider,obstacleMapper);
+        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider );
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
 
-        // instantiate launcher
+        // instantiate offense controllers
         Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer );
-        BallRetriever retriever = new BallRetriever(launcher, odometer, navigator, leftLightSensor, rightLightSensor );
-
-        // start threads (except correction, start that after localizing)
-        leftLightSensor.start(); // waits until further instruction to actually start
-        rightLightSensor.start(); // waits until further instruction to actually start
-        forwardUSSensor.start(); // waits until further instruction to actually start
-        leftUSSensor.start(); // waits until further instruction to actually start
-        odometer.start(); // starts immediately
-        odometerDisplay.start(); // starts immediately
-        obstacleMapper.start(); // waits until further instruction to actually start
-
+        BallRetriever ballRetriever = new BallRetriever( launcher, odometer, navigator, odometerCorrection );
 
         // localize
-        Localizer localizer = new Localizer( odometer, forwardUSSensor, navigator, 1 );
+        Localizer localizer = new Localizer( odometer, forwardUSSensor, navigator, getStartingCorner( parameters ) );
         localizer.start();
 
-        odometerCorrection.start(); // waits until further instruction to actually start
+        // signal end of localization
+        Sound.beepSequence();
+
+        odometerCorrection.start(); // timed thread - waits until further instruction to actually start
 
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
-        retriever.getBall();
-
-       /* navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][7]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][7]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][0]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][7]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][7]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][0]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][7]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][7]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[7][0]);
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]); */
-
-       /* navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][1]);
-        launcher.retractArm();
-        navigator.travelToSquare(odometer.getFieldMapper().getMapping()[1][4]);
-        navigator.setCorrectionNeeded( false );
-        navigator.travelTo( 0.5 * FieldConstants.SQUARE_LENGTH, 4 * FieldConstants.SQUARE_LENGTH);
-        launcher.setLaunchMotorAcceleration(2*ShootingConstants.BALL_LOWERING_ACCELERATION);
-        launcher.rotateLaunchMotors(ShootingConstants.BALL_RETRIEVAL_ANGLE);
-        Sound.beep(); //Notify instructors we are ready to receive ball
-
-        try { Thread.sleep( 5000 ); } catch( Exception e ){}
-
-        launcher.setLaunchMotorAcceleration(ShootingConstants.BALL_LOWERING_ACCELERATION);
-        launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
-        navigator.setCorrectionNeeded( true );*/
-
-       // Sound.beepSequence();
+        if( parameters.getForwardTeam() == 11 ){
+            playOffense( navigator, odometer, ballRetriever, launcher );
+        } else if ( parameters.getDefenseTeam() == 11 ){
+            playDefense( navigator, odometer, launcher );
+        }
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
+    }
+
+    /**
+     * A method to play offense with field mapping and strict avoidance (used in third round)
+     *
+     * @param navigator
+     * @param odometer
+     * @param ballRetriever
+     * @param launcher
+     */
+    private static void playOffense(Navigator navigator, Odometer odometer,
+                                    BallRetriever ballRetriever,
+                                    Launcher launcher ) {
+
+        ballRetriever.getBall();
+        navigator.travelToShootingPosition();
+        //launcher.launchBall();      //1 ball launched
+
+        navigator.returnToBallDispenser();
+        ballRetriever.getBall();
+        navigator.returnToShootingPosition();
+//        launcher.launchBall(); //2 balls launched
+//
+        navigator.returnToBallDispenser();
+        ballRetriever.getBall();
+        navigator.returnToShootingPosition();
+//        launcher.launchBall(); //3 balls launched
+    }
+
+
+    /**
+     * A method to play defense
+     *
+     * @param navigator
+     * @param odometer
+     * @param launcher
+     */
+    private static void playDefense( Navigator navigator, Odometer odometer, Launcher launcher)  {
+        double startTime = System.currentTimeMillis();
+        int y = 10-parameters.getDefenderZone()[1];
+
+        navigator.travelToSquare( odometer.getFieldMapper().getMapping()[5][y] );
+        launcher.rotateLaunchMotors(ShootingConstants.VERTICAL_ANGLE);
+        while(System.currentTimeMillis() - startTime < 7*60*1000){
+            navigator.moveSquareX(1);
+            navigator.moveSquareX(-1);
+        }
+
+
     }
 
     /**
@@ -203,5 +220,17 @@ public class FinalProject {
         } catch ( Exception e ) {
             // Error occurred
         }
+    }
+
+    /**
+     * A method to get our starting corner
+     *
+     * @param parameters
+     */
+    private static int getStartingCorner( Parameters parameters ) {
+        if ( parameters.getForwardTeam() == WifiProperties.TEAM_NUMBER ) {
+            return parameters.getForwardCorner();
+        }
+        return parameters.getDefenseCorner();
     }
 }

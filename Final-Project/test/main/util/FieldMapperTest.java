@@ -116,16 +116,6 @@ public class FieldMapperTest {
     }
 
     @Test
-    public void testIsShootingPosition() {
-        // given
-        Square square = new Square( 0, 4 );
-        // when
-        boolean isShootingPosition = fieldMapper.isShootingPosition( square );
-        // then
-        Assert.assertEquals( false, isShootingPosition );
-    }
-
-    @Test
     public void testGetNorthLine() {
         // given
         Square square = new Square( 0, 4 );

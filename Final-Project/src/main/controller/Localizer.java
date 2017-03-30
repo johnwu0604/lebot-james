@@ -1,5 +1,6 @@
 package main.controller;
 
+import lejos.hardware.Sound;
 import main.object.UltrasonicSensor;
 import main.resource.ThresholdConstants;
 import main.resource.FieldConstants;
@@ -44,9 +45,6 @@ public class Localizer {
     public void start() {
 
         try {
-
-            ultrasonicSensor.startRunning();
-
             int firstMinIndex = -1;
             int secondMinIndex = -2;
             ArrayList<SensorReading> sensorReadings = new ArrayList<SensorReading>();
@@ -78,8 +76,6 @@ public class Localizer {
             setStartingSquare();
             moveToCenterOfSquare();
             odometer.addPastSquare( odometer.getCurrentSquare() );
-
-            ultrasonicSensor.stopRunning();
 
         } catch ( Exception e ) {
             try {

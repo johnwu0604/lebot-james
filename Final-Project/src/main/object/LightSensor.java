@@ -2,6 +2,7 @@ package main.object;
 
 import lejos.robotics.SampleProvider;
 import main.resource.ThresholdConstants;
+import main.resource.TimeConstants;
 
 /**
  * An object that represents a Light Sensor
@@ -16,7 +17,6 @@ public class LightSensor extends Thread {
     // variables
     private float[] data;
     private boolean lineDetected = false;
-    private volatile boolean running = false;
 
     /**
      * Our main constructor method
@@ -33,15 +33,12 @@ public class LightSensor extends Thread {
      */
     public void run() {
         while ( true ) {
-            // pause thread if it is not running
-            if ( !running ) {
-                try { pauseThread(); } catch ( Exception e ) {}
-            }
             // fetch samples
             sensor.fetchSample(data, 0);
             if( data[0] < ThresholdConstants.LINE_DETECTION) {
                 lineDetected = true;
             }
+            try { Thread.sleep( TimeConstants.LIGHT_SENSOR_READING_PERIOD ); } catch( Exception e ){}
         }
     }
 
@@ -60,37 +57,8 @@ public class LightSensor extends Thread {
      * @param lineDetected the boolean value for line detection
      */
     public void setLineDetected( boolean lineDetected ) {
-        this.lineDetected = lineDetected;
-    }
-
-    /**
-     * A method to temporarily pause our thread
-     */
-    public void pauseThread() throws InterruptedException {
-        synchronized (this) {
-            while ( !running ) {
-                wait();
-            }
-            running = true;
-        }
-    }
-
-    /**
-     * A method to temporarily stop our thread
-     */
-    public void stopRunning() {
         synchronized ( this ) {
-            running = false;
-        }
-    }
-
-    /**
-     * A method to restart our thread
-     */
-    public void startRunning() {
-        synchronized (this) {
-            lineDetected = false;
-            notify();
+            this.lineDetected = lineDetected;
         }
     }
 

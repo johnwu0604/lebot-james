@@ -1,5 +1,6 @@
 package main.object;
 
+import lejos.hardware.Sound;
 import lejos.robotics.SampleProvider;
 import main.resource.ThresholdConstants;
 import main.resource.RobotConstants;
@@ -17,7 +18,6 @@ public class UltrasonicSensor extends Thread {
 
     // variables
     private float[] data;
-    private volatile boolean running = false;
 
     /**
      * Our main constructor method
@@ -34,10 +34,6 @@ public class UltrasonicSensor extends Thread {
      */
     public void run() {
         while ( true ) {
-            // pause thread if it is not running
-            if ( !running ) {
-                try { pauseThread(); } catch ( Exception e ) {}
-            }
             // fetch data samples
             sensor.fetchSample( data, 0 );
             try { Thread.sleep( TimeConstants.ULTRASONICSENSOR_SENSOR_READING_PERIOD ); } catch( Exception e ){}
@@ -62,36 +58,6 @@ public class UltrasonicSensor extends Thread {
     public float getFilteredLeftSensorData() {
         float distance = data[0]*100;
         return distance > ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE ? ThresholdConstants.ULTRASONICSENSOR_MAX_DISTANCE : distance;
-    }
-
-    /**
-     * A method to temporarily pause our thread
-     */
-    public void pauseThread() throws InterruptedException {
-        synchronized (this) {
-            while ( !running ) {
-                wait();
-            }
-            running = true;
-        }
-    }
-
-    /**
-     * A method to temporarily stop our thread
-     */
-    public void stopRunning() {
-        synchronized ( this ) {
-            running = false;
-        }
-    }
-
-    /**
-     * A method to restart our thread
-     */
-    public void startRunning() {
-        synchronized (this) {
-            notify();
-        }
     }
 
 
