@@ -8,7 +8,6 @@ import main.resource.RobotConstants;
 import java.util.Stack;
 import java.util.ArrayList;
 
-
 /**
  * Navigator object used to navigate the vehicle.
  *
@@ -132,28 +131,41 @@ public class Navigator {
         int deltaX = getComponentDistances(destination)[0]; // in square values
         int deltaY = getComponentDistances(destination)[1]; // in square values
 
-        // greater distance to travel in x
-        if ( Math.abs( deltaX ) >= Math.abs( deltaY ) ) {
-            topPriority = deltaX > 0 ? eastSquare : westSquare;
-            secondPriority = deltaY > 0 ? northSquare : southSquare;
-            if ( secondPriority == null ) {
-                secondPriority = deltaY > 0 ? southSquare : northSquare;
-            } else {
-                secondPriority = deltaY > 0 ? southSquare : northSquare;
+        if(deltaX != 0 && deltaY != 0) {
+            // greater distance to travel in x
+            if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+                topPriority = deltaX > 0 ? eastSquare : westSquare;
+                secondPriority = deltaY > 0 ? northSquare : southSquare;
+                fourthPriority = odometer.getLastSquare();
+                thirdPriority = getUnassignedMove(topPriority, secondPriority, fourthPriority);
             }
-            fourthPriority = topPriority = deltaX > 0 ? westSquare : eastSquare;
-        }
 
-        // greater distance to travel in y
-        if ( Math.abs( deltaX ) < Math.abs( deltaY ) ) {
-            topPriority = deltaY > 0 ? northSquare : southSquare;
-            secondPriority = deltaX > 0 ? eastSquare : westSquare;
-            if ( secondPriority == null ) {
-                secondPriority = deltaX > 0 ? westSquare : eastSquare;
-            } else {
-                thirdPriority = deltaX > 0 ? westSquare : eastSquare;
+            // greater distance to travel in y
+            if (Math.abs(deltaX) < Math.abs(deltaY)) {
+                topPriority = deltaY > 0 ? northSquare : southSquare;
+                secondPriority = deltaX > 0 ? eastSquare : westSquare;
+                fourthPriority = odometer.getLastSquare();
+                thirdPriority = getUnassignedMove(topPriority, secondPriority, fourthPriority);
             }
+        }  else if (deltaX == 0 && deltaY !=0){
+            topPriority = deltaY > 0 ? northSquare : southSquare;
             fourthPriority = deltaY > 0 ? southSquare : northSquare;
+
+            if(componentsMoved("X") > 0 ){
+                secondPriority = eastSquare;
+            }else{
+                thirdPriority = westSquare;
+            }
+
+        } else if (deltaX != 0 && deltaY ==0){
+            topPriority = deltaX > 0 ? eastSquare : westSquare;
+            fourthPriority = deltaX > 0 ? westSquare : eastSquare;
+
+            if(componentsMoved("Y") > 0 ){
+                secondPriority = northSquare;
+            }else{
+                thirdPriority = southSquare;
+            }
         }
 
         if ( fourthPriority != null ) {
@@ -168,6 +180,50 @@ public class Navigator {
         possibleMoves.push( topPriority );
 
         return possibleMoves;
+    }
+
+    /**
+     * A method to return which of 4 possible moves hasn't been assigned
+     *
+     * @param top
+     * @param second
+     * @param last
+     * @return the square which hasn't been assigned
+     */
+    public Square getUnassignedMove(Square top, Square second, Square last){
+
+        Square northSquare = odometer.getNorthSquare();
+        Square southSquare = odometer.getSouthSquare();
+        Square eastSquare = odometer.getEastSquare();
+        Square westSquare = odometer.getWestSquare();
+
+        if (top != northSquare && second != northSquare && last != northSquare){
+            return northSquare;
+        }else if(top != southSquare && second != southSquare && last != southSquare){
+            return southSquare;
+        }else if(top != westSquare && second != westSquare && last != westSquare){
+            return westSquare;
+        }else if(top != eastSquare && second != eastSquare && last != eastSquare){
+            return eastSquare;
+        }else{
+            return null;
+        }
+    }
+
+    /**
+     * A method to the number (w/ direction) of moves that have been completed
+     *
+     * @param direction X or Y
+     * @return sum of changes
+     */
+    public int componentsMoved(String direction){
+        if(direction.equals("X")){
+            return odometer.getCurrentSquare().getSquarePosition()[0] - recentMoves.get(0).getSquarePosition()[0];
+        }else if (direction.equals("Y")){
+            return odometer.getCurrentSquare().getSquarePosition()[1] - recentMoves.get(0).getSquarePosition()[1];
+        }else{
+            return 0;
+        }
     }
 
     /**
