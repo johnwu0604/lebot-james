@@ -61,7 +61,7 @@ public class Launcher {
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_7);
             restArm(ShootingConstants.LAUNCH_ROM_7);
         }else if (distanceToTarget <= 8*FieldConstants.SQUARE_LENGTH){
-            setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_7);
+            setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_8);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_8);
             restArm(ShootingConstants.LAUNCH_ROM_8);
         } else {
