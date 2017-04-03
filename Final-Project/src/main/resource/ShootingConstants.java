@@ -50,25 +50,50 @@ public class ShootingConstants {
     /**
      * angle to rotate arm to fire 5 squares
      */
-    public static final int LAUNCH_ROM_5 = 120;
-
-    /**
-     * angle to rotate arm to fire 6 squares
-     */
-    public static final int LAUNCH_ROM_6 = 130;
-
-    /**
-     * angle to rotate arm to fire 7 squares
-     */
-    public static final int LAUNCH_ROM_7 = 135;
+    public static final int LAUNCH_ROM_5 = 110;
 
     /**
      * angle to rotate arm to fire 8 squares
      */
-    public static final int LAUNCH_ROM_8 = 140;
+    public static final int LAUNCH_SPEED_5 = 400;
+
+    /**
+     * angle to rotate arm to fire 6 squares
+     */
+    public static final int LAUNCH_ROM_6 = 120;
+
+    /**
+     * angle to rotate arm to fire 8 squares
+     */
+    public static final int LAUNCH_SPEED_6 = 400;
+
+    /**
+     * angle to rotate arm to fire 7 squares
+     */
+    public static final int LAUNCH_ROM_7 = 130;
+
+    /**
+     * angle to rotate arm to fire 8 squares
+     */
+    public static final int LAUNCH_SPEED_7 = 400;
+
+    /**
+     * angle to rotate arm to fire 8 squares
+     */
+    public static final int LAUNCH_ROM_8 = 130;
+
+    /**
+     * angle to rotate arm to fire 8 squares
+     */
+    public static final int LAUNCH_SPEED_8 = 600;
 
     /**
      * angle to rotate arm to fire 8+ squares
      */
-    public static final int LAUNCH_ROM_MAX = 145;
+    public static final int LAUNCH_ROM_MAX = 130;
+
+    /**
+     * angle to rotate arm to fire 8 squares
+     */
+    public static final int LAUNCH_SPEED_MAX = 700;
 }

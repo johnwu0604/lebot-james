@@ -75,7 +75,7 @@ public class FieldConstants {
     /**
      * The position of the target center in the x coordinate (square units)
      */
-    public static final int TARGET_CENTER_Y = 6;
+    public static final int TARGET_CENTER_Y = 10;
 
     /**
      * The position of the target center in the y coordinate (square units)

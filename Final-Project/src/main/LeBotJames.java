@@ -92,7 +92,7 @@ public class LeBotJames {
         emergencyStopper.start();
 
         int[] defenderZone = {4,4};
-        int[] ballDispenserPosition  = {-1,3};
+        int[] ballDispenserPosition  = {3,-1};
         Parameters parameters = new Parameters();
         parameters.setForwardCorner(1);
         parameters.setForwardLine(7);
@@ -140,7 +140,7 @@ public class LeBotJames {
         try { Thread.sleep( 1000 ); } catch( Exception e ){}
 
         if( parameters.getForwardTeam() == 11 ){
-            playOffense( navigator, odometer, ballRetriever, launcher );
+            playOffense( navigator, ballRetriever, launcher );
         } else if ( parameters.getDefenseTeam() == 11 ){
             playDefense( navigator, odometer, launcher );
         }
@@ -153,27 +153,28 @@ public class LeBotJames {
      * A method to play offense with field mapping and strict avoidance (used in third round)
      *
      * @param navigator
-     * @param odometer
      * @param ballRetriever
      * @param launcher
      */
-    private static void playOffense(Navigator navigator, Odometer odometer,
+    private static void playOffense(Navigator navigator,
                                     BallRetriever ballRetriever,
                                     Launcher launcher ) {
 
         ballRetriever.getBall();
+        Sound.buzz();
         navigator.travelToShootingPosition();
-        //launcher.launchBall();      //1 ball launched
+        Sound.beep();
+        launcher.launchBall();      //1 ball launched
 
         navigator.returnToBallDispenser();
         ballRetriever.getBall();
         navigator.returnToShootingPosition();
-//        launcher.launchBall(); //2 balls launched
-//
+        launcher.launchBall(); //2 balls launched
+
         navigator.returnToBallDispenser();
         ballRetriever.getBall();
         navigator.returnToShootingPosition();
-//        launcher.launchBall(); //3 balls launched
+        launcher.launchBall(); //3 balls launched
     }
 
 
