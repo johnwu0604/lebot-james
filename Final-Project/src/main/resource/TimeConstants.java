@@ -20,7 +20,7 @@ public class TimeConstants {
     /**
      * Light sensor reading interval (ms)
      */
-    public static final long LIGHT_SENSOR_READING_PERIOD = 10;
+    public static final long LIGHT_SENSOR_READING_PERIOD = 25;
 
     /**
      * Color sensor reading hold time to allow time for line to pass
@@ -40,7 +40,7 @@ public class TimeConstants {
     /**
      * The max time alignment can happen for ball retrieval
      */
-    public static final double ALIGNMENT_MAX_TIME = 500;
+    public static final double ALIGNMENT_MAX_TIME = 3000;
 
     /**
      * Hold time for alignment to retreive ball

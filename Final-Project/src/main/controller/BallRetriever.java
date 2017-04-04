@@ -147,6 +147,7 @@ public class BallRetriever {
 
         navigator.turnToSquare( firstTurn );
         moveToLine();
+        try { Thread.sleep( 1000 ); } catch( Exception e ){}
         navigator.turnRobot( secondTurn );
         moveToLine();
         navigator.moveDistance( -ThresholdConstants.BALL_RETRIEVAL_DISTANCE );
@@ -162,7 +163,7 @@ public class BallRetriever {
         while ( !odometerCorrection.isLineDetectedRight() && !odometerCorrection.isLineDetectedLeft() ) {
             navigator.driveForwardSlow();
         }
-        navigator.stop();
+        navigator.stopFast();
         alignToLine();
         navigator.moveDistance( RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE - 0.5 );
     }

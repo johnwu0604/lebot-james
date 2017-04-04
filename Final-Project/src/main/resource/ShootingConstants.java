@@ -10,7 +10,8 @@ public class ShootingConstants {
     /**
      * angle to raise arm to retireve ball
      */
-    public static final int BALL_RETRIEVAL_ANGLE = 47;
+//    public static final int BALL_RETRIEVAL_ANGLE = 47;
+    public static final int BALL_RETRIEVAL_ANGLE = 44;
 
     /**
      * angle to retract arm to have it vertical

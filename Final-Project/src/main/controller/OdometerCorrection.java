@@ -180,11 +180,7 @@ public class OdometerCorrection extends Thread {
      * A method to temporarily pause our thread
      */
     public void pauseThread() throws InterruptedException {
-        synchronized (this) {
-            while ( !running ) {
-                wait();
-            }
-        }
+        wait();
     }
 
     /**
