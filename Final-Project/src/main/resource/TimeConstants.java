@@ -45,7 +45,7 @@ public class TimeConstants {
     /**
      * Hold time for alignment to retreive ball
      */
-    public static final double ALIGNMENT_HOLD_TIME = 500;
+    public static final double ALIGNMENT_HOLD_TIME = 100;
 
     /**
      * The time to scan for obstacles
