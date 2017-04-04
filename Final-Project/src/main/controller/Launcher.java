@@ -40,8 +40,6 @@ public class Launcher {
      */
     public void launchBall(){
 
-        align();
-
         setLaunchMotorAcceleration( ShootingConstants.LAUNCH_MOTOR_ACCELERATION );
 
         double leftSpeed = leftLaunchMotor.getMaxSpeed();
@@ -145,6 +143,11 @@ public class Launcher {
      * @return distance ball must travel to target
      */
     private double alignToTarget(){
+
+        double angleToAlignNorth = navigator.calculateMinAngle( odometer.getNorthSquare().getCenterCoordinate()[0] - odometer.getX(),
+                odometer.getNorthSquare().getCenterCoordinate()[1] - odometer.getY() );
+        navigator.turnRobot( angleToAlignNorth );
+        align();
 
         double deltaX = FieldConstants.TARGET_CENTER_X_COORDINATE - odometer.getX();
         double deltaY = FieldConstants.TARGET_CENTER_Y_COORDINATE - odometer.getY();

@@ -92,14 +92,14 @@ public class LeBotJames {
         emergencyStopper.start();
 
         int[] defenderZone = {4,4};
-        int[] ballDispenserPosition  = {-1,2};
+        int[] ballDispenserPosition  = {11,2};
         Parameters parameters = new Parameters();
-        parameters.setForwardCorner(1);
+        parameters.setForwardCorner(2);
         parameters.setForwardLine(7);
         parameters.setForwardTeam(11);
         parameters.setDefenderZone(defenderZone);
         parameters.setBallDispenserPosition(ballDispenserPosition);
-        parameters.setBallDispenserOrientation("E");
+        parameters.setBallDispenserOrientation("W");
 
 
         // map field
