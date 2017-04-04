@@ -230,15 +230,28 @@ public class FieldMapper {
 
         // highest priority for the closet square
         if ( y == closestSquare ) {
-            return 4;
+            if (x == 5 || x ==6){
+                return 4;
+            }else{
+                return 3;
+            }
+
         }
         // lower priority for the second closet square
         if ( y == closestSquare-1 ) {
-            return 3;
+            if (x == 5 || x ==6){
+                return 3;
+            }else{
+                return 2;
+            }
         }
         // lower priority for the third closet square
         if ( y == closestSquare-2 ) {
-            return 2;
+            if (x == 5 || x ==6){
+                return 2;
+            }else{
+                return 1;
+            }
         }
         // lower priority for the fourth closet square
         if ( y == closestSquare-3 ) {
