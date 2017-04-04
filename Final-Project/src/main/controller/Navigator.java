@@ -217,6 +217,10 @@ public class Navigator {
      * @return sum of changes
      */
     public int componentsMoved(String direction){
+        if ( recentMoves.size() == 0 ) {
+            return 0;
+        }
+
         if(direction.equals("X")){
             return odometer.getCurrentSquare().getSquarePosition()[0] - recentMoves.get(0).getSquarePosition()[0];
         }else if (direction.equals("Y")){
@@ -444,8 +448,8 @@ public class Navigator {
         ArrayList<Square> currentPastSquares = new ArrayList<Square>();
         currentPastSquares.addAll(odometer.getPastSquares());
 
-        while (odometer.getCurrentSquare() != odometer.getFieldMapper().getBallDispenserApproaches()[0]
-                || odometer.getCurrentSquare() != odometer.getFieldMapper().getBallDispenserApproaches()[1]){
+        while (odometer.getCurrentSquare() != odometer.getFieldMapper().calculateBallDispenserApproach()[0]
+                && odometer.getCurrentSquare() != odometer.getFieldMapper().calculateBallDispenserApproach()[1]){
             travelToSquare(currentPastSquares.get(currentPastSquares.size()-1));
             currentPastSquares.remove(currentPastSquares.size()-1);
         }
