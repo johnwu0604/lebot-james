@@ -414,27 +414,6 @@ public class FieldMapper {
         return ballDispenserApproach;
     }
 
-    /**
-     * A method to return out ball dispenser approach
-     *
-     * @return the square we will approach
-     */
-    public Square getBallDispenserApproach(int approachDirection) {
-        if (approachDirection <= 0) {
-            return squares[ballDispenserApproach[0].getSquarePosition()[0]][ballDispenserApproach[0].getSquarePosition()[1]];
-        } else {
-            return squares[ballDispenserApproach[1].getSquarePosition()[0]][ballDispenserApproach[1].getSquarePosition()[1]];
-        }
-    }
-
-    /**
-     * A method to return the 2 ball dispenser approach squares
-     *
-     * @return ball dispenser approach squares
-     */
-    public Square[] getBallDispenserApproaches(){
-        return ballDispenserApproach;
-    }
 
     /**
      * A method that returns the mapping for the field
