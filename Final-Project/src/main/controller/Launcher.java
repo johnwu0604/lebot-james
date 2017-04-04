@@ -55,23 +55,23 @@ public class Launcher {
 
         double distanceToTarget =  alignToTarget(); //faces target and returns distance to target
 
-        if(distanceToTarget <= 4*FieldConstants.SQUARE_LENGTH){
+        if(distanceToTarget >= 3*FieldConstants.SQUARE_LENGTH){
             setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_5);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_4);
             restArm(ShootingConstants.LAUNCH_ROM_4);
-        }else if (distanceToTarget <= 5*FieldConstants.SQUARE_LENGTH){
+        }else if (distanceToTarget >= 4*FieldConstants.SQUARE_LENGTH){
             setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_5);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_5);
             restArm(ShootingConstants.LAUNCH_ROM_5);
-        }else if (distanceToTarget <= 6*FieldConstants.SQUARE_LENGTH){
+        }else if (distanceToTarget >= 5*FieldConstants.SQUARE_LENGTH){
             setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_6);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_6);
             restArm(ShootingConstants.LAUNCH_ROM_6);
-        }else if (distanceToTarget <= 7*FieldConstants.SQUARE_LENGTH){
+        }else if (distanceToTarget >= 6*FieldConstants.SQUARE_LENGTH){
             setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_7);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_7);
             restArm(ShootingConstants.LAUNCH_ROM_7);
-        }else if (distanceToTarget <= 8*FieldConstants.SQUARE_LENGTH){
+        }else if (distanceToTarget >= 7*FieldConstants.SQUARE_LENGTH){
             setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_8);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_8);
             restArm(ShootingConstants.LAUNCH_ROM_8);
