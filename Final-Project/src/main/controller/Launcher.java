@@ -53,23 +53,23 @@ public class Launcher {
 
         double distanceToTarget =  alignToTarget(); //faces target and returns distance to target
 
-        if(distanceToTarget >= 3*FieldConstants.SQUARE_LENGTH){
+        if(distanceToTarget <= 4*FieldConstants.SQUARE_LENGTH){
             setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_5);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_4);
             restArm(ShootingConstants.LAUNCH_ROM_4);
-        }else if (distanceToTarget >= 4*FieldConstants.SQUARE_LENGTH){
+        }else if (distanceToTarget <= 5*FieldConstants.SQUARE_LENGTH){
             setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_5);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_5);
             restArm(ShootingConstants.LAUNCH_ROM_5);
-        }else if (distanceToTarget >= 5*FieldConstants.SQUARE_LENGTH){
+        }else if (distanceToTarget <= 6*FieldConstants.SQUARE_LENGTH){
             setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_6);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_6);
             restArm(ShootingConstants.LAUNCH_ROM_6);
-        }else if (distanceToTarget >= 6*FieldConstants.SQUARE_LENGTH){
+        }else if (distanceToTarget <= 7*FieldConstants.SQUARE_LENGTH){
             setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_7);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_7);
             restArm(ShootingConstants.LAUNCH_ROM_7);
-        }else if (distanceToTarget >= 7*FieldConstants.SQUARE_LENGTH){
+        }else if (distanceToTarget <= 8*FieldConstants.SQUARE_LENGTH){
             setLaunchMotorSpeed(ShootingConstants.LAUNCH_SPEED_8);
             rotateLaunchMotors(ShootingConstants.LAUNCH_ROM_8);
             restArm(ShootingConstants.LAUNCH_ROM_8);
@@ -144,10 +144,17 @@ public class Launcher {
      */
     private double alignToTarget(){
 
-        double angleToAlignNorth = navigator.calculateMinAngle( odometer.getNorthSquare().getCenterCoordinate()[0] - odometer.getX(),
-                odometer.getNorthSquare().getCenterCoordinate()[1] - odometer.getY() );
-        navigator.turnRobot( angleToAlignNorth );
+        navigator.setCorrectionNeeded( false );
+
+        double angleToAlignEast = navigator.calculateMinAngle( odometer.getEastSquare().getCenterCoordinate()[0] - odometer.getX(),
+                odometer.getEastSquare().getCenterCoordinate()[1] - odometer.getY() );
+        navigator.turnRobot( angleToAlignEast );
         align();
+        navigator.turnRobot( -Math.PI/2 );
+        align();
+        odometer.setTheta( 0 );
+        odometer.setX( odometer.getCurrentSquare().getCenterCoordinate()[0] );
+        odometer.setY( odometer.getCurrentSquare().getCenterCoordinate()[1] );
 
         double deltaX = FieldConstants.TARGET_CENTER_X_COORDINATE - odometer.getX();
         double deltaY = FieldConstants.TARGET_CENTER_Y_COORDINATE - odometer.getY();
@@ -157,6 +164,8 @@ public class Launcher {
 
         navigator.turnRobot( targetAngle );
 
+        navigator.setCorrectionNeeded( true );
+
         return distance;
     }
 
@@ -164,7 +173,6 @@ public class Launcher {
      * A method to align our vehicle to the first line in front
      */
     private void align() {
-        navigator.setCorrectionNeeded( false );
         odometerCorrection.resetSensors();
         navigator.driveForwardSlow();
         while ( !odometerCorrection.isLineDetectedRight() && !odometerCorrection.isLineDetectedLeft() ) {
@@ -174,8 +182,6 @@ public class Launcher {
         correctAlignment();
         navigator.moveDistance( RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE - 0.5 );
         navigator.moveDistance( -FieldConstants.SQUARE_LENGTH/2 );
-        odometer.setTheta( 0.0 );
-        navigator.setCorrectionNeeded( true );
     }
 
     /**

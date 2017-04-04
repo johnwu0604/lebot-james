@@ -49,57 +49,11 @@ public class LeBotJames {
         /**
          * Uncomment for wifi code
          */
-//        EmergencyStopper emergencyStopper = new EmergencyStopper();
-//        emergencyStopper.start();
-//
-//      retrieveStartingParameters();
-//
-//        // notify profs we have received parameters
-//        Sound.beepSequenceUp();
-//
-//        if ( parameters.getForwardTeam() == 11 ) {
-//            // instantiate objects
-//            LightSensor leftLightSensor = new LightSensor( leftColorSensor );
-//            LightSensor rightLightSensor = new LightSensor( rightColorSensor );
-//            FieldMapper fieldMapper = new FieldMapper(parameters);
-//            Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
-//            Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
-//            OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
-//            OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
-//            Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometerCorrection );
-//            Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, parameters.getForwardCorner() );
-//            // start odometry threads
-//            odometer.start();
-//            odometerDisplay.start();
-//            // run localization
-//            localizer.run();
-//            // notify profs localization has completed
-//            Sound.beepSequenceUp();
-//            // start odometry correction
-//            odometerCorrection.start();
-//
-//            try { Thread.sleep( 1000 ); } catch( Exception e ){}
-//
-//            doBetaDemo( navigator, launcher ); //code to travel to shooting position and fire ball
-//
-//            navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
-//        }
-
-        /**
-         * Uncomment for non-wifi code
-         */
         EmergencyStopper emergencyStopper = new EmergencyStopper();
         emergencyStopper.start();
 
-        int[] defenderZone = {4,4};
-        int[] ballDispenserPosition  = {11,2};
-        Parameters parameters = new Parameters();
-        parameters.setForwardCorner(2);
-        parameters.setForwardLine(7);
-        parameters.setForwardTeam(11);
-        parameters.setDefenderZone(defenderZone);
-        parameters.setBallDispenserPosition(ballDispenserPosition);
-        parameters.setBallDispenserOrientation("W");
+        retrieveStartingParameters();
+        Sound.beepSequenceUp();
 
 
         // map field
@@ -144,6 +98,67 @@ public class LeBotJames {
         } else if ( parameters.getDefenseTeam() == 11 ){
             playDefense( navigator, odometer, launcher );
         }
+
+
+        /**
+         * Uncomment for non-wifi code
+         */
+//        EmergencyStopper emergencyStopper = new EmergencyStopper();
+//        emergencyStopper.start();
+//
+//        int[] defenderZone = {4,4};
+//        int[] ballDispenserPosition  = {11,2};
+//        Parameters parameters = new Parameters();
+//        parameters.setForwardCorner(2);
+//        parameters.setForwardLine(8);
+//        parameters.setForwardTeam(11);
+//        parameters.setDefenderZone(defenderZone);
+//        parameters.setBallDispenserPosition(ballDispenserPosition);
+//        parameters.setBallDispenserOrientation("W");
+//
+//
+//        // map field
+//        FieldMapper fieldMapper = new FieldMapper( parameters );
+//
+//        // instantiate timed threads (will start/stop throughout program)
+//        LightSensor leftLightSensor = new LightSensor( leftColorSensor );
+//        LightSensor rightLightSensor = new LightSensor( rightColorSensor );
+//        UltrasonicSensor forwardUSSensor = new UltrasonicSensor( forwardUltrasonicSensor );
+//        leftLightSensor.start();
+//        rightLightSensor.start();
+//        forwardUSSensor.start();
+//
+//        // instantiate continuous threads (don't stop during the program)
+//        Odometer odometer = new Odometer( leftMotor, rightMotor, fieldMapper);
+//        OdometerDisplay odometerDisplay = new OdometerDisplay( odometer, t );
+//        odometer.start();
+//        odometerDisplay.start();
+//
+//        // instantiate movement controllers
+//        ObstacleAvoider obstacleAvoider = new ObstacleAvoider( forwardUSSensor, odometer );
+//        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider );
+//        OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
+//
+//        // instantiate offense controllers
+//        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer, odometerCorrection );
+//        BallRetriever ballRetriever = new BallRetriever( launcher, odometer, navigator, odometerCorrection );
+//
+//        // localize
+//        Localizer localizer = new Localizer( odometer, forwardUSSensor, navigator, getStartingCorner( parameters ) );
+//        localizer.start();
+//
+//        // signal end of localization
+//        Sound.beepSequence();
+//
+//        odometerCorrection.start(); // timed thread - waits until further instruction to actually start
+//
+//        try { Thread.sleep( 1000 ); } catch( Exception e ){}
+//
+//        if( parameters.getForwardTeam() == 11 ){
+//            playOffense( navigator, ballRetriever, launcher );
+//        } else if ( parameters.getDefenseTeam() == 11 ){
+//            playDefense( navigator, odometer, launcher );
+//        }
 
         int buttonChoice = Button.waitForAnyPress();
         System.exit(0);
