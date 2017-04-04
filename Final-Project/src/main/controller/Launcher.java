@@ -1,8 +1,9 @@
 package main.controller;
 
 import lejos.hardware.motor.EV3LargeRegulatedMotor;
-import main.resource.FieldConstants;
-import main.resource.ShootingConstants;
+import main.Parameters;
+import main.object.Square;
+import main.resource.*;
 
 /**
  * A controller object to launch the ball
@@ -14,14 +15,22 @@ public class Launcher {
     // objects
     private Navigator navigator;
     private Odometer odometer;
+    private OdometerCorrection odometerCorrection;
     private EV3LargeRegulatedMotor leftLaunchMotor, rightLaunchMotor;
+
+    // variables
+    private boolean aligningLeft = false;
+    private boolean aligningRight = true;
+    private boolean alignmentTimedOut = false;
 
     /**
      * Constructor for launcher object
      */
-    public Launcher(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Navigator navigator, Odometer odometer){
+    public Launcher(EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Navigator navigator, Odometer odometer,
+                    OdometerCorrection odometerCorrection){
         this.navigator = navigator;
         this.odometer = odometer;
+        this.odometerCorrection = odometerCorrection;
         this.leftLaunchMotor = leftMotor;
         this.rightLaunchMotor = rightMotor;
     }
@@ -30,6 +39,8 @@ public class Launcher {
      * A method to aim at target and launch ball
      */
     public void launchBall(){
+
+        align();
 
         setLaunchMotorAcceleration( ShootingConstants.LAUNCH_MOTOR_ACCELERATION );
 
@@ -144,6 +155,100 @@ public class Launcher {
         navigator.turnRobot( targetAngle );
 
         return distance;
+    }
+
+    /**
+     * A method to align our vehicle to the first line in front
+     */
+    private void align() {
+        navigator.setCorrectionNeeded( false );
+        odometerCorrection.resetSensors();
+        navigator.driveForwardSlow();
+        while ( !odometerCorrection.isLineDetectedRight() && !odometerCorrection.isLineDetectedLeft() ) {
+            navigator.driveForwardSlow();
+        }
+        navigator.stopFast();
+        correctAlignment();
+        navigator.moveDistance( RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE - 0.5 );
+        navigator.moveDistance( -FieldConstants.SQUARE_LENGTH/2 );
+        odometer.setTheta( 0.0 );
+        navigator.setCorrectionNeeded( true );
+    }
+
+    /**
+     * A method to align to the vehicle to the current line
+     */
+    private void correctAlignment() {
+        double startTime = System.currentTimeMillis();
+        while ( !odometerCorrection.isLineDetectedLeft() && !hasTimedOut( startTime ) ) {
+            navigator.rotateLeftMotorForwardSlow();
+            aligningLeft = true;
+        }
+        while ( !odometerCorrection.isLineDetectedRight() && !hasTimedOut( startTime ) ) {
+            navigator.rotateRightMotorForwardSlow();
+            aligningRight = true;
+        }
+        if ( alignmentTimedOut ) {
+            navigator.stopFast();
+            revertChangesFromTimeOut();
+        } else {
+            startTime = System.currentTimeMillis();
+            if ( aligningLeft ) {
+                while ( !holdTimedOut( startTime ) ) {
+                    navigator.rotateLeftMotorForwardSlow();
+                }
+            }
+            if ( aligningRight ) {
+                while ( !holdTimedOut( startTime ) ) {
+                    navigator.rotateRightMotorForwardSlow();
+                }
+            }
+        }
+        navigator.stopFast();
+        aligningRight = false;
+        aligningLeft = false;
+    }
+
+    /**
+     * A method to determine if our alignment has timed out or not
+     *
+     * @param startTime
+     * @return hasTimedOut
+     */
+    public boolean hasTimedOut( double startTime ) {
+        double currentTime = System.currentTimeMillis();
+        alignmentTimedOut = currentTime - startTime < TimeConstants.ALIGNMENT_MAX_TIME ? false : true;
+        return alignmentTimedOut;
+    }
+
+    /**
+     * A method to determine if our alignment has timed out or not
+     *
+     * @param startTime
+     * @return hasTimedOut
+     */
+    public boolean holdTimedOut( double startTime ) {
+        double currentTime = System.currentTimeMillis();
+        alignmentTimedOut = currentTime - startTime < TimeConstants.ALIGNMENT_HOLD_TIME ? false : true;
+        return alignmentTimedOut;
+    }
+
+    /**
+     * A method to revert our changes from an alignment time out
+     */
+    public void revertChangesFromTimeOut() {
+        double startTime = System.currentTimeMillis();
+        if ( aligningLeft ) {
+            while ( !hasTimedOut( startTime ) ) {
+                navigator.rotateLeftMotorBackwardSlow();
+            }
+        }
+        if ( aligningRight ) {
+            while ( !hasTimedOut( startTime ) ) {
+                navigator.rotateRightMotorBackwardSlow();
+            }
+        }
+        navigator.stop();
     }
 
 }

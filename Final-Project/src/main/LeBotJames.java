@@ -125,7 +125,7 @@ public class LeBotJames {
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
 
         // instantiate offense controllers
-        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer );
+        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer, odometerCorrection );
         BallRetriever ballRetriever = new BallRetriever( launcher, odometer, navigator, odometerCorrection );
 
         // localize
