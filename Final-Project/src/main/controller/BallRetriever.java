@@ -56,7 +56,8 @@ public class BallRetriever {
         launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
 
         navigator.setCorrectionNeeded(true);
-        navigator.travelToSquare( odometer.getLastSquare() );
+        navigator.travelToX( chooseApproach().getCenterCoordinate()[0] );
+        navigator.travelToY( chooseApproach().getCenterCoordinate()[1] );
 
     }
 
