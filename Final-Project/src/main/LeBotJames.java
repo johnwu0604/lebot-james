@@ -95,7 +95,7 @@ public class LeBotJames {
 
         if( parameters.getForwardTeam() == 11 ){
             playOffense( navigator, ballRetriever, launcher );
-        } else if ( parameters.getDefenseTeam() == 11 ){
+        } else {
             playDefense( navigator, odometer, launcher );
         }
 
@@ -171,9 +171,7 @@ public class LeBotJames {
      * @param ballRetriever
      * @param launcher
      */
-    private static void playOffense(Navigator navigator,
-                                    BallRetriever ballRetriever,
-                                    Launcher launcher ) {
+    private static void playOffense(Navigator navigator, BallRetriever ballRetriever, Launcher launcher ) {
 
         ballRetriever.getBall();
         Sound.buzz();
@@ -201,6 +199,7 @@ public class LeBotJames {
      * @param launcher
      */
     private static void playDefense( Navigator navigator, Odometer odometer, Launcher launcher)  {
+
         double startTime = System.currentTimeMillis();
         int y = 10-parameters.getDefenderZone()[1];
 
