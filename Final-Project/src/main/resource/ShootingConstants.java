@@ -81,12 +81,12 @@ public class ShootingConstants {
     /**
      * angle to rotate arm to fire 8 squares
      */
-    public static final int LAUNCH_ROM_8 = 130;
+    public static final int LAUNCH_ROM_8 = 120;
 
     /**
      * angle to rotate arm to fire 8 squares
      */
-    public static final int LAUNCH_SPEED_8 = 600;
+    public static final int LAUNCH_SPEED_8 = 650;
 
     /**
      * angle to rotate arm to fire 8+ squares

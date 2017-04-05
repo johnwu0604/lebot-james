@@ -55,8 +55,8 @@ public class LeBotJames {
         t.clear();
 
         do {
-            t.drawString("Click UP for rounds 1 & 2 .....", 0,2);
-            t.drawString("Click DOWN for round 3 .....", 0,4);
+            t.drawString("Click UP for 1 & 2 .....", 0,2);
+            t.drawString("Click DOWN for 3 .....", 0,4);
             buttonChoice = Button.waitForAnyPress();
         } while ( buttonChoice != Button.ID_UP && buttonChoice != Button.ID_DOWN );
 
