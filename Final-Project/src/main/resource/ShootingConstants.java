@@ -10,7 +10,8 @@ public class ShootingConstants {
     /**
      * angle to raise arm to retireve ball
      */
-    public static final int BALL_RETRIEVAL_ANGLE = 47;
+//    public static final int BALL_RETRIEVAL_ANGLE = 47;
+    public static final int BALL_RETRIEVAL_ANGLE = 44;
 
     /**
      * angle to retract arm to have it vertical
@@ -75,17 +76,17 @@ public class ShootingConstants {
     /**
      * angle to rotate arm to fire 8 squares
      */
-    public static final int LAUNCH_SPEED_7 = 400;
+    public static final int LAUNCH_SPEED_7 = 380;
 
     /**
      * angle to rotate arm to fire 8 squares
      */
-    public static final int LAUNCH_ROM_8 = 130;
+    public static final int LAUNCH_ROM_8 = 120;
 
     /**
      * angle to rotate arm to fire 8 squares
      */
-    public static final int LAUNCH_SPEED_8 = 600;
+    public static final int LAUNCH_SPEED_8 = 650;
 
     /**
      * angle to rotate arm to fire 8+ squares

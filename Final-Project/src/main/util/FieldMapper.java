@@ -125,7 +125,7 @@ public class FieldMapper {
      * @return whether square is in defense
      */
     public boolean isInDefenseRegion( Square square ) {
-        if ( !isInGoalRegion( square ) && !isInOffenseRegion( square ) ) {
+        if ( !isInGoalRegion( square ) ) {
             return true;
         }
         return false;

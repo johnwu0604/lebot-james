@@ -56,7 +56,8 @@ public class BallRetriever {
         launcher.rotateLaunchMotors(-ShootingConstants.BALL_RETRIEVAL_ANGLE);
 
         navigator.setCorrectionNeeded(true);
-        navigator.travelToSquare( odometer.getLastSquare() );
+        navigator.travelToX( chooseApproach().getCenterCoordinate()[0] );
+        navigator.travelToY( chooseApproach().getCenterCoordinate()[1] );
 
     }
 
@@ -146,6 +147,7 @@ public class BallRetriever {
 
         navigator.turnToSquare( firstTurn );
         moveToLine();
+        try { Thread.sleep( 1000 ); } catch( Exception e ){}
         navigator.turnRobot( secondTurn );
         moveToLine();
         navigator.moveDistance( -ThresholdConstants.BALL_RETRIEVAL_DISTANCE );
@@ -161,7 +163,7 @@ public class BallRetriever {
         while ( !odometerCorrection.isLineDetectedRight() && !odometerCorrection.isLineDetectedLeft() ) {
             navigator.driveForwardSlow();
         }
-        navigator.stop();
+        navigator.stopFast();
         alignToLine();
         navigator.moveDistance( RobotConstants.LIGHT_SENSOR_TO_TRACK_DISTANCE - 0.5 );
     }

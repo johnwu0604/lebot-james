@@ -36,7 +36,7 @@ public class ThresholdConstants {
      * The threshold for determining which square a coordinate is in.
      * Any coordinate closer than this distance to a line is too hard too tell the exact square.
      */
-    public static final double COORDINATE_IN_SQUARE = 2.0;
+    public static final double COORDINATE_IN_SQUARE = 1.0;
 
     /**
      * This is the distance the robot needs to move in order to get to a good point to retrieve the ball

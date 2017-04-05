@@ -45,61 +45,28 @@ public class LeBotJames {
     public static void main(String[] args) {
 
         @SuppressWarnings("main/resource")
-        final TextLCD t = LocalEV3.get().getTextLCD();
         /**
          * Uncomment for wifi code
          */
-//        EmergencyStopper emergencyStopper = new EmergencyStopper();
-//        emergencyStopper.start();
-//
-//      retrieveStartingParameters();
-//
-//        // notify profs we have received parameters
-//        Sound.beepSequenceUp();
-//
-//        if ( parameters.getForwardTeam() == 11 ) {
-//            // instantiate objects
-//            LightSensor leftLightSensor = new LightSensor( leftColorSensor );
-//            LightSensor rightLightSensor = new LightSensor( rightColorSensor );
-//            FieldMapper fieldMapper = new FieldMapper(parameters);
-//            Odometer odometer = new Odometer(leftMotor,rightMotor,fieldMapper);
-//            Navigator navigator = new Navigator(leftMotor,rightMotor,odometer);
-//            OdometerDisplay odometerDisplay = new OdometerDisplay(odometer,t);
-//            OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
-//            Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometerCorrection );
-//            Localizer localizer = new Localizer( odometer, forwardUltrasonicSensor, navigator, parameters.getForwardCorner() );
-//            // start odometry threads
-//            odometer.start();
-//            odometerDisplay.start();
-//            // run localization
-//            localizer.run();
-//            // notify profs localization has completed
-//            Sound.beepSequenceUp();
-//            // start odometry correction
-//            odometerCorrection.start();
-//
-//            try { Thread.sleep( 1000 ); } catch( Exception e ){}
-//
-//            doBetaDemo( navigator, launcher ); //code to travel to shooting position and fire ball
-//
-//            navigator.travelToSquare(odometer.getFieldMapper().getMapping()[0][0]);
-//        }
 
-        /**
-         * Uncomment for non-wifi code
-         */
+        int buttonChoice;
+        boolean obstaclesInField;
+        final TextLCD t = LocalEV3.get().getTextLCD();
+        t.clear();
+
+        do {
+            t.drawString("Click UP for 1 & 2 .....", 0,2);
+            t.drawString("Click DOWN for 3 .....", 0,4);
+            buttonChoice = Button.waitForAnyPress();
+        } while ( buttonChoice != Button.ID_UP && buttonChoice != Button.ID_DOWN );
+
+        obstaclesInField = buttonChoice == Button.ID_UP ? false : true;
+
         EmergencyStopper emergencyStopper = new EmergencyStopper();
         emergencyStopper.start();
 
-        int[] defenderZone = {4,4};
-        int[] ballDispenserPosition  = {-1,2};
-        Parameters parameters = new Parameters();
-        parameters.setForwardCorner(1);
-        parameters.setForwardLine(7);
-        parameters.setForwardTeam(11);
-        parameters.setDefenderZone(defenderZone);
-        parameters.setBallDispenserPosition(ballDispenserPosition);
-        parameters.setBallDispenserOrientation("E");
+        retrieveStartingParameters();
+        Sound.beepSequenceUp();
 
 
         // map field
@@ -121,11 +88,11 @@ public class LeBotJames {
 
         // instantiate movement controllers
         ObstacleAvoider obstacleAvoider = new ObstacleAvoider( forwardUSSensor, odometer );
-        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider );
+        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider, obstaclesInField );
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
 
         // instantiate offense controllers
-        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer );
+        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer, odometerCorrection );
         BallRetriever ballRetriever = new BallRetriever( launcher, odometer, navigator, odometerCorrection );
 
         // localize
@@ -141,11 +108,72 @@ public class LeBotJames {
 
         if( parameters.getForwardTeam() == 11 ){
             playOffense( navigator, ballRetriever, launcher );
-        } else if ( parameters.getDefenseTeam() == 11 ){
+        } else {
             playDefense( navigator, odometer, launcher );
         }
 
-        int buttonChoice = Button.waitForAnyPress();
+
+        /**
+         * Uncomment for non-wifi code
+         */
+//        EmergencyStopper emergencyStopper = new EmergencyStopper();
+//        emergencyStopper.start();
+//
+//        int[] defenderZone = {4,4};
+//        int[] ballDispenserPosition  = {11,2};
+//        Parameters parameters = new Parameters();
+//        parameters.setForwardCorner(2);
+//        parameters.setForwardLine(8);
+//        parameters.setForwardTeam(11);
+//        parameters.setDefenderZone(defenderZone);
+//        parameters.setBallDispenserPosition(ballDispenserPosition);
+//        parameters.setBallDispenserOrientation("W");
+//
+//
+//        // map field
+//        FieldMapper fieldMapper = new FieldMapper( parameters );
+//
+//        // instantiate timed threads (will start/stop throughout program)
+//        LightSensor leftLightSensor = new LightSensor( leftColorSensor );
+//        LightSensor rightLightSensor = new LightSensor( rightColorSensor );
+//        UltrasonicSensor forwardUSSensor = new UltrasonicSensor( forwardUltrasonicSensor );
+//        leftLightSensor.start();
+//        rightLightSensor.start();
+//        forwardUSSensor.start();
+//
+//        // instantiate continuous threads (don't stop during the program)
+//        Odometer odometer = new Odometer( leftMotor, rightMotor, fieldMapper);
+//        OdometerDisplay odometerDisplay = new OdometerDisplay( odometer, t );
+//        odometer.start();
+//        odometerDisplay.start();
+//
+//        // instantiate movement controllers
+//        ObstacleAvoider obstacleAvoider = new ObstacleAvoider( forwardUSSensor, odometer );
+//        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider );
+//        OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
+//
+//        // instantiate offense controllers
+//        Launcher launcher = new Launcher( leftLaunchMotor, rightLaunchMotor, navigator, odometer, odometerCorrection );
+//        BallRetriever ballRetriever = new BallRetriever( launcher, odometer, navigator, odometerCorrection );
+//
+//        // localize
+//        Localizer localizer = new Localizer( odometer, forwardUSSensor, navigator, getStartingCorner( parameters ) );
+//        localizer.start();
+//
+//        // signal end of localization
+//        Sound.beepSequence();
+//
+//        odometerCorrection.start(); // timed thread - waits until further instruction to actually start
+//
+//        try { Thread.sleep( 1000 ); } catch( Exception e ){}
+//
+//        if( parameters.getForwardTeam() == 11 ){
+//            playOffense( navigator, ballRetriever, launcher );
+//        } else if ( parameters.getDefenseTeam() == 11 ){
+//            playDefense( navigator, odometer, launcher );
+//        }
+
+        buttonChoice = Button.waitForAnyPress();
         System.exit(0);
     }
 
@@ -156,9 +184,7 @@ public class LeBotJames {
      * @param ballRetriever
      * @param launcher
      */
-    private static void playOffense(Navigator navigator,
-                                    BallRetriever ballRetriever,
-                                    Launcher launcher ) {
+    private static void playOffense(Navigator navigator, BallRetriever ballRetriever, Launcher launcher ) {
 
         ballRetriever.getBall();
         Sound.buzz();
@@ -186,6 +212,7 @@ public class LeBotJames {
      * @param launcher
      */
     private static void playDefense( Navigator navigator, Odometer odometer, Launcher launcher)  {
+
         double startTime = System.currentTimeMillis();
         int y = 10-parameters.getDefenderZone()[1];
 
