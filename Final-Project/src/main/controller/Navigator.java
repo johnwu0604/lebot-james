@@ -25,6 +25,7 @@ public class Navigator {
     // variables
     private boolean correctionNeeded = true;
     ArrayList<Square> recentMoves = new ArrayList<Square>();
+    private boolean obstaclesInField;
 
     /**
      * Default constructor for Navigator object.
@@ -34,11 +35,12 @@ public class Navigator {
      * @param odometer the odometer controller used in the robot
      */
     public Navigator( EV3LargeRegulatedMotor leftMotor, EV3LargeRegulatedMotor rightMotor, Odometer odometer,
-                      ObstacleAvoider obstacleAvoider ) {
+                      ObstacleAvoider obstacleAvoider, boolean obstaclesInField ) {
         this.odometer = odometer;
         this.leftMotor = leftMotor;
         this.rightMotor = rightMotor;
         this.obstacleAvoider = obstacleAvoider;
+        this.obstaclesInField = obstaclesInField;
         obstacleAvoider.setNavigator( this );
     }
 
@@ -479,10 +481,20 @@ public class Navigator {
         if ( odometer.getPastSquares().contains( destination ) ) {
             return true;
         }
-        // scan the square if we don't know anything about
-        if ( !obstacleAvoider.scanSquare( destination ) ) {
-            return false;
+        if ( obstaclesInField ) {
+            if ( !obstacleAvoider.scanSquare( destination ) ) {
+                return false;
+            }
+        } else {
+            int x = destination.getSquarePosition()[0];
+            int y = destination.getSquarePosition()[1];
+            if ( x == 0 || x == 1 || x == 10 || x == 11 || y == 0 || y == 11 ) {
+                if ( !obstacleAvoider.scanSquare( destination ) ) {
+                    return false;
+                }
+            }
         }
+
         return true;
     }
 
