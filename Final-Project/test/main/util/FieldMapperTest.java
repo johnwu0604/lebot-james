@@ -82,7 +82,7 @@ public class FieldMapperTest {
         // when
         boolean isInDefenseRegion = fieldMapper.isInDefenseRegion( square );
         // then
-        Assert.assertEquals( false, isInDefenseRegion );
+        Assert.assertEquals( true, isInDefenseRegion );
     }
 
     @Test
