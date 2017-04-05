@@ -45,10 +45,23 @@ public class LeBotJames {
     public static void main(String[] args) {
 
         @SuppressWarnings("main/resource")
-        final TextLCD t = LocalEV3.get().getTextLCD();
         /**
          * Uncomment for wifi code
          */
+
+        int buttonChoice;
+        boolean obstaclesInField;
+        final TextLCD t = LocalEV3.get().getTextLCD();
+        t.clear();
+
+        do {
+            t.drawString("Click UP for rounds 1 & 2 .....", 0,2);
+            t.drawString("Click DOWN for round 3 .....", 0,4);
+            buttonChoice = Button.waitForAnyPress();
+        } while ( buttonChoice != Button.ID_UP && buttonChoice != Button.ID_DOWN );
+
+        obstaclesInField = buttonChoice == Button.ID_UP ? false : true;
+
         EmergencyStopper emergencyStopper = new EmergencyStopper();
         emergencyStopper.start();
 
@@ -75,7 +88,7 @@ public class LeBotJames {
 
         // instantiate movement controllers
         ObstacleAvoider obstacleAvoider = new ObstacleAvoider( forwardUSSensor, odometer );
-        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider );
+        Navigator navigator = new Navigator( leftMotor, rightMotor, odometer, obstacleAvoider, obstaclesInField );
         OdometerCorrection odometerCorrection = new OdometerCorrection( navigator, odometer, leftLightSensor, rightLightSensor );
 
         // instantiate offense controllers
@@ -160,7 +173,7 @@ public class LeBotJames {
 //            playDefense( navigator, odometer, launcher );
 //        }
 
-        int buttonChoice = Button.waitForAnyPress();
+        buttonChoice = Button.waitForAnyPress();
         System.exit(0);
     }
 
