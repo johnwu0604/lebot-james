@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?><project name="DPM Group 11 Gantt Chart - Winter 2017" company="DPM Group 11" webLink="https://dpm-group11.slack.com/threads/" view-date="2017-02-19" view-index="0" gantt-divider-location="379" resource-divider-location="300" version="2.8.1" locale="en_US">
+    <description><![CDATA[Time management for the Design Principles & Methods design project in the Winter of 2017.
+
+       Group 11:	
+	Alex- Documentation Manager
+	John- Software Team Leader
+	Ian- Testing Team Leader
+	Durham- Design Team Manager
+	Ethan- Hardware Team Leader]]></description>
+    <view zooming-state="default:5" id="gantt-chart">
+        <field id="tpd3" name="Name" width="168" order="0"/>
+        <field id="tpd4" name="Begin date" width="95" order="1"/>
+        <field id="tpd5" name="End date" width="95" order="2"/>
+        <option id="color.recent"><![CDATA[#ff3333 #666666 #000000 #ff6633 #66ff66 #ff0066 #3399ff #00cc66 #006666 #0000ff]]></option>
+    </view>
+    <view id="resource-table">
+        <field id="0" name="Name" width="209" order="0"/>
+        <field id="1" name="Default role" width="85" order="1"/>
+    </view>
+    <!-- -->
+    <calendars>
+        <day-types>
+            <day-type id="0"/>
+            <day-type id="1"/>
+            <default-week id="1" name="default" sun="1" mon="0" tue="0" wed="0" thu="0" fri="0" sat="1"/>
+            <only-show-weekends value="true"/>
+            <overriden-day-types/>
+            <days/>
+        </day-types>
+    </calendars>
+    <tasks empty-milestones="true">
+        <taskproperties>
+            <taskproperty id="tpd0" name="type" type="default" valuetype="icon"/>
+            <taskproperty id="tpd1" name="priority" type="default" valuetype="icon"/>
+            <taskproperty id="tpd2" name="info" type="default" valuetype="icon"/>
+            <taskproperty id="tpd3" name="name" type="default" valuetype="text"/>
+            <taskproperty id="tpd4" name="begindate" type="default" valuetype="date"/>
+            <taskproperty id="tpd5" name="enddate" type="default" valuetype="date"/>
+            <taskproperty id="tpd6" name="duration" type="default" valuetype="int"/>
+            <taskproperty id="tpd7" name="completion" type="default" valuetype="int"/>
+            <taskproperty id="tpd8" name="coordinator" type="default" valuetype="text"/>
+            <taskproperty id="tpd9" name="predecessorsr" type="default" valuetype="text"/>
+        </taskproperties>
+        <task id="0" name="Initial team meeting and planning" color="#cccccc" shape="1,0,1,0,0,1,0,1,1,0,1,0,0,1,0,1" meeting="false" start="2017-02-19" duration="1" complete="1" expand="true"/>
+        <task id="6" name="Preparation of first 4 design documents" color="#666666" shape="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" meeting="false" start="2017-02-19" duration="3" complete="0" expand="true">
+            <notes><![CDATA[
+]]></notes>
+            <depend id="10" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="10" name="Preparation of initial Gantt Chart" color="#666666" shape="0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0" meeting="false" start="2017-02-22" duration="1" complete="0" expand="true">
+            <depend id="37" type="2" difference="0" hardness="Strong"/>
+            <depend id="130" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="130" name="First Design Meeting" color="#000000" meeting="true" start="2017-02-23" duration="0" complete="0" expand="true">
+            <depend id="41" type="2" difference="0" hardness="Strong"/>
+            <depend id="74" type="2" difference="0" hardness="Strong"/>
+            <depend id="131" type="2" difference="0" hardness="Strong"/>
+            <depend id="132" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="37" name="Software Design Period" color="#00cc66" meeting="false" start="2017-02-23" duration="22" complete="0" expand="true">
+            <task id="41" name="Phase 1: Odometry/Navigation/Obstacle Avoidance" color="#00cc66" meeting="false" start="2017-02-23" duration="11" complete="0" expand="true">
+                <depend id="46" type="2" difference="0" hardness="Rubber"/>
+                <depend id="112" type="2" difference="0" hardness="Strong"/>
+                <depend id="137" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="46" name="Phase 2: Localization, WiFi Integration" color="#00cc66" meeting="false" start="2017-03-06" duration="4" complete="0" expand="true">
+                <depend id="112" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="112" name="Mobility around Field" color="#ff0033" meeting="true" start="2017-03-10" duration="0" complete="0" expand="true">
+                <depend id="55" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="55" name="Phase 3: Ball Retrieval &amp; Throwing" color="#00cc66" meeting="false" start="2017-03-10" duration="4" complete="0" expand="true">
+                <depend id="99" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="99" name="Offensive Capability" color="#ff0033" meeting="true" start="2017-03-14" duration="0" complete="0" expand="true">
+                <depend id="58" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="58" name="Phase 4: Defense" color="#00cc66" meeting="false" start="2017-03-14" duration="3" complete="0" expand="true">
+                <depend id="106" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="106" name="Complete Design" color="#ff0033" meeting="true" start="2017-03-17" duration="0" complete="0" expand="true">
+                <depend id="148" type="2" difference="0" hardness="Strong"/>
+            </task>
+        </task>
+        <task id="66" name="Hardware Design Period" color="#000099" meeting="false" start="2017-02-23" duration="21" complete="0" thirdDate="2017-02-23" thirdDate-constraint="1" expand="true">
+            <task id="74" name="Phase 1: Mobile Robot" color="#0000ff" meeting="false" start="2017-02-23" duration="11" complete="0" expand="true">
+                <depend id="80" type="2" difference="0" hardness="Strong"/>
+                <depend id="112" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="80" name="Phase 2: Ball Retrieval &amp; Throwing Mechanism" color="#0000ff" meeting="false" start="2017-03-06" duration="6" complete="0" expand="true">
+                <depend id="83" type="2" difference="0" hardness="Strong"/>
+                <depend id="99" type="2" difference="0" hardness="Strong"/>
+            </task>
+            <task id="83" name="Phase 3: Defensive Components" color="#0000ff" meeting="false" start="2017-03-12" duration="4" complete="0" expand="true">
+                <depend id="106" type="2" difference="0" hardness="Strong"/>
+            </task>
+        </task>
+        <task id="131" name="Mechanical Design Documentation" color="#666666" meeting="false" start="2017-02-23" duration="22" complete="0" expand="true">
+            <depend id="106" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="132" name="Software System Hierarchy" color="#666666" meeting="false" start="2017-02-23" duration="12" complete="0" expand="true">
+            <depend id="133" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="133" name="Preliminary API" color="#666666" meeting="false" start="2017-03-07" duration="7" complete="0" expand="true">
+            <depend id="106" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="134" name="Second Design Meeting" color="#000000" meeting="true" start="2017-03-09" duration="0" complete="0" expand="true">
+            <depend id="55" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="186" name="Preparation of Testing Procedures" color="#ff6633" meeting="false" start="2017-02-23" duration="11" complete="0" expand="true">
+            <depend id="137" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="135" name="Third Design Meeting" color="#000000" meeting="true" start="2017-03-16" duration="0" complete="0" expand="true">
+            <depend id="148" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="137" name="Odometry/Navigation/Obstacle Avoidance Testing" color="#ff6633" meeting="false" start="2017-03-06" duration="4" complete="0" expand="true">
+            <depend id="112" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="139" name="Localization/Wifi Testing" color="#ff6633" meeting="false" start="2017-03-06" duration="7" complete="0" expand="true">
+            <depend id="99" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="143" name="Ball Retrieval/Throwing Testing" color="#ff6633" meeting="false" start="2017-03-10" duration="6" complete="0" expand="true"/>
+        <task id="144" name="Defense Testing" color="#ff6633" meeting="false" start="2017-03-15" duration="3" complete="0" expand="true"/>
+        <task id="148" name="Integrative Testing &amp; Revision" color="#ff6633" meeting="false" start="2017-03-17" duration="7" complete="0" expand="true">
+            <depend id="151" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="149" name="Fourth Design Meeting" color="#000000" meeting="true" start="2017-03-23" duration="0" complete="0" expand="true">
+            <depend id="155" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="151" name="Beta Demonstration/Test Docs" color="#66ff66" meeting="true" start="2017-03-24" duration="0" complete="0" expand="true">
+            <depend id="154" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="154" name="Design Revisions/Calibration" color="#00cc66" shape="0,0,0,0,0,0,0,1,0,0,1,1,0,1,1,1" meeting="false" start="2017-03-24" duration="7" complete="0" expand="true">
+            <depend id="162" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="155" name="Preparation of Final Documentation" color="#666666" meeting="false" start="2017-03-23" duration="8" complete="0" expand="true">
+            <depend id="162" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="162" name="Source Code, Final Documents Due" color="#66ff66" meeting="true" start="2017-03-31" duration="0" complete="0" expand="true"/>
+        <task id="160" name="Fifth Design Meeting: Poster Planning" color="#000000" meeting="true" start="2017-03-30" duration="0" complete="0" expand="true">
+            <depend id="163" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="163" name="Poster Design and Production" color="#3399ff" meeting="false" start="2017-03-30" duration="6" complete="0" expand="true"/>
+        <task id="167" name="Poster Presentation Prep" color="#3399ff" meeting="false" start="2017-03-31" duration="5" complete="0" expand="true"/>
+        <task id="170" name="Final Demo &amp; Competition" color="#ff3333" meeting="false" start="2017-04-05" duration="1" complete="0" expand="true">
+            <depend id="176" type="2" difference="0" hardness="Strong"/>
+        </task>
+        <task id="172" name="Last Class" color="#66ff66" meeting="true" start="2017-04-07" duration="0" complete="0" expand="true"/>
+        <task id="176" name="Final Document Updates" color="#666666" meeting="false" start="2017-04-06" duration="2" complete="0" expand="true"/>
+    </tasks>
+    <resources/>
+    <allocations/>
+    <vacations/>
+    <previous/>
+    <roles roleset-name="Default"/>
+</project>
